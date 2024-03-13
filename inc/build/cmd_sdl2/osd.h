@@ -12,7 +12,6 @@
 #include "main.h"
 #include "config.h"
 #include "error.h"
-#include "unzip.h"
 #include "fileio.h"
 
 #define osd_input_update sdl_input_update
@@ -29,5 +28,7 @@
 #define MS_BIOS_EU  "./bios_E.sms"
 #define MS_BIOS_JP  "./bios_J.sms"
 #define GG_BIOS     "./bios.gg"
+
+unsigned int crc32(unsigned int crc, const unsigned char* buffer, unsigned int len);
 
 #endif /* _OSD_H_ */

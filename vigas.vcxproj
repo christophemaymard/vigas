@@ -58,13 +58,13 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;INLINE=static inline;LSB_FIRST;USE_16BPP_RENDERING;MAXROMSIZE=33554432;HAVE_YM3438_CORE;_CONSOLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/core/;$(SolutionDir)inc/core/m68k/;$(SolutionDir)inc/core/z80/;$(SolutionDir)inc/core/input_hw/;$(SolutionDir)inc/core/sound/;$(SolutionDir)inc/core/cart_hw/;$(SolutionDir)inc/core/cart_hw/svp/;$(SolutionDir)inc/core/cd_hw/;$(SolutionDir)inc/core/debug/;$(SolutionDir)inc/core/ntsc/;$(SolutionDir)lib/SDL2/include/;$(SolutionDir)lib/zlib/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/core/;$(SolutionDir)inc/core/m68k/;$(SolutionDir)inc/core/z80/;$(SolutionDir)inc/core/input_hw/;$(SolutionDir)inc/core/sound/;$(SolutionDir)inc/core/cart_hw/;$(SolutionDir)inc/core/cart_hw/svp/;$(SolutionDir)inc/core/cd_hw/;$(SolutionDir)inc/core/debug/;$(SolutionDir)inc/core/ntsc/;$(SolutionDir)lib/SDL2/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib/SDL2/lib/$(PlatformTarget)/;$(SolutionDir)lib/zlib/lib/$(PlatformTarget)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;libz-static_d.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib/SDL2/lib/$(PlatformTarget)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -76,15 +76,15 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;INLINE=static inline;LSB_FIRST;USE_16BPP_RENDERING;MAXROMSIZE=33554432;HAVE_YM3438_CORE;_CONSOLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/core/;$(SolutionDir)inc/core/m68k/;$(SolutionDir)inc/core/z80/;$(SolutionDir)inc/core/input_hw/;$(SolutionDir)inc/core/sound/;$(SolutionDir)inc/core/cart_hw/;$(SolutionDir)inc/core/cart_hw/svp/;$(SolutionDir)inc/core/cd_hw/;$(SolutionDir)inc/core/debug/;$(SolutionDir)inc/core/ntsc/;$(SolutionDir)lib/SDL2/include/;$(SolutionDir)lib/zlib/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/core/;$(SolutionDir)inc/core/m68k/;$(SolutionDir)inc/core/z80/;$(SolutionDir)inc/core/input_hw/;$(SolutionDir)inc/core/sound/;$(SolutionDir)inc/core/cart_hw/;$(SolutionDir)inc/core/cart_hw/svp/;$(SolutionDir)inc/core/cd_hw/;$(SolutionDir)inc/core/debug/;$(SolutionDir)inc/core/ntsc/;$(SolutionDir)lib/SDL2/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib/SDL2/lib/$(PlatformTarget)/;$(SolutionDir)lib/zlib/lib/$(PlatformTarget)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;libz-static.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib/SDL2/lib/$(PlatformTarget)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -93,7 +93,6 @@
     <ClInclude Include="inc\build\cmd_sdl2\fileio.h" />
     <ClInclude Include="inc\build\cmd_sdl2\main.h" />
     <ClInclude Include="inc\build\cmd_sdl2\osd.h" />
-    <ClInclude Include="inc\build\cmd_sdl2\unzip.h" />
     <ClInclude Include="inc\core\cart_hw\areplay.h" />
     <ClInclude Include="inc\core\cart_hw\eeprom_93c.h" />
     <ClInclude Include="inc\core\cart_hw\eeprom_i2c.h" />
@@ -167,7 +166,7 @@
     <ClCompile Include="src\build\cmd_sdl2\error.cpp" />
     <ClCompile Include="src\build\cmd_sdl2\fileio.cpp" />
     <ClCompile Include="src\build\cmd_sdl2\main.cpp" />
-    <ClCompile Include="src\build\cmd_sdl2\unzip.cpp" />
+    <ClCompile Include="src\build\cmd_sdl2\osd.cpp" />
     <ClCompile Include="src\core\cart_hw\areplay.cpp" />
     <ClCompile Include="src\core\cart_hw\eeprom_93c.cpp" />
     <ClCompile Include="src\core\cart_hw\eeprom_i2c.cpp" />
