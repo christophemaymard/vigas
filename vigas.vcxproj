@@ -199,8 +199,8 @@
     <ClCompile Include="src\core\input_hw\xe_1ap.cpp" />
     <ClCompile Include="src\core\io_ctrl.cpp" />
     <ClCompile Include="src\core\loadrom.cpp" />
-    <ClCompile Include="src\core\m68k\m68kcpu.c" />
-    <ClCompile Include="src\core\m68k\s68kcpu.c" />
+    <ClCompile Include="src\core\m68k\m68kcpu.cpp" />
+    <ClCompile Include="src\core\m68k\s68kcpu.cpp" />
     <ClCompile Include="src\core\mem68k.cpp" />
     <ClCompile Include="src\core\membnk.cpp" />
     <ClCompile Include="src\core\memz80.cpp" />
