@@ -772,7 +772,7 @@ int main (int argc, char **argv)
 #elif defined(USE_32BPP_RENDERING)
   bitmap.pitch        = (bitmap.width * 4);
 #endif
-  bitmap.data         = sdl_video.surf_bitmap->pixels;
+  bitmap.data         = (uint8*)sdl_video.surf_bitmap->pixels;
   SDL_UnlockSurface(sdl_video.surf_bitmap);
   bitmap.viewport.changed = 3;
 
