@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{6b424e4c-ea6b-460d-9be8-b894220d4e86}</ProjectGuid>
+    <RootNamespace>vigas</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)bin/$(ShortProjectName)_$(Platform)_$(Configuration)/output/</OutDir>
+    <IntDir>$(SolutionDir)bin/$(ShortProjectName)_$(Platform)_$(Configuration)/intermediate/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)bin/$(ShortProjectName)_$(Platform)_$(Configuration)/output/</OutDir>
+    <IntDir>$(SolutionDir)bin/$(ShortProjectName)_$(Platform)_$(Configuration)/intermediate/</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;INLINE=static inline;_7ZIP_ST;FLAC__NO_DLL;FLAC__HAS_OGG=0;PACKAGE_VERSION="1.3.2";LSB_FIRST;USE_16BPP_RENDERING;USE_LIBTREMOR;USE_LIBCHDR;MAXROMSIZE=33554432;HAVE_YM3438_CORE;_CONSOLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/core/;$(SolutionDir)inc/core/m68k/;$(SolutionDir)inc/core/z80/;$(SolutionDir)inc/core/input_hw/;$(SolutionDir)inc/core/sound/;$(SolutionDir)inc/core/cart_hw/;$(SolutionDir)inc/core/cart_hw/svp/;$(SolutionDir)inc/core/cd_hw/;$(SolutionDir)inc/core/cd_hw/libchdr/deps/libFLAC/include/;$(SolutionDir)inc/core/cd_hw/libchdr/deps/lzma/;$(SolutionDir)inc/core/cd_hw/libchdr/deps/zlib/;$(SolutionDir)inc/core/debug/;$(SolutionDir)inc/core/ntsc/;$(SolutionDir)lib/SDL2/include/;$(SolutionDir)lib/zlib/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib/SDL2/lib/$(PlatformTarget)/;$(SolutionDir)lib/zlib/lib/$(PlatformTarget)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;libz-static_d.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;INLINE=static inline;_7ZIP_ST;FLAC__NO_DLL;FLAC__HAS_OGG=0;PACKAGE_VERSION="1.3.2";LSB_FIRST;USE_16BPP_RENDERING;USE_LIBTREMOR;USE_LIBCHDR;MAXROMSIZE=33554432;HAVE_YM3438_CORE;_CONSOLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/core/;$(SolutionDir)inc/core/m68k/;$(SolutionDir)inc/core/z80/;$(SolutionDir)inc/core/input_hw/;$(SolutionDir)inc/core/sound/;$(SolutionDir)inc/core/cart_hw/;$(SolutionDir)inc/core/cart_hw/svp/;$(SolutionDir)inc/core/cd_hw/;$(SolutionDir)inc/core/cd_hw/libchdr/deps/libFLAC/include/;$(SolutionDir)inc/core/cd_hw/libchdr/deps/lzma/;$(SolutionDir)inc/core/cd_hw/libchdr/deps/zlib/;$(SolutionDir)inc/core/debug/;$(SolutionDir)inc/core/ntsc/;$(SolutionDir)lib/SDL2/include/;$(SolutionDir)lib/zlib/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib/SDL2/lib/$(PlatformTarget)/;$(SolutionDir)lib/zlib/lib/$(PlatformTarget)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;libz-static.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="inc\build\cmd_sdl2\config.h" />
+    <ClInclude Include="inc\build\cmd_sdl2\error.h" />
+    <ClInclude Include="inc\build\cmd_sdl2\fileio.h" />
+    <ClInclude Include="inc\build\cmd_sdl2\main.h" />
+    <ClInclude Include="inc\build\cmd_sdl2\osd.h" />
+    <ClInclude Include="inc\build\cmd_sdl2\unzip.h" />
+    <ClInclude Include="inc\core\cart_hw\areplay.h" />
+    <ClInclude Include="inc\core\cart_hw\eeprom_93c.h" />
+    <ClInclude Include="inc\core\cart_hw\eeprom_i2c.h" />
+    <ClInclude Include="inc\core\cart_hw\eeprom_spi.h" />
+    <ClInclude Include="inc\core\cart_hw\ggenie.h" />
+    <ClInclude Include="inc\core\cart_hw\md_cart.h" />
+    <ClInclude Include="inc\core\cart_hw\megasd.h" />
+    <ClInclude Include="inc\core\cart_hw\sms_cart.h" />
+    <ClInclude Include="inc\core\cart_hw\sram.h" />
+    <ClInclude Include="inc\core\cart_hw\svp\ssp16.h" />
+    <ClInclude Include="inc\core\cart_hw\svp\svp.h" />
+    <ClInclude Include="inc\core\cd_hw\cdc.h" />
+    <ClInclude Include="inc\core\cd_hw\cdd.h" />
+    <ClInclude Include="inc\core\cd_hw\cd_cart.h" />
+    <ClInclude Include="inc\core\cd_hw\gfx.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\FLAC\assert.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\FLAC\callback.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\FLAC\export.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\FLAC\format.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\FLAC\metadata.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\FLAC\ordinals.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\FLAC\stream_decoder.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\private\bitmath.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\private\bitreader.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\private\cpu.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\private\crc.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\private\fixed.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\private\float.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\private\format.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\private\lpc.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\private\macros.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\private\md5.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\private\memory.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\protected\stream_decoder.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\share\alloc.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\share\compat.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\libFLAC\include\share\endswap.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\lzma\7zTypes.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\lzma\Compiler.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\lzma\LzFind.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\lzma\LzHash.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\lzma\LzmaDec.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\lzma\LzmaEnc.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\lzma\Precomp.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\zlib\gzguts.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\zlib\inffast.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\zlib\inffixed.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\zlib\inflate.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\zlib\inftrees.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\zlib\zconf.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\zlib\zlib.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\deps\zlib\zutil.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\src\bitstream.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\src\cdrom.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\src\chd.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\src\coretypes.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\src\flac.h" />
+    <ClInclude Include="inc\core\cd_hw\libchdr\src\huffman.h" />
+    <ClInclude Include="inc\core\cd_hw\pcm.h" />
+    <ClInclude Include="inc\core\cd_hw\scd.h" />
+    <ClInclude Include="inc\core\debug\cpuhook.h" />
+    <ClInclude Include="inc\core\genesis.h" />
+    <ClInclude Include="inc\core\hvc.h" />
+    <ClInclude Include="inc\core\input_hw\activator.h" />
+    <ClInclude Include="inc\core\input_hw\gamepad.h" />
+    <ClInclude Include="inc\core\input_hw\graphic_board.h" />
+    <ClInclude Include="inc\core\input_hw\input.h" />
+    <ClInclude Include="inc\core\input_hw\lightgun.h" />
+    <ClInclude Include="inc\core\input_hw\mouse.h" />
+    <ClInclude Include="inc\core\input_hw\paddle.h" />
+    <ClInclude Include="inc\core\input_hw\sportspad.h" />
+    <ClInclude Include="inc\core\input_hw\teamplayer.h" />
+    <ClInclude Include="inc\core\input_hw\terebi_oekaki.h" />
+    <ClInclude Include="inc\core\input_hw\xe_1ap.h" />
+    <ClInclude Include="inc\core\io_ctrl.h" />
+    <ClInclude Include="inc\core\loadrom.h" />
+    <ClInclude Include="inc\core\m68k\m68k.h" />
+    <ClInclude Include="inc\core\m68k\m68kconf.h" />
+    <ClInclude Include="inc\core\m68k\m68kcpu.h" />
+    <ClInclude Include="inc\core\m68k\m68ki_cycles.h" />
+    <ClInclude Include="inc\core\m68k\m68ki_instruction_jump_table.h" />
+    <ClInclude Include="inc\core\m68k\m68kops.h" />
+    <ClInclude Include="inc\core\m68k\s68kconf.h" />
+    <ClInclude Include="inc\core\m68k\s68ki_cycles.h" />
+    <ClInclude Include="inc\core\macros.h" />
+    <ClInclude Include="inc\core\mem68k.h" />
+    <ClInclude Include="inc\core\membnk.h" />
+    <ClInclude Include="inc\core\memz80.h" />
+    <ClInclude Include="inc\core\ntsc\md_ntsc.h" />
+    <ClInclude Include="inc\core\ntsc\md_ntsc_config.h" />
+    <ClInclude Include="inc\core\ntsc\md_ntsc_impl.h" />
+    <ClInclude Include="inc\core\ntsc\sms_ntsc.h" />
+    <ClInclude Include="inc\core\ntsc\sms_ntsc_config.h" />
+    <ClInclude Include="inc\core\ntsc\sms_ntsc_impl.h" />
+    <ClInclude Include="inc\core\shared.h" />
+    <ClInclude Include="inc\core\sound\blip_buf.h" />
+    <ClInclude Include="inc\core\sound\eq.h" />
+    <ClInclude Include="inc\core\sound\opll.h" />
+    <ClInclude Include="inc\core\sound\psg.h" />
+    <ClInclude Include="inc\core\sound\sound.h" />
+    <ClInclude Include="inc\core\sound\ym2413.h" />
+    <ClInclude Include="inc\core\sound\ym2612.h" />
+    <ClInclude Include="inc\core\sound\ym3438.h" />
+    <ClInclude Include="inc\core\state.h" />
+    <ClInclude Include="inc\core\system.h" />
+    <ClInclude Include="inc\core\tremor\asm_arm.h" />
+    <ClInclude Include="inc\core\tremor\backends.h" />
+    <ClInclude Include="inc\core\tremor\block.h" />
+    <ClInclude Include="inc\core\tremor\codebook.h" />
+    <ClInclude Include="inc\core\tremor\codec_internal.h" />
+    <ClInclude Include="inc\core\tremor\config_types.h" />
+    <ClInclude Include="inc\core\tremor\ivorbiscodec.h" />
+    <ClInclude Include="inc\core\tremor\ivorbisfile.h" />
+    <ClInclude Include="inc\core\tremor\lsp_lookup.h" />
+    <ClInclude Include="inc\core\tremor\mdct.h" />
+    <ClInclude Include="inc\core\tremor\mdct_lookup.h" />
+    <ClInclude Include="inc\core\tremor\misc.h" />
+    <ClInclude Include="inc\core\tremor\ogg.h" />
+    <ClInclude Include="inc\core\tremor\os.h" />
+    <ClInclude Include="inc\core\tremor\os_types.h" />
+    <ClInclude Include="inc\core\tremor\registry.h" />
+    <ClInclude Include="inc\core\tremor\window.h" />
+    <ClInclude Include="inc\core\tremor\window_lookup.h" />
+    <ClInclude Include="inc\core\types.h" />
+    <ClInclude Include="inc\core\vdp_ctrl.h" />
+    <ClInclude Include="inc\core\vdp_render.h" />
+    <ClInclude Include="inc\core\z80\osd_cpu.h" />
+    <ClInclude Include="inc\core\z80\z80.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\build\cmd_sdl2\config.cpp" />
+    <ClCompile Include="src\build\cmd_sdl2\error.cpp" />
+    <ClCompile Include="src\build\cmd_sdl2\fileio.cpp" />
+    <ClCompile Include="src\build\cmd_sdl2\main.cpp" />
+    <ClCompile Include="src\build\cmd_sdl2\unzip.cpp" />
+    <ClCompile Include="src\core\cart_hw\areplay.cpp" />
+    <ClCompile Include="src\core\cart_hw\eeprom_93c.cpp" />
+    <ClCompile Include="src\core\cart_hw\eeprom_i2c.cpp" />
+    <ClCompile Include="src\core\cart_hw\eeprom_spi.cpp" />
+    <ClCompile Include="src\core\cart_hw\ggenie.cpp" />
+    <ClCompile Include="src\core\cart_hw\md_cart.cpp" />
+    <ClCompile Include="src\core\cart_hw\megasd.cpp" />
+    <ClCompile Include="src\core\cart_hw\sms_cart.cpp" />
+    <ClCompile Include="src\core\cart_hw\sram.cpp" />
+    <ClCompile Include="src\core\cart_hw\svp\ssp16.cpp" />
+    <ClCompile Include="src\core\cart_hw\svp\svp.cpp" />
+    <ClCompile Include="src\core\cd_hw\cdc.cpp" />
+    <ClCompile Include="src\core\cd_hw\cdd.cpp" />
+    <ClCompile Include="src\core\cd_hw\cd_cart.cpp" />
+    <ClCompile Include="src\core\cd_hw\gfx.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\bitmath.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\bitreader.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\cpu.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\crc.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\fixed.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\float.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\format.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\lpc.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\lpc_intrin_avx2.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\lpc_intrin_sse.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\lpc_intrin_sse2.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\lpc_intrin_sse41.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\md5.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\memory.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\libFLAC\stream_decoder.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\lzma\LzFind.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\lzma\LzmaDec.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\lzma\LzmaEnc.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\zlib\adler32.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\zlib\inffast.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\zlib\inflate.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\zlib\inftrees.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\deps\zlib\zutil.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\src\bitstream.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\src\cdrom.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\src\chd.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\src\flac.cpp" />
+    <ClCompile Include="src\core\cd_hw\libchdr\src\huffman.cpp" />
+    <ClCompile Include="src\core\cd_hw\pcm.cpp" />
+    <ClCompile Include="src\core\cd_hw\scd.cpp" />
+    <ClCompile Include="src\core\debug\cpuhook.cpp" />
+    <ClCompile Include="src\core\genesis.cpp" />
+    <ClCompile Include="src\core\input_hw\activator.cpp" />
+    <ClCompile Include="src\core\input_hw\gamepad.cpp" />
+    <ClCompile Include="src\core\input_hw\graphic_board.cpp" />
+    <ClCompile Include="src\core\input_hw\input.cpp" />
+    <ClCompile Include="src\core\input_hw\lightgun.cpp" />
+    <ClCompile Include="src\core\input_hw\mouse.cpp" />
+    <ClCompile Include="src\core\input_hw\paddle.cpp" />
+    <ClCompile Include="src\core\input_hw\sportspad.cpp" />
+    <ClCompile Include="src\core\input_hw\teamplayer.cpp" />
+    <ClCompile Include="src\core\input_hw\terebi_oekaki.cpp" />
+    <ClCompile Include="src\core\input_hw\xe_1ap.cpp" />
+    <ClCompile Include="src\core\io_ctrl.cpp" />
+    <ClCompile Include="src\core\loadrom.cpp" />
+    <ClCompile Include="src\core\m68k\m68kcpu.c" />
+    <ClCompile Include="src\core\m68k\s68kcpu.c" />
+    <ClCompile Include="src\core\mem68k.cpp" />
+    <ClCompile Include="src\core\membnk.cpp" />
+    <ClCompile Include="src\core\memz80.cpp" />
+    <ClCompile Include="src\core\ntsc\md_ntsc.cpp" />
+    <ClCompile Include="src\core\ntsc\sms_ntsc.cpp" />
+    <ClCompile Include="src\core\sound\blip_buf.cpp" />
+    <ClCompile Include="src\core\sound\eq.cpp" />
+    <ClCompile Include="src\core\sound\opll.cpp" />
+    <ClCompile Include="src\core\sound\psg.cpp" />
+    <ClCompile Include="src\core\sound\sound.cpp" />
+    <ClCompile Include="src\core\sound\ym2413.cpp" />
+    <ClCompile Include="src\core\sound\ym2612.cpp" />
+    <ClCompile Include="src\core\sound\ym3438.cpp" />
+    <ClCompile Include="src\core\state.cpp" />
+    <ClCompile Include="src\core\system.cpp" />
+    <ClCompile Include="src\core\tremor\bitwise.cpp" />
+    <ClCompile Include="src\core\tremor\block.cpp" />
+    <ClCompile Include="src\core\tremor\codebook.cpp" />
+    <ClCompile Include="src\core\tremor\floor0.cpp" />
+    <ClCompile Include="src\core\tremor\floor1.cpp" />
+    <ClCompile Include="src\core\tremor\framing.cpp" />
+    <ClCompile Include="src\core\tremor\info.cpp" />
+    <ClCompile Include="src\core\tremor\mapping0.cpp" />
+    <ClCompile Include="src\core\tremor\mdct.cpp" />
+    <ClCompile Include="src\core\tremor\registry.cpp" />
+    <ClCompile Include="src\core\tremor\res012.cpp" />
+    <ClCompile Include="src\core\tremor\sharedbook.cpp" />
+    <ClCompile Include="src\core\tremor\synthesis.cpp" />
+    <ClCompile Include="src\core\tremor\vorbisfile.cpp" />
+    <ClCompile Include="src\core\tremor\window.cpp" />
+    <ClCompile Include="src\core\vdp_ctrl.cpp" />
+    <ClCompile Include="src\core\vdp_render.cpp" />
+    <ClCompile Include="src\core\z80\z80.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

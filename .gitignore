@@ -1,2 +1,4 @@
 /bin/
 
+# Visual Studio
+.vs
