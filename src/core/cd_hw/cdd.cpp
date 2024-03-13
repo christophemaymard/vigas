@@ -260,7 +260,7 @@ int cdd_context_save(uint8 *state)
   return bufferptr;
 }
 
-int cdd_context_load(uint8 *state, char *version)
+int cdd_context_load(uint8 *state, const char *version)
 {
   unsigned int offset, lba, index;
   int bufferptr = 0;
