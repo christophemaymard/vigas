@@ -2,3 +2,6 @@
 
 # Visual Studio
 .vs
+
+# SRAM file (game.srm) that is automatically saved on exit and loaded on startup.
+game.srm
