@@ -312,6 +312,9 @@ static const uint16 vc_table[4][2] =
   {0x106, 0x10A}  /* Mode 5 (240 lines) */
 };
 
+static uint8 state_load_buf[STATE_SIZE];
+static uint8 state_save_buf[STATE_SIZE];
+
 static int sdl_control_update(SDL_Keycode keystate)
 {
     switch (keystate)
@@ -372,9 +375,8 @@ static int sdl_control_update(SDL_Keycode keystate)
         FILE *f = fopen("game.gp0","rb");
         if (f)
         {
-          uint8 buf[STATE_SIZE];
-          fread(&buf, STATE_SIZE, 1, f);
-          state_load(buf);
+          fread(&state_load_buf, STATE_SIZE, 1, f);
+          state_load(state_load_buf);
           fclose(f);
         }
         break;
@@ -385,9 +387,8 @@ static int sdl_control_update(SDL_Keycode keystate)
         FILE *f = fopen("game.gp0","wb");
         if (f)
         {
-          uint8 buf[STATE_SIZE];
-          int len = state_save(buf);
-          fwrite(&buf, len, 1, f);
+          int len = state_save(state_save_buf);
+          fwrite(&state_save_buf, len, 1, f);
           fclose(f);
         }
         break;
