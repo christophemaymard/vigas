@@ -55,7 +55,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;INLINE=static inline;LSB_FIRST;USE_16BPP_RENDERING;USE_LIBTREMOR;MAXROMSIZE=33554432;HAVE_YM3438_CORE;_CONSOLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;INLINE=static inline;LSB_FIRST;USE_16BPP_RENDERING;MAXROMSIZE=33554432;HAVE_YM3438_CORE;_CONSOLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/core/;$(SolutionDir)inc/core/m68k/;$(SolutionDir)inc/core/z80/;$(SolutionDir)inc/core/input_hw/;$(SolutionDir)inc/core/sound/;$(SolutionDir)inc/core/cart_hw/;$(SolutionDir)inc/core/cart_hw/svp/;$(SolutionDir)inc/core/cd_hw/;$(SolutionDir)inc/core/debug/;$(SolutionDir)inc/core/ntsc/;$(SolutionDir)lib/SDL2/include/;$(SolutionDir)lib/zlib/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -73,7 +73,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;INLINE=static inline;LSB_FIRST;USE_16BPP_RENDERING;USE_LIBTREMOR;MAXROMSIZE=33554432;HAVE_YM3438_CORE;_CONSOLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;INLINE=static inline;LSB_FIRST;USE_16BPP_RENDERING;MAXROMSIZE=33554432;HAVE_YM3438_CORE;_CONSOLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/core/;$(SolutionDir)inc/core/m68k/;$(SolutionDir)inc/core/z80/;$(SolutionDir)inc/core/input_hw/;$(SolutionDir)inc/core/sound/;$(SolutionDir)inc/core/cart_hw/;$(SolutionDir)inc/core/cart_hw/svp/;$(SolutionDir)inc/core/cd_hw/;$(SolutionDir)inc/core/debug/;$(SolutionDir)inc/core/ntsc/;$(SolutionDir)lib/SDL2/include/;$(SolutionDir)lib/zlib/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -156,24 +156,6 @@
     <ClInclude Include="inc\core\sound\ym3438.h" />
     <ClInclude Include="inc\core\state.h" />
     <ClInclude Include="inc\core\system.h" />
-    <ClInclude Include="inc\core\tremor\asm_arm.h" />
-    <ClInclude Include="inc\core\tremor\backends.h" />
-    <ClInclude Include="inc\core\tremor\block.h" />
-    <ClInclude Include="inc\core\tremor\codebook.h" />
-    <ClInclude Include="inc\core\tremor\codec_internal.h" />
-    <ClInclude Include="inc\core\tremor\config_types.h" />
-    <ClInclude Include="inc\core\tremor\ivorbiscodec.h" />
-    <ClInclude Include="inc\core\tremor\ivorbisfile.h" />
-    <ClInclude Include="inc\core\tremor\lsp_lookup.h" />
-    <ClInclude Include="inc\core\tremor\mdct.h" />
-    <ClInclude Include="inc\core\tremor\mdct_lookup.h" />
-    <ClInclude Include="inc\core\tremor\misc.h" />
-    <ClInclude Include="inc\core\tremor\ogg.h" />
-    <ClInclude Include="inc\core\tremor\os.h" />
-    <ClInclude Include="inc\core\tremor\os_types.h" />
-    <ClInclude Include="inc\core\tremor\registry.h" />
-    <ClInclude Include="inc\core\tremor\window.h" />
-    <ClInclude Include="inc\core\tremor\window_lookup.h" />
     <ClInclude Include="inc\core\types.h" />
     <ClInclude Include="inc\core\vdp_ctrl.h" />
     <ClInclude Include="inc\core\vdp_render.h" />
@@ -235,21 +217,6 @@
     <ClCompile Include="src\core\sound\ym3438.cpp" />
     <ClCompile Include="src\core\state.cpp" />
     <ClCompile Include="src\core\system.cpp" />
-    <ClCompile Include="src\core\tremor\bitwise.cpp" />
-    <ClCompile Include="src\core\tremor\block.cpp" />
-    <ClCompile Include="src\core\tremor\codebook.cpp" />
-    <ClCompile Include="src\core\tremor\floor0.cpp" />
-    <ClCompile Include="src\core\tremor\floor1.cpp" />
-    <ClCompile Include="src\core\tremor\framing.cpp" />
-    <ClCompile Include="src\core\tremor\info.cpp" />
-    <ClCompile Include="src\core\tremor\mapping0.cpp" />
-    <ClCompile Include="src\core\tremor\mdct.cpp" />
-    <ClCompile Include="src\core\tremor\registry.cpp" />
-    <ClCompile Include="src\core\tremor\res012.cpp" />
-    <ClCompile Include="src\core\tremor\sharedbook.cpp" />
-    <ClCompile Include="src\core\tremor\synthesis.cpp" />
-    <ClCompile Include="src\core\tremor\vorbisfile.cpp" />
-    <ClCompile Include="src\core\tremor\window.cpp" />
     <ClCompile Include="src\core\vdp_ctrl.cpp" />
     <ClCompile Include="src\core\vdp_render.cpp" />
     <ClCompile Include="src\core\z80\z80.cpp" />
