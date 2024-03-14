@@ -42,9 +42,9 @@
 /* ======================================================================== */
 
 #include <setjmp.h>
-#include "macros.h"
+#include "core/macros.h"
 #ifdef HOOK_CPU
-#include "cpuhook.h"
+#include "core/debug/cpuhook.h"
 #endif
 
 /* ======================================================================== */

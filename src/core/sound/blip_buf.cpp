@@ -7,7 +7,7 @@
 /*  - added stereo buffer support (define #BLIP_MONO to disable)    */
 /*  - added inverted stereo output (define #BLIP_INVERT to enable)*/
 
-#include "blip_buf.h"
+#include "core/sound/blip_buf.h"
 
 #ifdef BLIP_ASSERT
 #include <assert.h>

@@ -39,8 +39,8 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
-#include "eq.h"
+#include "core/shared.h"
+#include "core/sound/eq.h"
 
 /* Global variables */
 t_bitmap bitmap;

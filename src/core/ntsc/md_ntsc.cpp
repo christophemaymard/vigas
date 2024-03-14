@@ -2,8 +2,8 @@
 
 /* Modified for use with Genesis Plus GX -- EkeEke */
 
-#include "shared.h"
-#include "md_ntsc.h"
+#include "core/shared.h"
+#include "core/ntsc/md_ntsc.h"
 
 /* Copyright (C) 2006 Shay Green. This module is free software; you
 can redistribute it and/or modify it under the terms of the GNU Lesser
@@ -34,7 +34,7 @@ md_ntsc_setup_t const md_ntsc_rgb        = { 0, 0, 0, 0,.2,  0,.7, -1, -1,-1, 0,
 #define artifacts_max   1.00f
 #define LUMA_CUTOFF     0.1974
 
-#include "md_ntsc_impl.h"
+#include "core/ntsc/md_ntsc_impl.h"
 
 /* 2 input pixels -> 4 composite samples */
 pixel_info_t const md_ntsc_pixels [alignment_count] = {

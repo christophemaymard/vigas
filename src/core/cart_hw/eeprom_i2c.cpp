@@ -36,8 +36,8 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
-#include "gamepad.h"
+#include "core/shared.h"
+#include "core/input_hw/gamepad.h"
 
 /* Some notes from 8BitWizard (http://gendev.spritesmind.net/forum/viewtopic.php?t=206):
  *

@@ -38,7 +38,7 @@
  ****************************************************************************************/
 
 #include <ctype.h>
-#include "shared.h"
+#include "core/shared.h"
 
 /*** ROM Information ***/
 #define ROMCONSOLE    256

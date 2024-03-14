@@ -4,7 +4,7 @@
 #ifndef MD_NTSC_H
 #define MD_NTSC_H
 
-#include "md_ntsc_config.h"
+#include "core/ntsc/md_ntsc_config.h"
 
 #ifdef __cplusplus
   extern "C" {

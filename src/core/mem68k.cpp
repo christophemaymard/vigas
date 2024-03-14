@@ -37,7 +37,7 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
+#include "core/shared.h"
 
 /*--------------------------------------------------------------------------*/
 /* Unused areas (return open bus data, i.e prefetched instruction word)     */

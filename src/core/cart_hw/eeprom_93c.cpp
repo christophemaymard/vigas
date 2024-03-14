@@ -36,8 +36,8 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
-#include "eeprom_93c.h"
+#include "core/shared.h"
+#include "core/cart_hw/eeprom_93c.h"
 
 /* fixed board implementation */
 #define BIT_DATA (0)

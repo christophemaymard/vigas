@@ -1,5 +1,5 @@
 
-#include "shared.h"
+#include "core/shared.h"
 
 t_config config;
 

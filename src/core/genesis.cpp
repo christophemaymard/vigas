@@ -39,7 +39,7 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
+#include "core/shared.h"
 
 #ifdef USE_DYNAMIC_ALLOC
 external_t *ext;

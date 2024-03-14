@@ -189,7 +189,7 @@
  *   'ld d, (a)' loads from program ROM
  */
 
-#include "shared.h"
+#include "core/shared.h"
 
 
 #define u32 unsigned int

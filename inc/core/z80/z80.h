@@ -1,7 +1,7 @@
 #ifndef Z80_H_
 #define Z80_H_
 
-#include "osd_cpu.h"
+#include "core/z80/osd_cpu.h"
 
 enum
 {

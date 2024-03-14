@@ -124,8 +124,8 @@
  *    to a detailed description by Sean Young which can be found at:
  *      http://www.msxnet.org/tech/z80-documented.pdf
  *****************************************************************************/
-#include "shared.h"
-#include "z80.h"
+#include "core/shared.h"
+#include "core/z80/z80.h"
 
 /* execute main opcodes inside a big switch statement */
 #define BIG_SWITCH 1

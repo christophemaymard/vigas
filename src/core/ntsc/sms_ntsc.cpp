@@ -2,8 +2,8 @@
 
 /* Modified for use with Genesis Plus GX -- EkeEke */
 
-#include "shared.h"
-#include "sms_ntsc.h"
+#include "core/shared.h"
+#include "core/ntsc/sms_ntsc.h"
 
 /* Copyright (C) 2006-2007 Shay Green. This module is free software; you
 can redistribute it and/or modify it under the terms of the GNU Lesser
@@ -33,7 +33,7 @@ sms_ntsc_setup_t const sms_ntsc_rgb        = { 0, 0, 0, 0,.2,  0,.70, -1, -1,-1,
 
 #define gamma_size      16
 
-#include "sms_ntsc_impl.h"
+#include "core/ntsc/sms_ntsc_impl.h"
 
 /* 3 input pixels -> 8 composite samples */
 pixel_info_t const sms_ntsc_pixels [alignment_count] = {

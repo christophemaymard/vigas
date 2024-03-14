@@ -41,10 +41,10 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
-#include "eeprom_i2c.h"
-#include "eeprom_spi.h"
-#include "megasd.h"
+#include "core/shared.h"
+#include "core/cart_hw/eeprom_i2c.h"
+#include "core/cart_hw/eeprom_spi.h"
+#include "core/cart_hw/megasd.h"
 
 /* Cart database entry */
 typedef struct

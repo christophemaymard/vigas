@@ -12,12 +12,12 @@ extern int vdp_68k_irq_ack(int int_level);
 /* ======================================================================== */
 
 #ifndef BUILD_TABLES
-#include "m68ki_cycles.h"
+#include "core/m68k/m68ki_cycles.h"
 #endif
 
-#include "m68kconf.h"
-#include "m68kcpu.h"
-#include "m68kops.h"
+#include "core/m68k/m68kconf.h"
+#include "core/m68k/m68kcpu.h"
+#include "core/m68k/m68kops.h"
 
 /* ======================================================================== */
 /* ================================= DATA ================================= */

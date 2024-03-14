@@ -37,8 +37,8 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
-#include "gamepad.h"
+#include "core/shared.h"
+#include "core/input_hw/gamepad.h"
 
 static struct
 {

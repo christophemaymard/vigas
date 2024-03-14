@@ -37,7 +37,7 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
+#include "core/shared.h"
 
 
 t_zbank_memory_map zbank_memory_map[256];

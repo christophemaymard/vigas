@@ -13,8 +13,8 @@
 #ifndef _SVP_H_
 #define _SVP_H_
 
-#include "shared.h"
-#include "ssp16.h"
+#include "core/shared.h"
+#include "core/cart_hw/svp/ssp16.h"
 
 typedef struct {
   unsigned char iram_rom[0x20000]; /* IRAM (0-0x7ff) and program ROM (0x800-0x1ffff) */

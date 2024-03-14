@@ -38,11 +38,11 @@
 #ifndef _HW_SCD_
 #define _HW_SCD_
 
-#include "cdd.h"
-#include "cdc.h"
-#include "gfx.h"
-#include "pcm.h"
-#include "cd_cart.h"
+#include "core/cd_hw/cdd.h"
+#include "core/cd_hw/cdc.h"
+#include "core/cd_hw/gfx.h"
+#include "core/cd_hw/pcm.h"
+#include "core/cd_hw/cd_cart.h"
 
 #ifdef USE_DYNAMIC_ALLOC
 #define scd ext->cd_hw

@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  ****************************************************************************************/
-#include "shared.h"
-#include "megasd.h"
+#include "core/shared.h"
+#include "core/cart_hw/megasd.h"
 
 #define SUPPORTED_EXT 10
 

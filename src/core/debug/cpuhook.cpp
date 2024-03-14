@@ -41,7 +41,7 @@
 #ifdef HOOK_CPU
 
 #include <stdio.h>
-#include "cpuhook.h"
+#include "core/debug/cpuhook.h"
 
 void(*cpu_hook)(hook_type_t type, int width, unsigned int address, unsigned int value) = NULL;
 

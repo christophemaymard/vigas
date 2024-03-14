@@ -40,8 +40,8 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
-#include "blip_buf.h"
+#include "core/shared.h"
+#include "core/sound/blip_buf.h"
 
 /* internal clock = input clock : 16 = (master clock : 15) : 16 */
 #define PSG_MCYCLES_RATIO (15*16)

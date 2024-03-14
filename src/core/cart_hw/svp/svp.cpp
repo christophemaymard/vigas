@@ -10,7 +10,7 @@
    Modified for Genesis Plus GX (Eke-Eke): added BIG ENDIAN support, fixed addr/code inversion
 */
 
-#include "shared.h"
+#include "core/shared.h"
 
 svp_t *svp;
 

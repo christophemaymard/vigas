@@ -33,8 +33,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "eq.h"
-#include "macros.h"
+#include "core/sound/eq.h"
+#include "core/macros.h"
 
 
 /* -----------

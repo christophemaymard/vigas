@@ -12,12 +12,12 @@ extern int scd_68k_irq_ack(int level);
 /* ======================================================================== */
 
 #ifndef BUILD_TABLES
-#include "s68ki_cycles.h"
+#include "core/m68k/s68ki_cycles.h"
 #endif
 
-#include "s68kconf.h"
-#include "m68kcpu.h"
-#include "m68kops.h"
+#include "core/m68k/s68kconf.h"
+#include "core/m68k/m68kcpu.h"
+#include "core/m68k/m68kops.h"
 
 /* ======================================================================== */
 /* ================================= DATA ================================= */

@@ -4,7 +4,7 @@
 #ifndef SMS_NTSC_H
 #define SMS_NTSC_H
 
-#include "sms_ntsc_config.h"
+#include "core/ntsc/sms_ntsc_config.h"
 
 #ifdef __cplusplus
   extern "C" {

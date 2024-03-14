@@ -39,8 +39,8 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
-#include "hvc.h"
+#include "core/shared.h"
+#include "core/hvc.h"
 
 /* Mark a pattern as modified */
 #define MARK_BG_DIRTY(addr)                         \

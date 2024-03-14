@@ -58,7 +58,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;INLINE=static inline;LSB_FIRST;USE_16BPP_RENDERING;MAXROMSIZE=33554432;HAVE_YM3438_CORE;_CONSOLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/core/;$(SolutionDir)inc/core/m68k/;$(SolutionDir)inc/core/z80/;$(SolutionDir)inc/core/input_hw/;$(SolutionDir)inc/core/sound/;$(SolutionDir)inc/core/cart_hw/;$(SolutionDir)inc/core/cart_hw/svp/;$(SolutionDir)inc/core/cd_hw/;$(SolutionDir)inc/core/debug/;$(SolutionDir)inc/core/ntsc/;$(SolutionDir)lib/SDL2/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/;$(SolutionDir)lib/SDL2/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -76,7 +76,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;INLINE=static inline;LSB_FIRST;USE_16BPP_RENDERING;MAXROMSIZE=33554432;HAVE_YM3438_CORE;_CONSOLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/core/;$(SolutionDir)inc/core/m68k/;$(SolutionDir)inc/core/z80/;$(SolutionDir)inc/core/input_hw/;$(SolutionDir)inc/core/sound/;$(SolutionDir)inc/core/cart_hw/;$(SolutionDir)inc/core/cart_hw/svp/;$(SolutionDir)inc/core/cd_hw/;$(SolutionDir)inc/core/debug/;$(SolutionDir)inc/core/ntsc/;$(SolutionDir)lib/SDL2/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)inc/build/cmd_sdl2/;$(SolutionDir)inc/;$(SolutionDir)lib/SDL2/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

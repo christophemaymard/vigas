@@ -40,9 +40,9 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
-#include "md_ntsc.h"
-#include "sms_ntsc.h"
+#include "core/shared.h"
+#include "core/ntsc/md_ntsc.h"
+#include "core/ntsc/sms_ntsc.h"
 
 #ifndef HAVE_NO_SPRITE_LIMIT
 #define MAX_SPRITES_PER_LINE 20

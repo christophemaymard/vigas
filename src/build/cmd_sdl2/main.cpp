@@ -1,9 +1,9 @@
 #include "SDL.h"
 #include "SDL_thread.h"
 
-#include "shared.h"
-#include "sms_ntsc.h"
-#include "md_ntsc.h"
+#include "core/shared.h"
+#include "core/ntsc/sms_ntsc.h"
+#include "core/ntsc/md_ntsc.h"
 
 #define SOUND_FREQUENCY 48000
 #define SOUND_SAMPLES_SIZE  2048

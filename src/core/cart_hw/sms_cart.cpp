@@ -39,9 +39,9 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
-#include "eeprom_93c.h"
-#include "terebi_oekaki.h"
+#include "core/shared.h"
+#include "core/cart_hw/eeprom_93c.h"
+#include "core/input_hw/terebi_oekaki.h"
 
 #define MAPPER_NONE           (0x00)
 #define MAPPER_TEREBI         (0x01)

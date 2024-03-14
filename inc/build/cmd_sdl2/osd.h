@@ -9,10 +9,10 @@
 
 #include <stdlib.h>
 
-#include "main.h"
-#include "config.h"
-#include "error.h"
-#include "fileio.h"
+#include "build/cmd_sdl2/main.h"
+#include "build/cmd_sdl2/config.h"
+#include "build/cmd_sdl2/error.h"
+#include "build/cmd_sdl2/fileio.h"
 
 #define osd_input_update sdl_input_update
 

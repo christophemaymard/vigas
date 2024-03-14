@@ -37,17 +37,17 @@
  *
  ****************************************************************************************/
 
-#include "shared.h"
-#include "gamepad.h"
-#include "lightgun.h"
-#include "mouse.h"
-#include "activator.h"
-#include "xe_1ap.h"
-#include "teamplayer.h"
-#include "paddle.h"
-#include "sportspad.h"
-#include "terebi_oekaki.h"
-#include "graphic_board.h"
+#include "core/shared.h"
+#include "core/input_hw/gamepad.h"
+#include "core/input_hw/lightgun.h"
+#include "core/input_hw/mouse.h"
+#include "core/input_hw/activator.h"
+#include "core/input_hw/xe_1ap.h"
+#include "core/input_hw/teamplayer.h"
+#include "core/input_hw/paddle.h"
+#include "core/input_hw/sportspad.h"
+#include "core/input_hw/terebi_oekaki.h"
+#include "core/input_hw/graphic_board.h"
 
 t_input input;
 int old_system[2] = {-1,-1};
