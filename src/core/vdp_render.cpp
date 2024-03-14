@@ -40,7 +40,17 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/vdp_render.h"
+
+#include <string.h>
+#include <math.h>
+
+#include "core/types.h"
+#include "osd.h"
+#include "core/macros.h"
+#include "core/system.h"
+#include "core/vdp_ctrl.h"
+
 #include "core/ntsc/md_ntsc.h"
 #include "core/ntsc/sms_ntsc.h"
 

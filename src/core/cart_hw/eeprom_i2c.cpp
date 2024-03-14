@@ -36,7 +36,19 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/cart_hw/eeprom_i2c.h"
+
+#include <string.h>
+
+#include "core/types.h"
+#include "core/macros.h"
+#include "core/loadrom.h"
+#include "core/m68k/m68k.h"
+#include "core/genesis.h"
+#include "core/mem68k.h"
+#include "core/membnk.h"
+#include "core/cart_hw/sram.h"
+
 #include "core/input_hw/gamepad.h"
 
 /* Some notes from 8BitWizard (http://gendev.spritesmind.net/forum/viewtopic.php?t=206):

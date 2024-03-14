@@ -37,7 +37,23 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/mem68k.h"
+
+#include "core/types.h"
+#include "osd.h"
+#include "core/macros.h"
+#include "core/m68k/m68k.h"
+#include "core/system.h"
+#include "core/genesis.h"
+#include "core/vdp_ctrl.h"
+#include "core/membnk.h"
+#include "core/io_ctrl.h"
+#include "core/input_hw/input.h"
+#include "core/sound/sound.h"
+#include "core/sound/psg.h"
+#include "core/cart_hw/svp/svp.h"
+
+#include "core/cd_hw/scd.h"
 
 /*--------------------------------------------------------------------------*/
 /* Unused areas (return open bus data, i.e prefetched instruction word)     */

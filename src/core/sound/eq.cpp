@@ -30,10 +30,12 @@
 /* ----------
 //| Includes |
 // ----------*/
-#include <stdio.h>
+
+#include "core/sound/eq.h"
+
 #include <string.h>
 #include <math.h>
-#include "core/sound/eq.h"
+
 #include "core/macros.h"
 
 

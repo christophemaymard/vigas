@@ -36,7 +36,10 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/input_hw/xe_1ap.h"
+
+#include "core/types.h"
+#include "core/input_hw/input.h"
 
 #define XE_1AP_LATENCY 3
 

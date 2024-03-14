@@ -43,6 +43,8 @@
 #ifndef _RENDER_H_
 #define _RENDER_H_
 
+#include "core/types.h"
+
 /* 3:3:2 RGB */
 #if defined(USE_8BPP_RENDERING)
 #define PIXEL(r,g,b) (((r) << 5) | ((g) << 2) | (b))

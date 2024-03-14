@@ -2,7 +2,8 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#include "core/shared.h"
+#include "build/cmd_sdl2/main.h"
+#include "core/types.h"
 
 /****************************************************************************
  * Config Option 

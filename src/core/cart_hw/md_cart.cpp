@@ -41,7 +41,24 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/cart_hw/md_cart.h"
+
+#include <string.h>
+
+#include "osd.h"
+#include "core/loadrom.h"
+#include "core/m68k/m68k.h"
+#include "core/system.h"
+#include "core/genesis.h"
+#include "core/mem68k.h"
+#include "core/membnk.h"
+#include "core/input_hw/input.h"
+#include "core/cart_hw/sram.h"
+#include "core/cart_hw/ggenie.h"
+#include "core/cart_hw/areplay.h"
+#include "core/cart_hw/svp/svp.h"
+#include "core/state.h"
+
 #include "core/cart_hw/eeprom_i2c.h"
 #include "core/cart_hw/eeprom_spi.h"
 #include "core/cart_hw/megasd.h"

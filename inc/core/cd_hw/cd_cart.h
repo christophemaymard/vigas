@@ -36,6 +36,10 @@
  *
  ****************************************************************************************/
  
+#ifndef __CORE_CD_HW_CD_CART_H__
+#define __CORE_CD_HW_CD_CART_H__
+
+#include "core/types.h"
 
  /* CD compatible ROM/RAM cartridge */
 typedef struct 
@@ -50,3 +54,5 @@ typedef struct
 
 /* Function prototypes */
 extern void cd_cart_init(void);
+
+#endif // #ifndef __CORE_CD_HW_CD_CART_H__

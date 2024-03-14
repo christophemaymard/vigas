@@ -36,8 +36,11 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
 #include "core/cart_hw/eeprom_93c.h"
+
+#include <string.h>
+
+#include "core/cart_hw/sram.h"
 
 /* fixed board implementation */
 #define BIT_DATA (0)

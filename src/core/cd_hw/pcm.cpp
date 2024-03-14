@@ -35,7 +35,18 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  ****************************************************************************************/
-#include "core/shared.h"
+
+#include "core/cd_hw/pcm.h"
+
+#include <string.h>
+
+#include "osd.h"
+#include "core/system.h"
+#include "core/genesis.h"
+#include "core/state.h"
+
+#include "core/cd_hw/scd.h"
+#include "core/sound/blip_buf.h"
 
 #define PCM_SCYCLES_RATIO (384 * 4)
 

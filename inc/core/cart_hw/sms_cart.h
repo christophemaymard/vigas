@@ -39,6 +39,8 @@
 #ifndef _SMS_CART_H_
 #define _SMS_CART_H_
 
+#include "core/types.h"
+
 /* Special hardware */
 #define HW_3D_GLASSES     0x01
 #define HW_TEREBI_OEKAKI  0x02

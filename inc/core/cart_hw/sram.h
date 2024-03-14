@@ -39,6 +39,8 @@
 #ifndef _SRAM_H_
 #define _SRAM_H_
 
+#include "core/types.h"
+
 typedef struct
 {
   uint8 detected;

@@ -36,7 +36,17 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/cd_hw/scd.h"
+
+#include <string.h>
+
+#include "core/macros.h"
+#include "core/m68k/m68k.h"
+#include "core/system.h"
+#include "core/genesis.h"
+#include "core/mem68k.h"
+#include "core/membnk.h"
+#include "core/state.h"
 
 /*--------------------------------------------------------------------------*/
 /* Unused area (return open bus data, i.e prefetched instruction word)      */

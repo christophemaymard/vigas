@@ -38,6 +38,7 @@
 #ifndef _HW_SCD_
 #define _HW_SCD_
 
+#include "core/types.h"
 #include "core/cd_hw/cdd.h"
 #include "core/cd_hw/cdc.h"
 #include "core/cd_hw/gfx.h"

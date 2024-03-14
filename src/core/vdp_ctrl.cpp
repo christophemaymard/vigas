@@ -39,7 +39,23 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/vdp_ctrl.h"
+
+#include <string.h>
+
+#include "core/types.h"
+#include "osd.h"
+#include "core/macros.h"
+#include "core/m68k/m68k.h"
+#include "core/z80/z80.h"
+#include "core/system.h"
+#include "core/genesis.h"
+#include "core/vdp_render.h"
+#include "core/io_ctrl.h"
+#include "core/cart_hw/svp/svp.h"
+#include "core/state.h"
+
+#include "core/cart_hw/sms_cart.h"
 #include "core/hvc.h"
 
 /* Mark a pattern as modified */

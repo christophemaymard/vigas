@@ -36,7 +36,15 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/cart_hw/areplay.h"
+
+#include <string.h>
+
+#include "core/types.h"
+#include "osd.h"
+#include "core/m68k/m68k.h"
+#include "core/genesis.h"
+#include "core/mem68k.h"
 
 #define TYPE_PRO1 0x12
 #define TYPE_PRO2 0x22

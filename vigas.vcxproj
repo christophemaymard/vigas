@@ -144,7 +144,6 @@
     <ClInclude Include="inc\core\ntsc\sms_ntsc.h" />
     <ClInclude Include="inc\core\ntsc\sms_ntsc_config.h" />
     <ClInclude Include="inc\core\ntsc\sms_ntsc_impl.h" />
-    <ClInclude Include="inc\core\shared.h" />
     <ClInclude Include="inc\core\sound\blip_buf.h" />
     <ClInclude Include="inc\core\sound\eq.h" />
     <ClInclude Include="inc\core\sound\psg.h" />

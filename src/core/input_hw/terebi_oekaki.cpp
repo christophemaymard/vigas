@@ -36,7 +36,10 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/input_hw/terebi_oekaki.h"
+
+#include "core/types.h"
+#include "core/input_hw/input.h"
 
 static struct
 {

@@ -36,7 +36,12 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/cart_hw/eeprom_spi.h"
+
+#include <string.h>
+
+#include "core/types.h"
+#include "core/cart_hw/sram.h"
 
 /* max supported size 64KB (25x512/95x512) */
 #define SIZE_MASK 0xffff

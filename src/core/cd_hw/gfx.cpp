@@ -35,7 +35,17 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  ****************************************************************************************/
-#include "core/shared.h"
+
+#include "core/cd_hw/gfx.h"
+
+#include <string.h>
+
+#include "core/macros.h"
+#include "core/m68k/m68k.h"
+#include "core/genesis.h"
+#include "core/state.h"
+
+#include "core/cd_hw/scd.h"
 
 /***************************************************************/
 /*          WORD-RAM DMA interfaces (1M & 2M modes)            */

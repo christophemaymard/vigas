@@ -39,6 +39,8 @@
 #ifndef _EEPROM_93C_H_
 #define _EEPROM_93C_H_
 
+#include "core/types.h"
+
 typedef enum
 {
   WAIT_STANDBY,

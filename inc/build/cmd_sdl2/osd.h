@@ -2,13 +2,6 @@
 #ifndef _OSD_H_
 #define _OSD_H_
 
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <time.h>
-
-#include <stdlib.h>
-
 #include "build/cmd_sdl2/main.h"
 #include "build/cmd_sdl2/config.h"
 #include "build/cmd_sdl2/error.h"

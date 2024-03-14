@@ -39,7 +39,27 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/system.h"
+
+#include <string.h>
+
+#include "core/types.h"
+#include "osd.h"
+#include "core/m68k/m68k.h"
+#include "core/z80/z80.h"
+#include "core/genesis.h"
+#include "core/vdp_ctrl.h"
+#include "core/vdp_render.h"
+#include "core/io_ctrl.h"
+#include "core/input_hw/input.h"
+#include "core/sound/sound.h"
+#include "core/cart_hw/svp/svp.h"
+
+#include "core/cart_hw/svp/ssp16.h"
+#include "core/cart_hw/sms_cart.h"
+#include "core/cd_hw/cdd.h"
+#include "core/cd_hw/pcm.h"
+#include "core/sound/blip_buf.h"
 #include "core/sound/eq.h"
 
 /* Global variables */

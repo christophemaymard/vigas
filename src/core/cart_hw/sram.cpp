@@ -36,7 +36,14 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/cart_hw/sram.h"
+
+#include <string.h>
+
+#include "osd.h"
+#include "core/macros.h"
+#include "core/loadrom.h"
+#include "core/genesis.h"
 
 T_SRAM sram;
 

@@ -42,6 +42,7 @@
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
 
+#include "core/types.h"
 #include "core/sound/blip_buf.h"
 
 /* Supported hardware models */

@@ -10,7 +10,16 @@
    Modified for Genesis Plus GX (Eke-Eke): added BIG ENDIAN support, fixed addr/code inversion
 */
 
-#include "core/shared.h"
+#include "core/cart_hw/svp/svp.h"
+
+#include <string.h>
+
+#include "core/types.h"
+#include "core/m68k/m68k.h"
+#include "core/genesis.h"
+#include "core/membnk.h"
+
+#include "core/cart_hw/svp/ssp16.h"
 
 svp_t *svp;
 

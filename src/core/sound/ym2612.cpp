@@ -147,7 +147,15 @@
 /*    YM2610B : PSG:3ch FM:6ch ADPCM(18.5KHz):6ch DeltaT ADPCM:1ch      */
 /************************************************************************/
 
-#include "core/shared.h"
+#include "core/sound/ym2612.h"
+
+#include <string.h>
+#include <math.h>
+
+#include "core/types.h"
+#include "core/macros.h"
+#include "core/state.h"
+#include "core/z80/osd_cpu.h"
 
 /* envelope generator */
 #define ENV_BITS    10

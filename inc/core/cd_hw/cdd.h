@@ -38,7 +38,10 @@
 #ifndef _HW_CDD_
 #define _HW_CDD_
 
-#include "core/sound/blip_buf.h"
+#include <stdio.h>
+
+#include "core/types.h"
+#include "core/macros.h"
 
 #define cdd scd.cdd_hw
 

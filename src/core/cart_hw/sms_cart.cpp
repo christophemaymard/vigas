@@ -39,7 +39,20 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/cart_hw/sms_cart.h"
+
+#include <string.h>
+
+#include "osd.h"
+#include "core/loadrom.h"
+#include "core/z80/z80.h"
+#include "core/system.h"
+#include "core/genesis.h"
+#include "core/io_ctrl.h"
+#include "core/input_hw/input.h"
+#include "core/cart_hw/sram.h"
+#include "core/state.h"
+
 #include "core/cart_hw/eeprom_93c.h"
 #include "core/input_hw/terebi_oekaki.h"
 

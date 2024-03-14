@@ -38,6 +38,8 @@
 #ifndef _HW_CDC_
 #define _HW_CDC_
 
+#include "core/types.h"
+
 #define cdc scd.cdc_hw
 
 #define CDC_MAIN_CPU_ACCESS 0x42

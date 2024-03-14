@@ -13,7 +13,6 @@
 #ifndef _SVP_H_
 #define _SVP_H_
 
-#include "core/shared.h"
 #include "core/cart_hw/svp/ssp16.h"
 
 typedef struct {

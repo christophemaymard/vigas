@@ -43,6 +43,8 @@
 #ifndef _PSG_H_
 #define _PSG_H_
 
+#include "core/types.h"
+
 typedef enum {
   PSG_DISCRETE,
   PSG_INTEGRATED

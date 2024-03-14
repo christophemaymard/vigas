@@ -37,8 +37,15 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/membnk.h"
 
+#include "osd.h"
+#include "core/z80/z80.h"
+#include "core/genesis.h"
+#include "core/vdp_ctrl.h"
+#include "core/io_ctrl.h"
+#include "core/sound/psg.h"
+#include "core/cart_hw/md_cart.h"
 
 t_zbank_memory_map zbank_memory_map[256];
 

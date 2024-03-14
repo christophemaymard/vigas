@@ -40,7 +40,8 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include <stdio.h>
+#include <string.h>
 
 int load_archive(const char *filename, unsigned char *buffer, int maxsize, char *extension)
 {

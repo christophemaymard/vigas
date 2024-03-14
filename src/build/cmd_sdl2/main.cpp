@@ -1,7 +1,20 @@
 #include "SDL.h"
 #include "SDL_thread.h"
 
-#include "core/shared.h"
+#include <stdio.h>
+#include <string.h>
+
+#include "core/types.h"
+#include "osd.h"
+#include "core/loadrom.h"
+#include "core/system.h"
+#include "core/genesis.h"
+#include "core/vdp_ctrl.h"
+#include "core/io_ctrl.h"
+#include "core/input_hw/input.h"
+#include "core/cart_hw/sram.h"
+#include "core/state.h"
+
 #include "core/ntsc/sms_ntsc.h"
 #include "core/ntsc/md_ntsc.h"
 

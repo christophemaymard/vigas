@@ -40,6 +40,8 @@
 #ifndef _INPUT_H_
 #define _INPUT_H_
 
+#include "core/types.h"
+
 /* Max. number of devices */
 #define MAX_DEVICES (8)
 

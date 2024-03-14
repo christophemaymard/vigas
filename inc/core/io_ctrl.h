@@ -42,6 +42,8 @@
 #ifndef _IO_CTRL_H_
 #define _IO_CTRL_H_
 
+#include "core/types.h"
+
 #define IO_RESET_HI 0x10
 #define IO_CONT1_HI 0x20
 

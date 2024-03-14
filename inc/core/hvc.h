@@ -139,6 +139,8 @@
 #ifndef _HVC_H_
 #define _HVC_H_
 
+#include "core/types.h"
+
 /***************************************************************/
 /*                                                             */
 /* H-counter timings in H32 & H40 modes (starts from HINT)     */

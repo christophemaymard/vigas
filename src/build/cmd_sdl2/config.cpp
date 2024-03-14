@@ -1,5 +1,8 @@
 
-#include "core/shared.h"
+#include "build/cmd_sdl2/config.h"
+
+#include "core/input_hw/input.h"
+#include "core/sound/ym2612.h"
 
 t_config config;
 

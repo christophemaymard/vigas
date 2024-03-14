@@ -36,7 +36,10 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/input_hw/graphic_board.h"
+
+#include "core/types.h"
+#include "core/input_hw/input.h"
 
 static struct
 {

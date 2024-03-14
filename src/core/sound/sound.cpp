@@ -37,8 +37,18 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
-#include "core/sound/blip_buf.h"
+#include "core/sound/sound.h"
+
+#include <string.h>
+
+#include "core/types.h"
+#include "osd.h"
+#include "core/system.h"
+#include "core/sound/psg.h"
+#include "core/sound/ym2413.h"
+#include "core/sound/ym2612.h"
+#include "core/sound/ym3438.h"
+#include "core/state.h"
 
 /* YM2612 internal clock = input clock / 6 = (master clock / 7) / 6 */
 #define YM2612_CLOCK_RATIO (7*6)

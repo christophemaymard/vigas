@@ -3,9 +3,14 @@
     Error logging 
 */
 
-#include "osd.h"
-
 #ifdef LOGERROR
+
+#include <stdio.h>
+#include <stdarg.h>
+
+#include "build/cmd_sdl2/error.h"
+#include "build/cmd_sdl2/main.h"
+
 static FILE *error_log;
 #endif
 

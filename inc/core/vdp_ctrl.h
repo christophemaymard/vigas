@@ -42,6 +42,8 @@
 #ifndef _VDP_H_
 #define _VDP_H_
 
+#include "core/types.h"
+
 /* VDP context */
 extern uint8 reg[0x20];
 extern uint8 sat[0x400];

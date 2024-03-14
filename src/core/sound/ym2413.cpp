@@ -42,7 +42,13 @@ to do:
 /** 2022/08/07: fixed operator ouput when EG is off **/
 /************************************************/
 
-#include "core/shared.h"
+#include "core/sound/ym2413.h"
+
+#include <string.h>
+#include <math.h>
+
+#include "core/macros.h"
+#include "core/z80/osd_cpu.h"
 
 #define FREQ_SH 16  /* 16.16 fixed point (frequency calculations) */
 #define EG_SH   16  /* 16.16 fixed point (EG timing)              */

@@ -39,7 +39,26 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/genesis.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+#include "core/types.h"
+#include "osd.h"
+#include "core/m68k/m68k.h"
+#include "core/z80/z80.h"
+#include "core/system.h"
+#include "core/vdp_ctrl.h"
+#include "core/mem68k.h"
+#include "core/memz80.h"
+#include "core/membnk.h"
+#include "core/io_ctrl.h"
+#include "core/sound/sound.h"
+
+#include "core/cart_hw/md_cart.h"
+#include "core/cart_hw/sms_cart.h"
+#include "core/cd_hw/scd.h"
 
 #ifdef USE_DYNAMIC_ALLOC
 external_t *ext;

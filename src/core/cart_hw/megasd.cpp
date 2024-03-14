@@ -35,7 +35,20 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  ****************************************************************************************/
-#include "core/shared.h"
+
+#include "core/cart_hw/megasd.h"
+
+#include <string.h>
+
+#include "core/m68k/m68k.h"
+#include "core/system.h"
+#include "core/genesis.h"
+#include "core/mem68k.h"
+#include "core/membnk.h"
+#include "core/cart_hw/sram.h"
+#include "core/state.h"
+
+#include "core/cd_hw/scd.h"
 
 typedef struct
 {

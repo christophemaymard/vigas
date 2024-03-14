@@ -36,7 +36,17 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/cd_hw/cd_cart.h"
+
+#include <string.h>
+
+#include "core/m68k/m68k.h"
+#include "core/genesis.h"
+#include "core/mem68k.h"
+#include "core/membnk.h"
+#include "core/cart_hw/sram.h"
+
+#include "core/cd_hw/scd.h"
 
 /*--------------------------------------------------------------------------*/
 /* backup RAM cartridge (max. 512KB)                                        */

@@ -39,7 +39,20 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/io_ctrl.h"
+
+#include "core/types.h"
+#include "osd.h"
+#include "core/z80/z80.h"
+#include "core/system.h"
+#include "core/genesis.h"
+#include "core/vdp_ctrl.h"
+#include "core/input_hw/input.h"
+#include "core/sound/psg.h"
+
+#include "core/cart_hw/md_cart.h"
+#include "core/cart_hw/sms_cart.h"
+
 #include "core/input_hw/gamepad.h"
 #include "core/input_hw/lightgun.h"
 #include "core/input_hw/mouse.h"

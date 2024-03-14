@@ -37,8 +37,24 @@
  *
  ****************************************************************************************/
 
+#include "core/loadrom.h"
+
+#include <string.h>
 #include <ctype.h>
-#include "core/shared.h"
+
+#include "core/types.h"
+#include "osd.h"
+#include "core/system.h"
+#include "core/genesis.h"
+#include "core/vdp_ctrl.h"
+#include "core/io_ctrl.h"
+#include "core/input_hw/input.h"
+#include "core/cart_hw/ggenie.h"
+#include "core/cart_hw/areplay.h"
+
+#include "core/cart_hw/md_cart.h"
+#include "core/cart_hw/sms_cart.h"
+
 
 /*** ROM Information ***/
 #define ROMCONSOLE    256

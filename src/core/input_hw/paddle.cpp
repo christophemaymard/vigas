@@ -36,7 +36,11 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/input_hw/paddle.h"
+
+#include "core/types.h"
+#include "core/io_ctrl.h"
+#include "core/input_hw/input.h"
 
 static struct
 {

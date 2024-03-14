@@ -210,9 +210,6 @@
     <ClInclude Include="inc\core\memz80.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\core\shared.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="inc\core\state.h">
       <Filter>Header Files</Filter>
     </ClInclude>

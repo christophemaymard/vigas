@@ -38,6 +38,8 @@
 #ifndef _CD_GFX_
 #define _CD_GFX_
 
+#include "core/types.h"
+
 #define gfx scd.gfx_hw
 
 typedef struct

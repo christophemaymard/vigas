@@ -40,7 +40,13 @@
  *
  ****************************************************************************************/
 
-#include "core/shared.h"
+#include "core/sound/psg.h"
+
+#include <string.h>
+
+#include "osd.h"
+#include "core/system.h"
+#include "core/state.h"
 #include "core/sound/blip_buf.h"
 
 /* internal clock = input clock : 16 = (master clock : 15) : 16 */

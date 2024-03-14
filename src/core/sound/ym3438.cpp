@@ -27,8 +27,9 @@
  * version: 1.0.12
  */
 
-#include <string.h>
 #include "core/sound/ym3438.h"
+
+#include <string.h>
 
 #define SIGN_EXTEND(bit_index, value) (((value) & ((1u << (bit_index)) - 1u)) - ((value) & (1u << (bit_index))))
 

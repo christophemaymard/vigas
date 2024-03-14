@@ -189,8 +189,12 @@
  *   'ld d, (a)' loads from program ROM
  */
 
-#include "core/shared.h"
+#include "core/cart_hw/svp/ssp16.h"
 
+#include <stdlib.h>
+
+#include "core/genesis.h"
+#include "core/cart_hw/svp/svp.h"
 
 #define u32 unsigned int
 
