@@ -38,7 +38,7 @@
 #include "shared.h"
 #include "megasd.h"
 
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
 #define SUPPORTED_EXT 20
 #else
 #define SUPPORTED_EXT 10
@@ -129,7 +129,7 @@ static const uint32 toc_ffightj[29] =
 /* supported audio file extensions */
 static const char extensions[SUPPORTED_EXT][16] =
 {
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
   "%02d.ogg",
   " %02d.ogg",
   "-%02d.ogg",
@@ -153,7 +153,7 @@ static const char extensions[SUPPORTED_EXT][16] =
   " - %d.wav"
 };
 
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
 
 static int seek64_wrap(void *f,ogg_int64_t off,int whence){
   return cdStreamSeek(f,off,whence);
@@ -231,7 +231,7 @@ int cdd_context_save(uint8 *state)
   if (cdd.toc.tracks[cdd.index].type == TYPE_AUDIO)
   {
     /* get file read offset */
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
     if (cdd.toc.tracks[cdd.index].vf.seekable)
     {
       /* VORBIS file sample offset */
@@ -292,7 +292,7 @@ int cdd_context_load(uint8 *state, const char *version)
     /* current track is an audio track ? */
     if (cdd.toc.tracks[index].type == TYPE_AUDIO)
     {
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
 #ifdef DISABLE_MANY_OGG_OPEN_FILES
       /* check if track index has changed */
       if (index != cdd.index)
@@ -312,7 +312,7 @@ int cdd_context_load(uint8 *state, const char *version)
 #endif
 #endif
       /* seek to current file read offset */
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
       if (cdd.toc.tracks[index].vf.seekable)
       {
         /* VORBIS file sample offset */
@@ -550,7 +550,7 @@ int cdd_load(char *filename, char *header)
             /* adjust current track file read offset with WAVE header length */
             cdd.toc.tracks[cdd.toc.last].offset -= dataOffset;
           }
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
           else if (!ov_open_callbacks(cdd.toc.tracks[cdd.toc.last].fd,&cdd.toc.tracks[cdd.toc.last].vf,0,0,cb))
           {
             /* retrieve stream infos */
@@ -696,7 +696,7 @@ int cdd_load(char *filename, char *header)
           /* adjust current track file read offset with previous track end time (only used for AUDIO track) */
           cdd.toc.tracks[cdd.toc.last].offset += cdd.toc.end * 2352;
 
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
           if (cdd.toc.tracks[cdd.toc.last].vf.datasource)
           { 
             /* convert read offset to PCM sample offset */
@@ -764,7 +764,7 @@ int cdd_load(char *filename, char *header)
     }
 
     /* close any incomplete track file */
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
     if (cdd.toc.tracks[cdd.toc.last].vf.datasource)
     {
       ov_clear(&cdd.toc.tracks[cdd.toc.last].vf);
@@ -873,7 +873,7 @@ int cdd_load(char *filename, char *header)
         /* increment track number */
         cdd.toc.last++;
       }
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
       else if (!ov_open_callbacks(fd,&cdd.toc.tracks[cdd.toc.last].vf,0,0,cb))
       {
         /* retrieve stream infos */
@@ -1088,7 +1088,7 @@ void cdd_unload(void)
     /* close CD tracks */
     for (i=0; i<cdd.toc.last; i++)
     {
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
       if (cdd.toc.tracks[i].vf.datasource)
       {
         /* close any opened VORBIS file */
@@ -1163,7 +1163,7 @@ void cdd_read_data(uint8 *dst, uint8 *subheader)
 
 void cdd_seek_audio(int index, int lba)
 {
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
 #ifdef DISABLE_MANY_OGG_OPEN_FILES
   /* check if track index has changed */
   if (index != cdd.index)
@@ -1184,7 +1184,7 @@ void cdd_seek_audio(int index, int lba)
 #endif
 
   /* seek to track position */
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
   if (cdd.toc.tracks[index].vf.seekable)
   {
     /* VORBIS AUDIO track */
@@ -1217,7 +1217,7 @@ void cdd_read_audio(unsigned int samples)
     int endVol = cdd.fader[1];
 
     /* read samples from current block */
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
     if (cdd.toc.tracks[cdd.index].vf.datasource)
     {
       int len, done = 0;

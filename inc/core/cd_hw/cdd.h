@@ -42,8 +42,6 @@
 
 #if defined(USE_LIBVORBIS)
 #include <vorbis/vorbisfile.h>
-#elif defined(USE_LIBTREMOR)
-#include "tremor/ivorbisfile.h"
 #endif
 
 #define cdd scd.cdd_hw
@@ -69,7 +67,7 @@
 typedef struct
 {
   cdStream *fd;
-#if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
+#if defined(USE_LIBVORBIS)
   OggVorbis_File vf;
 #endif
   int offset;
