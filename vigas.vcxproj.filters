@@ -165,9 +165,6 @@
     <ClInclude Include="inc\core\sound\eq.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\core\sound\opll.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="inc\core\sound\psg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -348,9 +345,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\sound\eq.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\sound\opll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\sound\psg.cpp">

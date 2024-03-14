@@ -147,7 +147,6 @@
     <ClInclude Include="inc\core\shared.h" />
     <ClInclude Include="inc\core\sound\blip_buf.h" />
     <ClInclude Include="inc\core\sound\eq.h" />
-    <ClInclude Include="inc\core\sound\opll.h" />
     <ClInclude Include="inc\core\sound\psg.h" />
     <ClInclude Include="inc\core\sound\sound.h" />
     <ClInclude Include="inc\core\sound\ym2413.h" />
@@ -208,7 +207,6 @@
     <ClCompile Include="src\core\ntsc\sms_ntsc.cpp" />
     <ClCompile Include="src\core\sound\blip_buf.cpp" />
     <ClCompile Include="src\core\sound\eq.cpp" />
-    <ClCompile Include="src\core\sound\opll.cpp" />
     <ClCompile Include="src\core\sound\psg.cpp" />
     <ClCompile Include="src\core\sound\sound.cpp" />
     <ClCompile Include="src\core\sound\ym2413.cpp" />
