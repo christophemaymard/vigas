@@ -44,11 +44,7 @@
 #define YM2612_CLOCK_RATIO (7*6)
 
 /* FM output buffer (large enough to hold a whole frame at original chips rate) */
-#if defined(HAVE_YM3438_CORE)
 static int fm_buffer[1080 * 2 * 24];
-#else
-static int fm_buffer[1080 * 2];
-#endif
 
 static int fm_last[2];
 static int *fm_ptr;
@@ -65,12 +61,10 @@ void (*fm_reset)(unsigned int cycles);
 void (*fm_write)(unsigned int cycles, unsigned int address, unsigned int data);
 unsigned int (*fm_read)(unsigned int cycles, unsigned int address);
 
-#ifdef HAVE_YM3438_CORE
 static ym3438_t ym3438;
 static short ym3438_accm[24][2];
 static int ym3438_sample[2];
 static int ym3438_cycles;
-#endif
 
 /* Run FM chip until required M-cycles */
 INLINE void fm_update(int cycles)
@@ -172,7 +166,6 @@ static unsigned int YM2413_Read(unsigned int cycles, unsigned int a)
     return YM2413Read();
 }
 
-#ifdef HAVE_YM3438_CORE
 static void YM3438_Update(int *buffer, int length)
 {
   int i, j;
@@ -221,7 +214,6 @@ static unsigned int YM3438_Read(unsigned int cycles, unsigned int a)
   /* read FM status */
   return OPN2_Read(&ym3438, a);
 }
-#endif
 
 void sound_init( void )
 {
@@ -229,7 +221,6 @@ void sound_init( void )
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
   {
     /* YM2612 */
-#ifdef HAVE_YM3438_CORE
     if (config.ym3438)
     {
       /* Nuked OPN2 */
@@ -245,7 +236,6 @@ void sound_init( void )
       fm_cycles_ratio = YM2612_CLOCK_RATIO;
     }
     else
-#endif
     {
       /* MAME OPN2*/
       YM2612Init();
@@ -389,7 +379,6 @@ int sound_context_save(uint8 *state)
   
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
   {
-#ifdef HAVE_YM3438_CORE
     save_param(&config.ym3438, sizeof(config.ym3438));
     if (config.ym3438)
     {
@@ -402,9 +391,6 @@ int sound_context_save(uint8 *state)
     {
       bufferptr += YM2612SaveContext(state + sizeof(config.ym3438));
     }
-#else
-    bufferptr = YM2612SaveContext(state);
-#endif
   }
   else
   {
@@ -426,7 +412,6 @@ int sound_context_load(uint8 *state)
 
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
   {
-#ifdef HAVE_YM3438_CORE
     uint8 config_ym3438;
     load_param(&config_ym3438, sizeof(config_ym3438));
     if (config_ym3438)
@@ -440,9 +425,6 @@ int sound_context_load(uint8 *state)
     {
       bufferptr += YM2612LoadContext(state + sizeof(config_ym3438));
     }
-#else
-    bufferptr = YM2612LoadContext(state);
-#endif
   }
   else
   {

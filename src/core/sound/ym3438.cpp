@@ -1,4 +1,3 @@
-#ifdef HAVE_YM3438_CORE
 /*
  * Copyright (C) 2017-2022 Alexey Khokholov (Nuke.YKT)
  *
@@ -1426,4 +1425,3 @@ Bit8u OPN2_Read(ym3438_t *chip, Bit32u port)
     }
     return 0;
 }
-#endif /* HAVE_YM3438_CORE */
