@@ -40,10 +40,6 @@
 
 #include "blip_buf.h"
 
-#if defined(USE_LIBVORBIS)
-#include <vorbis/vorbisfile.h>
-#endif
-
 #define cdd scd.cdd_hw
 
 /* CDD status */
@@ -67,9 +63,6 @@
 typedef struct
 {
   cdStream *fd;
-#if defined(USE_LIBVORBIS)
-  OggVorbis_File vf;
-#endif
   int offset;
   int start;
   int end;
