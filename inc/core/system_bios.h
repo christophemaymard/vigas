@@ -39,62 +39,15 @@
  *
  ****************************************************************************************/
 
-#ifndef _SYSTEM_H_
-#define _SYSTEM_H_
+#ifndef __CORE_SYSTEM_BIOS_H__
+#define __CORE_SYSTEM_BIOS_H__
 
 #include "core/types.h"
-#include "core/sound/blip_buf.h"
 
-/* Number of M-Cycles executed per line */
-#define MCYCLES_PER_LINE  3420
+//==============================================================================
 
-/* Horizontal timing offsets when running in Z80 mode */
-#define SMS_CYCLE_OFFSET  530
-#define PBC_CYCLE_OFFSET  560
+//------------------------------------------------------------------------------
 
-typedef struct
-{
-  uint8 *data;      /* Bitmap data */
-  int width;        /* Bitmap width */
-  int height;       /* Bitmap height */
-  int pitch;        /* Bitmap pitch */
-  struct
-  {
-    int x;          /* X offset of viewport within bitmap */
-    int y;          /* Y offset of viewport within bitmap */
-    int w;          /* Width of viewport */
-    int h;          /* Height of viewport */
-    int ow;         /* Previous width of viewport */
-    int oh;         /* Previous height of viewport */
-    int changed;    /* 1= Viewport width or height have changed */
-  } viewport;
-} t_bitmap;
+extern uint8 system_bios;
 
-typedef struct
-{
-  int sample_rate;      /* Output Sample rate (8000-48000) */
-  double frame_rate;    /* Output Frame rate (usually 50 or 60 frames per second) */
-  int enabled;          /* 1= sound emulation is enabled */
-  blip_t* blips[3];     /* Blip Buffer resampling (stereo) */
-} t_snd;
-
-/* Global variables */
-extern t_bitmap bitmap;
-extern t_snd snd;
-extern uint32 mcycles_vdp;
-extern int16 SVP_cycles; 
-
-/* Function prototypes */
-extern int audio_init(int samplerate, double framerate);
-extern void audio_set_rate(int samplerate, double framerate);
-extern void audio_reset(void);
-extern void audio_shutdown(void);
-extern int audio_update(int16 *buffer);
-extern void audio_set_equalizer(void);
-extern void system_init(void);
-extern void system_reset(void);
-extern void system_frame_gen(int do_skip);
-extern void system_frame_scd(int do_skip);
-extern void system_frame_sms(int do_skip);
-
-#endif /* _SYSTEM_H_ */
+#endif // #ifndef __CORE_SYSTEM_BIOS_H__

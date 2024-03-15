@@ -49,6 +49,7 @@
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
 #include "core/system.h"
+#include "core/system_bios.h"
 #include "core/system_hardware.h"
 #include "core/genesis.h"
 #include "core/vdp_render.h"

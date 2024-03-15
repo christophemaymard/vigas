@@ -231,6 +231,9 @@
     <ClInclude Include="inc\core\system_clock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\core\system_bios.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\build\cmd_sdl2\config.cpp">
@@ -405,6 +408,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\system_clock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\system_bios.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -44,7 +44,7 @@
 
 #include "core/types.h"
 #include "osd.h"
-#include "core/system.h"
+#include "core/system_bios.h"
 #include "core/system_clock.h"
 #include "core/system_hardware.h"
 #include "core/genesis.h"
