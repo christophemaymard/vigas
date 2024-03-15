@@ -47,6 +47,7 @@
 #include "osd.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
+#include "core/system_hardware.h"
 #include "core/genesis.h"
 #include "core/vdp_ctrl.h"
 #include "core/vdp_render.h"
@@ -66,7 +67,6 @@
 t_bitmap bitmap;
 t_snd snd;
 uint32 mcycles_vdp;
-uint8 system_hw;
 uint8 system_bios;
 uint32 system_clock;
 int16 SVP_cycles = 800; 

@@ -49,6 +49,7 @@
 #include "core/loadrom.h"
 #include "core/m68k/m68k.h"
 #include "core/system.h"
+#include "core/system_hardware.h"
 #include "core/genesis.h"
 #include "core/mem68k.h"
 #include "core/membnk.h"

@@ -225,6 +225,9 @@
     <ClInclude Include="inc\core\vdp_render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\core\system_hardware.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\build\cmd_sdl2\config.cpp">
@@ -393,6 +396,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\build\cmd_sdl2\osd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\system_hardware.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

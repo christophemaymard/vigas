@@ -41,7 +41,7 @@
 
 #include "osd.h"
 #include "core/loadrom.h"
-#include "core/system.h"
+#include "core/system_hardware.h"
 #include "core/genesis.h"
 #include "core/cart_hw/md_cart.h"
 #include "core/cart_hw/sms_cart.h"

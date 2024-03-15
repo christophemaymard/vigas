@@ -153,6 +153,7 @@
     <ClInclude Include="inc\core\sound\ym3438.h" />
     <ClInclude Include="inc\core\state.h" />
     <ClInclude Include="inc\core\system.h" />
+    <ClInclude Include="inc\core\system_hardware.h" />
     <ClInclude Include="inc\core\types.h" />
     <ClInclude Include="inc\core\vdp_ctrl.h" />
     <ClInclude Include="inc\core\vdp_render.h" />
@@ -213,6 +214,7 @@
     <ClCompile Include="src\core\sound\ym3438.cpp" />
     <ClCompile Include="src\core\state.cpp" />
     <ClCompile Include="src\core\system.cpp" />
+    <ClCompile Include="src\core\system_hardware.cpp" />
     <ClCompile Include="src\core\vdp_ctrl.cpp" />
     <ClCompile Include="src\core\vdp_render.cpp" />
     <ClCompile Include="src\core\z80\z80.cpp" />

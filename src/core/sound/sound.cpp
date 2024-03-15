@@ -44,6 +44,7 @@
 #include "core/types.h"
 #include "osd.h"
 #include "core/system.h"
+#include "core/system_hardware.h"
 #include "core/sound/psg.h"
 #include "core/sound/ym2413.h"
 #include "core/sound/ym2612.h"

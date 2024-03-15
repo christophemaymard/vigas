@@ -49,6 +49,7 @@
 #include "osd.h"
 #include "core/macros.h"
 #include "core/system.h"
+#include "core/system_hardware.h"
 #include "core/vdp_ctrl.h"
 
 #include "core/ntsc/md_ntsc.h"

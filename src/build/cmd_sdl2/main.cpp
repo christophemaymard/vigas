@@ -8,6 +8,7 @@
 #include "osd.h"
 #include "core/loadrom.h"
 #include "core/system.h"
+#include "core/system_hardware.h"
 #include "core/genesis.h"
 #include "core/vdp_ctrl.h"
 #include "core/io_ctrl.h"
