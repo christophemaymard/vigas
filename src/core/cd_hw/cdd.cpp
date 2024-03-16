@@ -1457,7 +1457,7 @@ void cdd_process(void)
 
         default:
         {
-#ifdef LOG_ERROR
+#ifdef LOGERROR
           error("Invalid CDD request code %02X (%X)\n", scd.regs[0x44>>1].byte.l, s68k.pc);
 #endif
           return;
@@ -1709,7 +1709,7 @@ void cdd_process(void)
     }
 
     default:  /* Unknown command */
-#ifdef LOG_ERROR
+#ifdef LOGERROR
       error("Unsupported CDD command %02X (%X)\n", scd.regs[0x42>>1].byte.h & 0x0f, s68k.pc);
 #endif
       scd.regs[0x38>>1].byte.h = cdd.status;
