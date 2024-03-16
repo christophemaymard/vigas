@@ -7,6 +7,7 @@
 #include "core/types.h"
 #include "osd.h"
 #include "core/loadrom.h"
+#include "core/bitmap.h"
 #include "core/system.h"
 #include "core/system_bios.h"
 #include "core/system_hardware.h"

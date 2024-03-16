@@ -93,6 +93,7 @@
     <ClInclude Include="inc\build\cmd_sdl2\fileio.h" />
     <ClInclude Include="inc\build\cmd_sdl2\main.h" />
     <ClInclude Include="inc\build\cmd_sdl2\osd.h" />
+    <ClInclude Include="inc\core\bitmap.h" />
     <ClInclude Include="inc\core\cart_hw\areplay.h" />
     <ClInclude Include="inc\core\cart_hw\eeprom_93c.h" />
     <ClInclude Include="inc\core\cart_hw\eeprom_i2c.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="src\build\cmd_sdl2\fileio.cpp" />
     <ClCompile Include="src\build\cmd_sdl2\main.cpp" />
     <ClCompile Include="src\build\cmd_sdl2\osd.cpp" />
+    <ClCompile Include="src\core\bitmap.cpp" />
     <ClCompile Include="src\core\cart_hw\areplay.cpp" />
     <ClCompile Include="src\core\cart_hw\eeprom_93c.cpp" />
     <ClCompile Include="src\core\cart_hw\eeprom_i2c.cpp" />
