@@ -4,7 +4,7 @@
 /* Function prototypes */
 void error_init(void);
 void error_shutdown(void);
-void error(char *format, ...);
+void error(const char *format, ...);
 
 #endif /* _ERROR_H_ */
 

@@ -28,7 +28,7 @@ void error_shutdown(void)
 #endif
 }
 
-void error(char *format, ...)
+void error(const char *format, ...)
 {
 #ifdef LOGERROR
   if (log_error)
