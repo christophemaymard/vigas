@@ -51,6 +51,7 @@
 #include "core/system.h"
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
+#include "core/system_timing.h"
 #include "core/genesis.h"
 #include "core/vdp_render.h"
 #include "core/io_ctrl.h"

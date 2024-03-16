@@ -234,6 +234,9 @@
     <ClInclude Include="inc\core\system_bios.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\core\system_timing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\build\cmd_sdl2\config.cpp">

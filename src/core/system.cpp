@@ -49,6 +49,7 @@
 #include "core/z80/z80.h"
 #include "core/system_clock.h"
 #include "core/system_hardware.h"
+#include "core/system_timing.h"
 #include "core/genesis.h"
 #include "core/vdp_ctrl.h"
 #include "core/vdp_render.h"

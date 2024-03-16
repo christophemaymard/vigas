@@ -156,6 +156,7 @@
     <ClInclude Include="inc\core\system_bios.h" />
     <ClInclude Include="inc\core\system_clock.h" />
     <ClInclude Include="inc\core\system_hardware.h" />
+    <ClInclude Include="inc\core\system_timing.h" />
     <ClInclude Include="inc\core\types.h" />
     <ClInclude Include="inc\core\vdp_ctrl.h" />
     <ClInclude Include="inc\core\vdp_render.h" />

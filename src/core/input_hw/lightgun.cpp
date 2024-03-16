@@ -45,6 +45,7 @@
 #include "core/z80/z80.h"
 #include "core/system.h"
 #include "core/system_hardware.h"
+#include "core/system_timing.h"
 #include "core/vdp_ctrl.h"
 #include "core/io_ctrl.h"
 #include "core/input_hw/input.h"
