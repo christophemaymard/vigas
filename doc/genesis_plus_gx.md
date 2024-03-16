@@ -1,0 +1,43 @@
+# Genesis Plus GX
+
+Repository on GitHub: https://github.com/ekeeke/Genesis-Plus-GX
+
+## Preprocessor definitions
+
+| Identifier |
+| --- |
+| ALIGN_LONG |
+| ALIGN_SND |
+| ALT_RENDERER |
+| BLIP_ASSERT |
+| BLIP_INVERT |
+| BLIP_MONO |
+| BUILD_TABLES |
+| CD_TRAY_CALLBACK |
+| CHEATS_UPDATE |
+| CUSTOM_BLITTER |
+| HAVE_NO_SPRITE_LIMIT |
+| HOOK_CPU |
+| INLINE |
+| LOG_CDC |
+| LOG_CDD |
+| LOG_PCM |
+| LOG_SCD |
+| LOG_SVP |
+| LOGERROR |
+| LOGSOUND |
+| LOGVDP |
+| LSB_FIRST |
+| M68K_OVERCLOCK_SHIFT |
+| MAXROMSIZE |
+| STEREO_INVERT |
+| USE_15BPP_RENDERING |
+| USE_16BPP_RENDERING |
+| USE_32BPP_RENDERING |
+| USE_8BPP_RENDERING |
+| USE_ABGR |
+| USE_DEBUGGER |
+| USE_DYNAMIC_ALLOC |
+| Z80_OVERCLOCK_SHIFT |
+
+
