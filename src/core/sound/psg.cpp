@@ -45,7 +45,7 @@
 #include <string.h>
 
 #include "osd.h"
-#include "core/system.h"
+#include "core/snd.h"
 #include "core/state.h"
 #include "core/sound/blip_buf.h"
 

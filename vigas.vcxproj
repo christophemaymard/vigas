@@ -145,6 +145,7 @@
     <ClInclude Include="inc\core\ntsc\sms_ntsc.h" />
     <ClInclude Include="inc\core\ntsc\sms_ntsc_config.h" />
     <ClInclude Include="inc\core\ntsc\sms_ntsc_impl.h" />
+    <ClInclude Include="inc\core\snd.h" />
     <ClInclude Include="inc\core\sound\blip_buf.h" />
     <ClInclude Include="inc\core\sound\eq.h" />
     <ClInclude Include="inc\core\sound\psg.h" />
@@ -210,6 +211,7 @@
     <ClCompile Include="src\core\memz80.cpp" />
     <ClCompile Include="src\core\ntsc\md_ntsc.cpp" />
     <ClCompile Include="src\core\ntsc\sms_ntsc.cpp" />
+    <ClCompile Include="src\core\snd.cpp" />
     <ClCompile Include="src\core\sound\blip_buf.cpp" />
     <ClCompile Include="src\core\sound\eq.cpp" />
     <ClCompile Include="src\core\sound\psg.cpp" />

@@ -43,7 +43,7 @@
 
 #include "osd.h"
 #include "core/m68k/m68k.h"
-#include "core/system.h"
+#include "core/snd.h"
 #include "core/genesis.h"
 #include "core/state.h"
 

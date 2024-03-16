@@ -48,6 +48,7 @@
 #include "osd.h"
 #include "core/loadrom.h"
 #include "core/m68k/m68k.h"
+#include "core/snd.h"
 #include "core/system.h"
 #include "core/system_hardware.h"
 #include "core/genesis.h"

@@ -48,6 +48,7 @@
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
 #include "core/bitmap.h"
+#include "core/snd.h"
 #include "core/system_clock.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
@@ -67,7 +68,6 @@
 #include "core/sound/eq.h"
 
 /* Global variables */
-t_snd snd;
 uint32 mcycles_vdp;
 int16 SVP_cycles = 800; 
 
