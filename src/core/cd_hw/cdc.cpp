@@ -40,6 +40,10 @@
 
 #include <string.h>
 
+#if defined(LOG_CDC) || defined(LOG_SCD)
+#include "osd.h"
+#endif
+
 #include "core/m68k/m68k.h"
 #include "core/genesis.h"
 #include "core/state.h"

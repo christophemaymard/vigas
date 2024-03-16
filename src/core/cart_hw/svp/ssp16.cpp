@@ -194,6 +194,14 @@
 #include <stdlib.h>
 
 #include "core/genesis.h"
+
+#ifdef LOG_SVP
+#include "osd.h"
+#include "core/vdp_ctrl.h"
+
+static unsigned int frame_count = 0;
+#endif
+
 #include "core/cart_hw/svp/svp.h"
 
 #define u32 unsigned int

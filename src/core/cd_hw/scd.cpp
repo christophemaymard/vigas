@@ -40,12 +40,21 @@
 
 #include <string.h>
 
+#if defined(LOG_CDD) || defined(LOGERROR) || defined(LOG_SCD)
+#include "osd.h"
+#endif
+
 #include "core/macros.h"
 #include "core/m68k/m68k.h"
 #include "core/system_clock.h"
 #include "core/system_cycle.h"
 #include "core/system_timing.h"
 #include "core/genesis.h"
+
+#ifdef LOG_SCD
+#include "core/vdp_ctrl.h"
+#endif
+
 #include "core/mem68k.h"
 #include "core/membnk.h"
 #include "core/state.h"

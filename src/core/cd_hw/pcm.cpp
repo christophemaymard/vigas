@@ -43,6 +43,12 @@
 #include "osd.h"
 #include "core/snd.h"
 #include "core/genesis.h"
+
+#ifdef LOG_PCM
+#include "core/m68k/m68k.h"
+#include "core/vdp_ctrl.h"
+#endif
+
 #include "core/state.h"
 
 #include "core/cd_hw/scd.h"

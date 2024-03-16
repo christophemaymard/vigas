@@ -40,6 +40,10 @@
 
 #include <string.h>
 
+#ifdef LOG_SCD
+#include "osd.h"
+#endif
+
 #include "core/macros.h"
 #include "core/m68k/m68k.h"
 #include "core/genesis.h"
