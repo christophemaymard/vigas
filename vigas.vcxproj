@@ -157,6 +157,7 @@
     <ClInclude Include="inc\core\system.h" />
     <ClInclude Include="inc\core\system_bios.h" />
     <ClInclude Include="inc\core\system_clock.h" />
+    <ClInclude Include="inc\core\system_cycle.h" />
     <ClInclude Include="inc\core\system_hardware.h" />
     <ClInclude Include="inc\core\system_timing.h" />
     <ClInclude Include="inc\core\types.h" />
@@ -223,6 +224,7 @@
     <ClCompile Include="src\core\system.cpp" />
     <ClCompile Include="src\core\system_bios.cpp" />
     <ClCompile Include="src\core\system_clock.cpp" />
+    <ClCompile Include="src\core\system_cycle.cpp" />
     <ClCompile Include="src\core\system_hardware.cpp" />
     <ClCompile Include="src\core\vdp_ctrl.cpp" />
     <ClCompile Include="src\core\vdp_render.cpp" />

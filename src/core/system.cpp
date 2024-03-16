@@ -50,6 +50,7 @@
 #include "core/bitmap.h"
 #include "core/snd.h"
 #include "core/system_clock.h"
+#include "core/system_cycle.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/genesis.h"
@@ -66,10 +67,6 @@
 #include "core/cd_hw/pcm.h"
 #include "core/sound/blip_buf.h"
 #include "core/sound/eq.h"
-
-/* Global variables */
-uint32 mcycles_vdp;
-int16 SVP_cycles = 800; 
 
 static uint8 pause_b;
 static EQSTATE eq[2];

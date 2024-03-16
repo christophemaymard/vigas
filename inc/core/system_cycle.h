@@ -39,22 +39,16 @@
  *
  ****************************************************************************************/
 
-#ifndef _SYSTEM_H_
-#define _SYSTEM_H_
+#ifndef __CORE_SYSTEM_CYCLE_H__
+#define __CORE_SYSTEM_CYCLE_H__
 
 #include "core/types.h"
 
-/* Function prototypes */
-extern int audio_init(int samplerate, double framerate);
-extern void audio_set_rate(int samplerate, double framerate);
-extern void audio_reset(void);
-extern void audio_shutdown(void);
-extern int audio_update(int16 *buffer);
-extern void audio_set_equalizer(void);
-extern void system_init(void);
-extern void system_reset(void);
-extern void system_frame_gen(int do_skip);
-extern void system_frame_scd(int do_skip);
-extern void system_frame_sms(int do_skip);
+//==============================================================================
 
-#endif /* _SYSTEM_H_ */
+//------------------------------------------------------------------------------
+
+extern uint32 mcycles_vdp;
+extern int16 SVP_cycles;
+
+#endif // #ifndef __CORE_SYSTEM_CYCLE_H__
