@@ -2,6 +2,7 @@
 
 # Visual Studio
 .vs
+*.vcxproj.user
 
 # SRAM file (game.srm) that is automatically saved on exit and loaded on startup.
 game.srm
