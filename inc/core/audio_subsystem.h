@@ -1,8 +1,6 @@
 /***************************************************************************************
  *  Genesis Plus
- *  Virtual System emulation
- *
- *  Support for 16-bit & 8-bit hardware modes
+ *  Audio subsystem emulation
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2024  Eke-Eke (Genesis Plus GX)
@@ -39,14 +37,20 @@
  *
  ****************************************************************************************/
 
-#ifndef _SYSTEM_H_
-#define _SYSTEM_H_
+#ifndef __CORE_AUDIO_SUBSYSTEM_H__
+#define __CORE_AUDIO_SUBSYSTEM_H__
 
-/* Function prototypes */
-extern void system_init(void);
-extern void system_reset(void);
-extern void system_frame_gen(int do_skip);
-extern void system_frame_scd(int do_skip);
-extern void system_frame_sms(int do_skip);
+#include "core/types.h"
 
-#endif /* _SYSTEM_H_ */
+//==============================================================================
+
+//------------------------------------------------------------------------------
+
+int audio_init(int samplerate, double framerate);
+void audio_set_rate(int samplerate, double framerate);
+void audio_reset(void);
+void audio_shutdown(void);
+int audio_update(int16* buffer);
+void audio_set_equalizer(void);
+
+#endif // #ifndef __CORE_AUDIO_SUBSYSTEM_H__

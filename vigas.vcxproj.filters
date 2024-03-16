@@ -246,6 +246,9 @@
     <ClInclude Include="inc\core\system_cycle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\core\audio_subsystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\build\cmd_sdl2\config.cpp">
@@ -432,6 +435,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\system_cycle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\audio_subsystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
