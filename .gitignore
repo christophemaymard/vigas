@@ -1,13 +1,2 @@
-/bin/
 /build/
-
-# Visual Studio
-.vs
-*.vcxproj.user
-
-# SRAM file (game.srm) that is automatically saved on exit and loaded on startup.
-game.srm
-
-# Log file that is created at startup with error_init().
-error.log
 
