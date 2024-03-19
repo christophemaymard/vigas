@@ -38,16 +38,17 @@
 
 #include "core/input_hw/xe_1ap.h"
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/input_hw/input.h"
 
 #define XE_1AP_LATENCY 3
 
 static struct
 {
-  uint8 State;
-  uint8 Counter;
-  uint8 Latency;
+  u8 State;
+  u8 Counter;
+  u8 Latency;
 } xe_1ap[2];
 
 void xe_1ap_reset(int index)

@@ -42,7 +42,7 @@
 #ifndef __CORE_SYSTEM_HARDWARE_H__
 #define __CORE_SYSTEM_HARDWARE_H__
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 //==============================================================================
 
@@ -64,6 +64,6 @@
 
 //------------------------------------------------------------------------------
 
-extern uint8 system_hw;
+extern u8 system_hw;
 
 #endif // #ifndef __CORE_SYSTEM_HARDWARE_H__

@@ -39,7 +39,7 @@
 #ifndef _EEPROM_93C_H_
 #define _EEPROM_93C_H_
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 typedef enum
 {
@@ -52,14 +52,14 @@ typedef enum
 
 typedef struct
 {
-  uint8 enabled;  /* 1: chip enabled */
-  uint8 cs;       /* CHIP SELECT line state */
-  uint8 clk;      /* CLK line state */
-  uint8 data;     /* DATA OUT line state */
-  uint8 cycles;   /* current operation cycle */
-  uint8 we;       /* 1: write enabled */
-  uint8 opcode;   /* 8-bit opcode + address */
-  uint16 buffer;  /* 16-bit data buffer */
+  u8 enabled;  /* 1: chip enabled */
+  u8 cs;       /* CHIP SELECT line state */
+  u8 clk;      /* CLK line state */
+  u8 data;     /* DATA OUT line state */
+  u8 cycles;   /* current operation cycle */
+  u8 we;       /* 1: write enabled */
+  u8 opcode;   /* 8-bit opcode + address */
+  u16 buffer;  /* 16-bit data buffer */
   T_STATE_93C state; /* current operation state */
 } T_EEPROM_93C;
 

@@ -1,6 +1,8 @@
 #ifndef Z80_H_
 #define Z80_H_
 
+#include "xee/fnd/data_type.h"
+
 #include "core/z80/osd_cpu.h"
 
 enum
@@ -38,22 +40,22 @@ typedef struct
 {
   PAIR  pc,sp,af,bc,de,hl,ix,iy,wz;
   PAIR  af2,bc2,de2,hl2;
-  UINT8  r,r2,iff1,iff2,halt,im,i;
-  UINT8  nmi_state;      /* nmi line state */
-  UINT8  nmi_pending;    /* nmi pending */
-  UINT8  irq_state;      /* irq line state */
-  UINT8  after_ei;       /* are we in the EI shadow? */
-  UINT32 cycles;         /* master clock cycles global counter */
+  u8  r,r2,iff1,iff2,halt,im,i;
+  u8  nmi_state;      /* nmi line state */
+  u8  nmi_pending;    /* nmi pending */
+  u8  irq_state;      /* irq line state */
+  u8  after_ei;       /* are we in the EI shadow? */
+  u32 cycles;         /* master clock cycles global counter */
   const struct z80_irq_daisy_chain *daisy;
   int    (*irq_callback)(int irqline);
 }  Z80_Regs;
 
 
 extern Z80_Regs Z80;
-extern UINT8 z80_last_fetch;
+extern u8 z80_last_fetch;
 
 #ifdef Z80_OVERCLOCK_SHIFT
-extern UINT32 z80_cycle_ratio;
+extern u32 z80_cycle_ratio;
 #endif
 
 extern unsigned char *z80_readmap[64];

@@ -42,7 +42,8 @@
 #ifndef _GENESIS_H_
 #define _GENESIS_H_
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/cart_hw/md_cart.h"
 #include "core/cd_hw/scd.h"
 
@@ -59,12 +60,12 @@ extern external_t *ext;
 #else
 extern external_t ext;
 #endif
-extern uint8 boot_rom[0x800];
-extern uint8 work_ram[0x10000];
-extern uint8 zram[0x2000];
-extern uint32 zbank;
-extern uint8 zstate;
-extern uint8 pico_current;
+extern u8 boot_rom[0x800];
+extern u8 work_ram[0x10000];
+extern u8 zram[0x2000];
+extern u32 zbank;
+extern u8 zstate;
+extern u8 pico_current;
 
 /* Function prototypes */
 extern void gen_init(void);

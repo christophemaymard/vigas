@@ -41,10 +41,10 @@
 
 #include "core/system_clock.h"
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 //==============================================================================
 
 //------------------------------------------------------------------------------
 
-uint32 system_clock;
+u32 system_clock;

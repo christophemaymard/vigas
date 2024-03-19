@@ -39,17 +39,17 @@
 #ifndef _SRAM_H_
 #define _SRAM_H_
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 typedef struct
 {
-  uint8 detected;
-  uint8 on;
-  uint8 custom;
-  uint32 start;
-  uint32 end;
-  uint32 crc;
-  uint8 sram[0x10000];
+  u8 detected;
+  u8 on;
+  u8 custom;
+  u32 start;
+  u32 end;
+  u32 crc;
+  u8 sram[0x10000];
 } T_SRAM;
 
 /* Function prototypes */

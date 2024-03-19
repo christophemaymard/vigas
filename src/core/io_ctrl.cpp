@@ -41,7 +41,8 @@
 
 #include "core/io_ctrl.h"
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/z80/z80.h"
 #include "core/system_hardware.h"
@@ -64,9 +65,9 @@
 #include "core/input_hw/sportspad.h"
 #include "core/input_hw/graphic_board.h"
 
-uint8 io_reg[0x10];
+u8 io_reg[0x10];
 
-uint8 region_code = REGION_USA;
+u8 region_code = REGION_USA;
 
 static struct port_t
 {

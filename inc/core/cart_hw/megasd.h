@@ -39,13 +39,13 @@
 #ifndef _MEGASD_H_
 #define _MEGASD_H_
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 extern void megasd_reset(void);
 extern void megasd_rom_mapper_w(unsigned int address, unsigned int data);
 extern void megasd_enhanced_ssf2_mapper_w(unsigned int address, unsigned int data);
 extern void megasd_update_cdda(unsigned int samples);
-extern int megasd_context_save(uint8 *state);
-extern int megasd_context_load(uint8 *state);
+extern int megasd_context_save(u8 *state);
+extern int megasd_context_load(u8 *state);
 
 #endif

@@ -43,6 +43,8 @@
 
 #include <string.h>
 
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/loadrom.h"
 #include "core/z80/z80.h"
@@ -86,20 +88,20 @@
 
 typedef struct
 {
-  uint32 crc;
-  uint8 g_3d;
-  uint8 fm;
-  uint8 peripheral;
-  uint8 mapper;
-  uint8 system;
-  uint8 region;
+  u32 crc;
+  u8 g_3d;
+  u8 fm;
+  u8 peripheral;
+  u8 mapper;
+  u8 system;
+  u8 region;
 } rominfo_t;
 
 typedef struct
 {
-  uint8 fcr[4];
-  uint8 mapper;
-  uint16 pages;
+  u8 fcr[4];
+  u8 mapper;
+  u16 pages;
 } romhw_t;
 
 static const rominfo_t game_list[] =
@@ -462,10 +464,10 @@ static romhw_t bios_rom;
 /* Current slot */
 static struct
 {
-  uint8 *rom;
-  uint8 *fcr;
-  uint8 mapper;
-  uint16 pages;
+  u8 *rom;
+  u8 *fcr;
+  u8 mapper;
+  u16 pages;
 } slot;
 
 /* Function prototypes */
@@ -505,7 +507,7 @@ void sms_cart_init(void)
   int i = sizeof(game_list) / sizeof(rominfo_t) - 1;
 
   /* game CRC */
-  uint32 crc = crc32(0, cart.rom, cart.romsize);
+  u32 crc = crc32(0, cart.rom, cart.romsize);
 
   /* unmapped memory return $FF on read (mapped to unused cartridge areas $510000-$5103FF & $510400-$5107FF) */
   memset(cart.rom + 0x510000, 0xFF, 0x800);
@@ -744,7 +746,7 @@ void sms_cart_reset(void)
   }
 }
 
-void sms_cart_switch(uint8 mode)
+void sms_cart_switch(u8 mode)
 {
   /* by default, disable cartridge & BIOS ROM */
   slot.pages = 0;
@@ -838,7 +840,7 @@ int sms_cart_region_detect(void)
   int i = sizeof(game_list) / sizeof(rominfo_t) - 1;
 
   /* compute CRC */
-  uint32 crc = crc32(0, cart.rom, cart.romsize);
+  u32 crc = crc32(0, cart.rom, cart.romsize);
 
   /* Turma da Mônica em: O Resgate & Wonder Boy III enable FM support on japanese hardware only */
   if (config.ym2413 && ((crc == 0x22CCA9BB) || (crc == 0x679E1676)))
@@ -878,7 +880,7 @@ int sms_cart_region_detect(void)
   return REGION_USA;
 }
 
-int sms_cart_context_save(uint8 *state)
+int sms_cart_context_save(u8 *state)
 {
   int bufferptr = 0;
 
@@ -909,7 +911,7 @@ int sms_cart_context_save(uint8 *state)
   return bufferptr;
 }
 
-int sms_cart_context_load(uint8 *state)
+int sms_cart_context_load(u8 *state)
 {
   int bufferptr = 0;
 
@@ -1275,7 +1277,7 @@ static void mapper_8k_w(int offset, unsigned char data)
   int i;
 
   /* cartridge ROM page (8KB) */
-  uint8 *page = &slot.rom[(data % slot.pages) << 13];
+  u8 *page = &slot.rom[(data % slot.pages) << 13];
   
   /* Save frame control register data */
   slot.fcr[offset] = data;
@@ -1382,7 +1384,7 @@ static void mapper_16k_w(int offset, unsigned char data)
   int i;
 
   /* cartridge ROM page (16KB) */
-  uint8 page = data % slot.pages;
+  u8 page = data % slot.pages;
 
   /* page index increment (SEGA mapper only) */
   if ((slot.fcr[0] & 0x03) && (slot.mapper == MAPPER_SEGA))
@@ -1579,7 +1581,7 @@ static void mapper_32k_w(unsigned char data)
   int i;
 
   /* cartridge ROM page (32KB) */
-  uint8 *page = &slot.rom[(data % slot.pages) << 15];
+  u8 *page = &slot.rom[(data % slot.pages) << 15];
   
   /* Save frame control register data */
   slot.fcr[0] = data;

@@ -38,14 +38,15 @@
 
 #include "core/input_hw/graphic_board.h"
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/input_hw/input.h"
 
 static struct
 {
-  uint8 State;
-  uint8 Counter;
-  uint8 Port;
+  u8 State;
+  u8 Counter;
+  u8 Port;
 } board;
 
 void graphic_board_reset(int port)
@@ -59,7 +60,7 @@ void graphic_board_reset(int port)
 
 unsigned char graphic_board_read(void)
 {
-  uint8 data;
+  u8 data;
 
   if (board.State & 0x20)
   {

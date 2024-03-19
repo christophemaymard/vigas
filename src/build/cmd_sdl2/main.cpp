@@ -42,7 +42,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/loadrom.h"
 #include "core/audio_subsystem.h"
@@ -93,7 +94,7 @@ struct {
 } sdl_sound;
 
 
-static uint8 brm_format[0x40] =
+static u8 brm_format[0x40] =
 {
   0x5f,0x5f,0x5f,0x5f,0x5f,0x5f,0x5f,0x5f,0x5f,0x5f,0x5f,0x00,0x00,0x00,0x00,0x40,
   0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -359,7 +360,7 @@ static void sdl_sync_close()
     SDL_DestroySemaphore(sdl_sync.sem_sync);
 }
 
-static const uint16 vc_table[4][2] =
+static const u16 vc_table[4][2] =
 {
   /* NTSC, PAL */
   {0xDA , 0xF2},  /* Mode 4 (192 lines) */
@@ -368,8 +369,8 @@ static const uint16 vc_table[4][2] =
   {0x106, 0x10A}  /* Mode 5 (240 lines) */
 };
 
-static uint8 state_load_buf[STATE_SIZE];
-static uint8 state_save_buf[STATE_SIZE];
+static u8 state_load_buf[STATE_SIZE];
+static u8 state_save_buf[STATE_SIZE];
 
 static int sdl_control_update(SDL_Keycode keystate)
 {
@@ -550,7 +551,7 @@ static int sdl_control_update(SDL_Keycode keystate)
 
 int sdl_input_update(void)
 {
-  const uint8 *keystate = SDL_GetKeyboardState(NULL);
+  const u8 *keystate = SDL_GetKeyboardState(NULL);
 
   /* reset input */
   input.pad[joynum] = 0;
@@ -799,7 +800,7 @@ int main (int argc, char **argv)
     /* Byteswap ROM */
     for (i=0; i<0x800; i+=2)
     {
-      uint8 temp = boot_rom[i];
+      u8 temp = boot_rom[i];
       boot_rom[i] = boot_rom[i+1];
       boot_rom[i+1] = temp;
     }
@@ -829,7 +830,7 @@ int main (int argc, char **argv)
 #elif defined(USE_32BPP_RENDERING)
   bitmap.pitch        = (bitmap.width * 4);
 #endif
-  bitmap.data         = (uint8*)sdl_video.surf_bitmap->pixels;
+  bitmap.data         = (u8*)sdl_video.surf_bitmap->pixels;
   SDL_UnlockSurface(sdl_video.surf_bitmap);
   bitmap.viewport.changed = 3;
 

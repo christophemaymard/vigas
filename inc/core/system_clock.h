@@ -42,7 +42,7 @@
 #ifndef __CORE_SYSTEM_CLOCK_H__
 #define __CORE_SYSTEM_CLOCK_H__
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 //==============================================================================
 
@@ -54,6 +54,6 @@
 
 //------------------------------------------------------------------------------
 
-extern uint32 system_clock;
+extern u32 system_clock;
 
 #endif // #ifndef __CORE_SYSTEM_CLOCK_H__

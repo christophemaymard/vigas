@@ -11,6 +11,8 @@ extern int vdp_68k_irq_ack(int int_level);
 /* ================================ INCLUDES ============================== */
 /* ======================================================================== */
 
+#include "xee/fnd/data_type.h"
+
 #ifndef BUILD_TABLES
 #include "core/m68k/m68ki_cycles.h"
 #endif
@@ -191,7 +193,7 @@ void m68k_set_fc_callback(void  (*callback)(unsigned int new_fc))
 #ifdef LOGERROR
 
 extern void error(const char *format, ...);
-extern uint16 v_counter;
+extern u16 v_counter;
 #endif
 
 /* ASG: rewrote so that the int_level is a mask of the IPL0/IPL1/IPL2 bits */
@@ -323,7 +325,7 @@ int m68k_cycles(void)
 void m68k_init(void)
 {
 #ifdef BUILD_TABLES
-  static uint emulation_initialized = 0;
+  static u32 emulation_initialized = 0;
 
   /* The first call to this function initializes the opcode handler jump table */
   if(!emulation_initialized)

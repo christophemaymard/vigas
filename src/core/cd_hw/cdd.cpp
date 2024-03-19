@@ -41,6 +41,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/m68k/m68k.h"
 #include "core/snd.h"
@@ -62,7 +64,7 @@
 #define TYPE_MODE2 0x02
 
 /* BCD conversion lookup tables */
-static const uint8 lut_BCD_8[100] =
+static const u8 lut_BCD_8[100] =
 {
   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 
   0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 
@@ -76,7 +78,7 @@ static const uint8 lut_BCD_8[100] =
   0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 
 };
 
-static const uint16 lut_BCD_16[100] =
+static const u16 lut_BCD_16[100] =
 {
   0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 0x0008, 0x0009, 
   0x0100, 0x0101, 0x0102, 0x0103, 0x0104, 0x0105, 0x0106, 0x0107, 0x0108, 0x0109, 
@@ -91,14 +93,14 @@ static const uint16 lut_BCD_16[100] =
 };
 
 /* pre-build TOC */
-static const uint16 toc_snatcher[21] =
+static const u16 toc_snatcher[21] =
 {
   56014,   495, 10120, 20555, 1580, 5417, 12502, 16090,  6553, 9681,
    8148, 20228,  8622,  6142, 5858, 1287,  7424,  3535, 31697, 2485,
   31380
 };
 
-static const uint16 toc_lunar[52] =
+static const u16 toc_lunar[52] =
 {
   5422, 1057, 7932, 5401, 6380, 6592, 5862,  5937, 5478, 5870,
   6673, 6613, 6429, 4996, 4977, 5657, 3720,  5892, 3140, 3263,
@@ -108,26 +110,26 @@ static const uint16 toc_lunar[52] =
   685, 3167
 };
 
-static const uint32 toc_shadow[15] =
+static const u32 toc_shadow[15] =
 {
   10226, 70054, 11100, 12532, 12444, 11923, 10059, 10167, 10138, 13792,
   11637,  2547,  2521,  3856, 900
 };
 
-static const uint32 toc_dungeon[13] =
+static const u32 toc_dungeon[13] =
 {
   2250, 22950, 16350, 24900, 13875, 19950, 13800, 15375, 17400, 17100,
   3325,  6825, 25275
 };
 
-static const uint32 toc_ffight[26] =
+static const u32 toc_ffight[26] =
 {
   11994, 9742, 10136, 9685, 9553, 14588, 9430, 8721, 9975, 9764,
   9704, 12796, 585, 754, 951, 624, 9047, 1068, 817, 9191, 1024,
   14562, 10320, 8627, 3795, 3047
 };
 
-static const uint32 toc_ffightj[29] =
+static const u32 toc_ffightj[29] =
 {
   11994, 9752, 10119, 9690, 9567, 14575, 9431, 8731, 9965, 9763,
   9716, 12791, 579, 751, 958, 630, 9050, 1052, 825, 9193, 1026,
@@ -178,7 +180,7 @@ void cdd_reset(void)
   cdd.audio[0] = cdd.audio[1] = 0;
 }
 
-int cdd_context_save(uint8 *state)
+int cdd_context_save(u8 *state)
 {
   int bufferptr = 0;
   unsigned int offset = 0;
@@ -208,7 +210,7 @@ int cdd_context_save(uint8 *state)
   return bufferptr;
 }
 
-int cdd_context_load(uint8 *state, const char *version)
+int cdd_context_load(u8 *state, const char *version)
 {
   unsigned int offset, lba, index;
   int bufferptr = 0;
@@ -302,7 +304,7 @@ int cdd_load(char *filename, char *header)
   {
     int len;
 
-    static const uint8 sync[12] = {0x00,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x00};
+    static const u8 sync[12] = {0x00,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x00};
 
     /* read first 16 bytes */
     cdStreamRead(header, 0x10, 1, fd);
@@ -739,7 +741,7 @@ int cdd_load(char *filename, char *header)
         cdStreamSeek(fd, 100 * 2352, SEEK_SET);
         cdStreamRead(head, 4, 1, fd);
         cdStreamSeek(fd, 0, SEEK_SET);
-        if (*(int32 *)head == 0)
+        if (*(s32 *)head == 0)
         {
           /* assume 2s PAUSE is included at the beginning of the file */
           cdd.toc.tracks[cdd.toc.last].offset -= 150 * 2352;
@@ -938,7 +940,7 @@ void cdd_unload(void)
   cdd.sectorSize = 0;
 }
 
-void cdd_read_data(uint8 *dst, uint8 *subheader)
+void cdd_read_data(u8 *dst, u8 *subheader)
 {
   /* only allow reading (first) CD-ROM track sectors */
   if (cdd.toc.tracks[cdd.index].type && (cdd.lba >= 0))
@@ -1002,9 +1004,9 @@ void cdd_read_audio(unsigned int samples)
     /* read samples from current block */
     {
 #ifdef LSB_FIRST
-      int16 *ptr = (int16 *) (cdc.ram);
+      s16 *ptr = (s16 *) (cdc.ram);
 #else
-      uint8 *ptr = cdc.ram;
+      u8 *ptr = cdc.ram;
 #endif
       cdStreamRead(cdc.ram, 1, samples * 4, cdd.toc.tracks[cdd.index].fd);
 
@@ -1021,8 +1023,8 @@ void cdd_read_audio(unsigned int samples)
         r = ((ptr[1] * mul) / 1024);
         ptr+=2;
 #else
-        l = (((int16)((ptr[0] + ptr[1]*256)) * mul) / 1024);
-        r = (((int16)((ptr[2] + ptr[3]*256)) * mul) / 1024);
+        l = (((s16)((ptr[0] + ptr[1]*256)) * mul) / 1024);
+        r = (((s16)((ptr[2] + ptr[3]*256)) * mul) / 1024);
         ptr+=4;
 #endif
 
@@ -1098,7 +1100,7 @@ void cdd_update_audio(unsigned int samples)
 
 static void cdd_read_subcode(void)
 {
-  uint8 subc[96];
+  u8 subc[96];
   int i,j,index;
 
   /* update subcode buffer pointer address */
@@ -1172,15 +1174,15 @@ void cdd_update(void)
     if (cdd.toc.tracks[cdd.index].type)
     {
       /* CD-ROM sector header */
-      uint8 header[4];
-      uint32 msf = cdd.lba + 150;
+      u8 header[4];
+      u32 msf = cdd.lba + 150;
       header[0] = lut_BCD_8[(msf / 75) / 60];
       header[1] = lut_BCD_8[(msf / 75) % 60];
       header[2] = lut_BCD_8[(msf % 75)];
       header[3] = cdd.toc.tracks[cdd.index].type;
 
       /* decode CD-ROM track sector */
-      cdc_decoder_update(*(uint32 *)(header));
+      cdc_decoder_update(*(u32 *)(header));
     }
     else
     {

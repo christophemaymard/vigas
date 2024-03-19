@@ -38,37 +38,39 @@
 #ifndef _CD_PCM_
 #define _CD_PCM_
 
+#include "xee/fnd/data_type.h"
+
 #include "core/types.h"
 
 /* PCM channel */
 typedef struct
 {
-  uint32 addr;  /* current Wave RAM address (16.11 fixed point) */
-  uint32 st;    /* Wave RAM start address (16.11 fixed point) */
+  u32 addr;  /* current Wave RAM address (16.11 fixed point) */
+  u32 st;    /* Wave RAM start address (16.11 fixed point) */
   reg16_t ls;   /* Wave RAM loop address ($0000-$ffff) */
   reg16_t fd;   /* Wave RAM address increment (5.11 fixed point) */
-  uint8 env;    /* enveloppe multiplier */
-  uint8 pan;    /* stereo panning */
+  u8 env;    /* enveloppe multiplier */
+  u8 pan;    /* stereo panning */
 } chan_t;
 
 /* PCM sound chip */
 typedef struct
 {
   chan_t chan[8];     /* PCM channels 1-8 */
-  int16 out[2];       /* previous PCM stereo output */
-  uint8 *bank;        /* external RAM bank pointer */
-  uint8 enabled;      /* PCM chip ON/OFF status */
-  uint8 status;       /* channels ON/OFF status */
-  uint8 index;        /* current channel index */
-  uint8 ram[0x10000]; /* 64k external RAM */
-  uint32 cycles;
+  s16 out[2];       /* previous PCM stereo output */
+  u8 *bank;        /* external RAM bank pointer */
+  u8 enabled;      /* PCM chip ON/OFF status */
+  u8 status;       /* channels ON/OFF status */
+  u8 index;        /* current channel index */
+  u8 ram[0x10000]; /* 64k external RAM */
+  u32 cycles;
 } pcm_t;
 
 /* Function prototypes */
 extern void pcm_init(double clock, int rate);
 extern void pcm_reset(void);
-extern int pcm_context_save(uint8 *state);
-extern int pcm_context_load(uint8 *state);
+extern int pcm_context_save(u8 *state);
+extern int pcm_context_load(u8 *state);
 extern void pcm_update(unsigned int samples);
 extern void pcm_write(unsigned int address, unsigned char data, unsigned int cycles);
 extern unsigned char pcm_read(unsigned int address, unsigned int cycles);

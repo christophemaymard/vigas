@@ -43,7 +43,8 @@
 
 #include <string.h>
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/m68k/m68k.h"
 #include "core/genesis.h"
@@ -51,11 +52,11 @@
 
 static struct
 {
-  uint8 enabled;
-  uint16 regs[0x20];
-  uint16 old[6];
-  uint16 data[6];
-  uint32 addr[6];
+  u8 enabled;
+  u16 regs[0x20];
+  u16 old[6];
+  u16 data[6];
+  u32 addr[6];
 } ggenie;
 
 static unsigned int ggenie_read_byte(unsigned int address);
@@ -76,7 +77,7 @@ void ggenie_init(void)
     for (i=0; i<0x8000; i+=2)
     {
       /* Byteswap ROM */
-      uint8 temp = cart.lockrom[i];
+      u8 temp = cart.lockrom[i];
       cart.lockrom[i] = cart.lockrom[i+1];
       cart.lockrom[i+1] = temp;
     }
@@ -139,8 +140,8 @@ void ggenie_switch(int enable)
       if (ggenie.regs[0] & (1 << i))
       {
         /* save old value and patch ROM if enabled */
-        ggenie.old[i] = *(uint16 *)(cart.rom + ggenie.addr[i]);
-        *(uint16 *)(cart.rom + ggenie.addr[i]) = ggenie.data[i];
+        ggenie.old[i] = *(u16 *)(cart.rom + ggenie.addr[i]);
+        *(u16 *)(cart.rom + ggenie.addr[i]) = ggenie.data[i];
       }
     }
   }
@@ -153,7 +154,7 @@ void ggenie_switch(int enable)
       if (ggenie.regs[0] & (1 << i))
       {
         /* restore original ROM value */
-        *(uint16 *)(cart.rom + ggenie.addr[i]) = ggenie.old[i];
+        *(u16 *)(cart.rom + ggenie.addr[i]) = ggenie.old[i];
       }
     }
   }
@@ -173,7 +174,7 @@ static unsigned int ggenie_read_word(unsigned int address)
 static void ggenie_write_byte(unsigned int address, unsigned int data)
 {
   /* Register offset */
-  uint8 offset = (address >> 1) & 0x1f;
+  u8 offset = (address >> 1) & 0x1f;
 
   /* /LWR and /UWR are used to decode writes */
   if (address & 1)
@@ -192,7 +193,7 @@ static void ggenie_write_byte(unsigned int address, unsigned int data)
 static void ggenie_write_word(unsigned int address, unsigned int data)
 {
   /* Register offset */
-  uint8 offset = (address >> 1) & 0x1f;
+  u8 offset = (address >> 1) & 0x1f;
 
   /* Write internal register (full WORD) */
   ggenie_write_regs(offset,data);

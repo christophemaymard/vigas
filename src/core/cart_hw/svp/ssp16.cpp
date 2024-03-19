@@ -193,6 +193,8 @@
 
 #include <stdlib.h>
 
+#include "xee/fnd/data_type.h"
+
 #include "core/genesis.h"
 
 #ifdef LOG_SVP
@@ -203,8 +205,6 @@ static unsigned int frame_count = 0;
 #endif
 
 #include "core/cart_hw/svp/svp.h"
-
-#define u32 unsigned int
 
 /*#define USE_DEBUGGER*/
 

@@ -41,6 +41,8 @@
 
 #include "core/memz80.h"
 
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/macros.h"
 #include "core/m68k/m68k.h"
@@ -621,7 +623,7 @@ unsigned char z80_ms_port_r(unsigned int port)
       }
       else
       {
-        uint8 data = 0xFF;
+        u8 data = 0xFF;
 
         /* read FM board if enabled */
         if (!(port & 4) && (config.ym2413 & 1))

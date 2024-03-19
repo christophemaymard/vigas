@@ -38,14 +38,15 @@
 
 #include "core/input_hw/paddle.h"
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/io_ctrl.h"
 #include "core/input_hw/input.h"
 
 static struct
 {
-  uint8 State;
-  uint8 Counter;
+  u8 State;
+  u8 Counter;
 } paddle[2];
 
 void paddle_reset(int port)

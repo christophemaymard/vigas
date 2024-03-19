@@ -40,6 +40,8 @@
 
 #include <string.h>
 
+#include "xee/fnd/data_type.h"
+
 #if defined(LOG_CDC) || defined(LOG_SCD)
 #include "osd.h"
 #endif
@@ -140,9 +142,9 @@ void cdc_reset(void)
   }
 }
 
-int cdc_context_save(uint8 *state)
+int cdc_context_save(u8 *state)
 {
-  uint8 tmp8;
+  u8 tmp8;
   int bufferptr = 0;
 
   if (cdc.dma_w == pcm_ram_dma_w)
@@ -194,9 +196,9 @@ int cdc_context_save(uint8 *state)
   return bufferptr;
 }
 
-int cdc_context_load(uint8 *state)
+int cdc_context_load(u8 *state)
 {
-  uint8 tmp8;
+  u8 tmp8;
   int bufferptr = 0;
 
   load_param(&cdc.ifstat, sizeof(cdc.ifstat));
@@ -286,7 +288,7 @@ void cdc_dma_init(void)
       cdc.dbc.w -= 2;
 
       /* end of transfer ? */
-      if ((int16)cdc.dbc.w < 0)
+      if ((s16)cdc.dbc.w < 0)
       {
         /* reset data byte counter (DBCH bits 4-7 should also be set to 1) */
         cdc.dbc.w = 0xffff;
@@ -485,13 +487,13 @@ void cdc_dma_update(unsigned int cycles)
   }
 }
 
-void cdc_decoder_update(uint32 header)
+void cdc_decoder_update(u32 header)
 {
   /* data decoding enabled ? */
   if (cdc.ctrl[0] & BIT_DECEN)
   {
     /* update HEADx registers with current block header */
-    *(uint32 *)(cdc.head[0]) = header;
+    *(u32 *)(cdc.head[0]) = header;
 
     /* set !VALST */
     cdc.stat[3] = 0x00;
@@ -535,7 +537,7 @@ void cdc_decoder_update(uint32 header)
       offset = cdc.pt.w & 0x3fff;
 
       /* write current block header to RAM buffer (4 bytes) */
-      *(uint32 *)(cdc.ram + offset) = header;
+      *(u32 *)(cdc.ram + offset) = header;
       offset += 4;
 
       /* check decoded block mode */
@@ -554,8 +556,8 @@ void cdc_decoder_update(uint32 header)
           cdd_read_data(cdc.ram + offset + 8, cdc.head[1]);
 
           /* write current block sub-header to RAM buffer (4 bytes x 2) */
-          *(uint32 *)(cdc.ram + offset) = *(uint32 *)(cdc.head[1]);
-          *(uint32 *)(cdc.ram + offset + 4) = *(uint32 *)(cdc.head[1]);
+          *(u32 *)(cdc.ram + offset) = *(u32 *)(cdc.head[1]);
+          *(u32 *)(cdc.ram + offset + 4) = *(u32 *)(cdc.head[1]);
           offset += 2336;
         }
         else
@@ -593,7 +595,7 @@ void cdc_reg_w(unsigned char data)
     case 0x01:  /* IFCTRL */
     {
       /* previous CDC IRQ state */
-      uint8 prev_irq = cdc.irq;
+      u8 prev_irq = cdc.irq;
 
       /* check end of CDC decoder active period */
       if (s68k.cycles > cdc.cycles[1])
@@ -761,7 +763,7 @@ void cdc_reg_w(unsigned char data)
 
 unsigned char cdc_reg_r(void)
 {
-  uint8 data;
+  u8 data;
 
   switch (scd.regs[0x04>>1].byte.l)
   {
@@ -894,10 +896,10 @@ unsigned char cdc_reg_r(void)
   return data;
 }
 
-unsigned short cdc_host_r(uint8 cpu_access)
+unsigned short cdc_host_r(u8 cpu_access)
 {
   /* read CDC buffered data (gate-array register $08) */
-  uint16 data = scd.regs[0x08>>1].w;
+  u16 data = scd.regs[0x08>>1].w;
 
   /* check if host data transfer is started for selected CPU */
   if ((scd.regs[0x04>>1].byte.h & 0x47) == cpu_access)
@@ -924,7 +926,7 @@ unsigned short cdc_host_r(uint8 cpu_access)
       cdc.dbc.w -= 2;
 
       /* end of transfer ? */
-      if ((int16)cdc.dbc.w < 0)
+      if ((s16)cdc.dbc.w < 0)
       {
         /* reset data byte counter (DBCH bits 4-7 should also be set to 1) */
         cdc.dbc.w = 0xffff;

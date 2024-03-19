@@ -38,6 +38,8 @@
 #ifndef _HW_CDC_
 #define _HW_CDC_
 
+#include "xee/fnd/data_type.h"
+
 #include "core/types.h"
 
 #define cdc scd.cdc_hw
@@ -48,33 +50,33 @@
 /* CDC hardware */
 typedef struct
 {
-  uint8 ifstat;
-  uint8 ifctrl;
+  u8 ifstat;
+  u8 ifctrl;
   reg16_t dbc;
   reg16_t dac;
   reg16_t pt;
   reg16_t wa;
-  uint8 ctrl[2];
-  uint8 head[2][4];
-  uint8 stat[4];
+  u8 ctrl[2];
+  u8 head[2][4];
+  u8 stat[4];
   int cycles[2];
   void (*dma_w)(unsigned int length);  /* active DMA callback */
   void (*halted_dma_w)(unsigned int length);  /* halted DMA callback */
-  uint8 ram[0x4000 + 2352]; /* 16K external RAM (with one block overhead to handle buffer overrun) */
-  uint8 ar_mask;
-  uint8 irq; /* invert of CDC /INT output */
+  u8 ram[0x4000 + 2352]; /* 16K external RAM (with one block overhead to handle buffer overrun) */
+  u8 ar_mask;
+  u8 irq; /* invert of CDC /INT output */
 } cdc_t; 
 
 /* Function prototypes */
 extern void cdc_init(void);
 extern void cdc_reset(void);
-extern int cdc_context_save(uint8 *state);
-extern int cdc_context_load(uint8 *state);
+extern int cdc_context_save(u8 *state);
+extern int cdc_context_load(u8 *state);
 extern void cdc_dma_init(void);
 extern void cdc_dma_update(unsigned int cycles);
-extern void cdc_decoder_update(uint32 header);
+extern void cdc_decoder_update(u32 header);
 extern void cdc_reg_w(unsigned char data);
 extern unsigned char cdc_reg_r(void);
-extern unsigned short cdc_host_r(uint8 cpu_access);
+extern unsigned short cdc_host_r(u8 cpu_access);
 
 #endif

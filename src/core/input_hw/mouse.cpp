@@ -38,15 +38,16 @@
 
 #include "core/input_hw/mouse.h"
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/input_hw/input.h"
 
 static struct
 {
-  uint8 State;
-  uint8 Counter;
-  uint8 Wait;
-  uint8 Port;
+  u8 State;
+  u8 Counter;
+  u8 Wait;
+  u8 Port;
 } mouse;
 
 void mouse_reset(int port)

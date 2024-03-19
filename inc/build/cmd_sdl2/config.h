@@ -39,8 +39,9 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+#include "xee/fnd/data_type.h"
+
 #include "build/cmd_sdl2/main.h"
-#include "core/types.h"
 
 /****************************************************************************
  * Config Option 
@@ -48,48 +49,48 @@
  ****************************************************************************/
 typedef struct 
 {
-  uint8 padtype;
+  u8 padtype;
 } t_input_config;
 
 typedef struct 
 {
-  uint8 hq_fm;
-  uint8 filter;
-  uint8 hq_psg;
-  uint8 ym2612;
-  uint8 ym2413;
-  uint8 ym3438;
-  uint8 cd_latency;
-  int16 psg_preamp;
-  int16 fm_preamp;
-  int16 cdda_volume;
-  int16 pcm_volume;
-  uint32 lp_range;
-  int16 low_freq;
-  int16 high_freq;
-  int16 lg;
-  int16 mg;
-  int16 hg;
-  uint8 mono;
-  uint8 system;
-  uint8 region_detect;
-  uint8 vdp_mode;
-  uint8 master_clock;
-  uint8 force_dtack;
-  uint8 addr_error;
-  uint8 bios;
-  uint8 lock_on;
-  uint8 add_on;
-  uint8 hot_swap;
-  uint8 invert_mouse;
-  uint8 gun_cursor[2];
-  uint8 overscan;
-  uint8 gg_extra;
-  uint8 ntsc;
-  uint8 lcd;
-  uint8 render;
-  uint8 enhanced_vscroll;
-  uint8 enhanced_vscroll_limit;
+  u8 hq_fm;
+  u8 filter;
+  u8 hq_psg;
+  u8 ym2612;
+  u8 ym2413;
+  u8 ym3438;
+  u8 cd_latency;
+  s16 psg_preamp;
+  s16 fm_preamp;
+  s16 cdda_volume;
+  s16 pcm_volume;
+  u32 lp_range;
+  s16 low_freq;
+  s16 high_freq;
+  s16 lg;
+  s16 mg;
+  s16 hg;
+  u8 mono;
+  u8 system;
+  u8 region_detect;
+  u8 vdp_mode;
+  u8 master_clock;
+  u8 force_dtack;
+  u8 addr_error;
+  u8 bios;
+  u8 lock_on;
+  u8 add_on;
+  u8 hot_swap;
+  u8 invert_mouse;
+  u8 gun_cursor[2];
+  u8 overscan;
+  u8 gg_extra;
+  u8 ntsc;
+  u8 lcd;
+  u8 render;
+  u8 enhanced_vscroll;
+  u8 enhanced_vscroll_limit;
   t_input_config input[MAX_INPUTS];
 } t_config;
 

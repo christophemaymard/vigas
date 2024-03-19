@@ -40,6 +40,8 @@
 
 #include <string.h>
 
+#include "xee/fnd/data_type.h"
+
 #include "core/m68k/m68k.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
@@ -53,22 +55,22 @@
 
 typedef struct
 {
-  uint8 unlock;
-  uint8 bank0;
-  uint8 special;
-  uint8 writeEnable;
-  uint8 overlayEnable;
-  uint8 playbackLoop;
-  uint8 playbackLoopTrack;
-  uint8 playbackEndTrack;
-  uint16 result;
-  uint16 fadeoutStartVolume;
+  u8 unlock;
+  u8 bank0;
+  u8 special;
+  u8 writeEnable;
+  u8 overlayEnable;
+  u8 playbackLoop;
+  u8 playbackLoopTrack;
+  u8 playbackEndTrack;
+  u16 result;
+  u16 fadeoutStartVolume;
   int fadeoutSamplesTotal;
   int fadeoutSamplesCount;
   int playbackSamplesCount;
   int playbackLoopSector;
   int playbackEndSector;
-  uint8 buffer[0x800];
+  u8 buffer[0x800];
 } T_MEGASD_HW;
 
 /* MegaSD mapper hardware */
@@ -114,7 +116,7 @@ void megasd_reset(void)
   }
 }
 
-int megasd_context_save(uint8 *state)
+int megasd_context_save(u8 *state)
 {
   int bufferptr = 0;
 
@@ -131,7 +133,7 @@ int megasd_context_save(uint8 *state)
   return bufferptr;
 }
 
-int megasd_context_load(uint8 *state)
+int megasd_context_load(u8 *state)
 {
   int bufferptr = 0;
 
@@ -238,10 +240,10 @@ void megasd_enhanced_ssf2_mapper_w(unsigned int address, unsigned int data)
       if (address & 1)
       {
         /* 512K ROM paging (max. 8MB)*/
-        uint8 *src = cart.rom + (((data  & 0x0f) << 19) & cart.mask);
+        u8 *src = cart.rom + (((data  & 0x0f) << 19) & cart.mask);
 
         /* cartridge area ($000000-$3FFFFF) is divided into 8 x 512K banks */
-        uint8 bank = (address << 2) & 0x38;
+        u8 bank = (address << 2) & 0x38;
 
         /* check selected bank is not locked */
         if ((bank != 0x00) || megasd_hw.unlock)
@@ -296,7 +298,7 @@ void megasd_enhanced_ssf2_mapper_w(unsigned int address, unsigned int data)
     else
     {
       /* 512K ROM paging (max. 8MB)*/
-      uint8 *src = cart.rom + (((megasd_hw.special & 0x0f) << 19) & cart.mask);
+      u8 *src = cart.rom + (((megasd_hw.special & 0x0f) << 19) & cart.mask);
 
       /* selected ROM page mapped in $380000-$3fffff */
       for (i=0x38; i<0x40; i++)
@@ -972,7 +974,7 @@ static unsigned int megasd_ctrl_read_word(unsigned int address)
   }
 
   /* default cartridge area */
-  return *(uint16 *)(m68k.memory_map[0x03].base + (address & 0xfffe));
+  return *(u16 *)(m68k.memory_map[0x03].base + (address & 0xfffe));
 }
 
 /* 

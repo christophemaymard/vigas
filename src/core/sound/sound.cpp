@@ -41,7 +41,8 @@
 
 #include <string.h>
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/snd.h"
 #include "core/system_hardware.h"
@@ -384,7 +385,7 @@ int sound_update(unsigned int cycles)
   return blip_samples_avail(snd.blips[0]);
 }
 
-int sound_context_save(uint8 *state)
+int sound_context_save(u8 *state)
 {
   int bufferptr = 0;
   
@@ -417,13 +418,13 @@ int sound_context_save(uint8 *state)
   return bufferptr;
 }
 
-int sound_context_load(uint8 *state)
+int sound_context_load(u8 *state)
 {
   int bufferptr = 0;
 
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
   {
-    uint8 config_ym3438;
+    u8 config_ym3438;
     load_param(&config_ym3438, sizeof(config_ym3438));
     if (config_ym3438)
     {

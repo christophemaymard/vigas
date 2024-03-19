@@ -38,13 +38,14 @@
 
 #include "core/input_hw/sportspad.h"
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/input_hw/input.h"
 
 static struct
 {
-  uint8 State;
-  uint8 Counter;
+  u8 State;
+  u8 Counter;
 } sportspad[2];
 
 void sportspad_reset(int index)

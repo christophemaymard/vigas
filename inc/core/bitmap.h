@@ -42,7 +42,7 @@
 #ifndef __CORE_BITMAP_H__
 #define __CORE_BITMAP_H__
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 //==============================================================================
 
@@ -50,7 +50,7 @@
 
 typedef struct
 {
-  uint8* data;      /* Bitmap data */
+  u8* data;      /* Bitmap data */
   int width;        /* Bitmap width */
   int height;       /* Bitmap height */
   int pitch;        /* Bitmap pitch */

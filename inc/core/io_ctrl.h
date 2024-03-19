@@ -42,7 +42,7 @@
 #ifndef _IO_CTRL_H_
 #define _IO_CTRL_H_
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 #define IO_RESET_HI 0x10
 #define IO_CONT1_HI 0x20
@@ -53,8 +53,8 @@
 #define REGION_EUROPE     0xC0
 
 /* Global variables */
-extern uint8 io_reg[0x10];
-extern uint8 region_code;
+extern u8 io_reg[0x10];
+extern u8 region_code;
 
 /* Function prototypes */
 extern void io_init(void);

@@ -1,3 +1,6 @@
 [submodule "3rdparty/sdl2/SDL"]
 	path = 3rdparty/sdl2/SDL
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "3rdparty/xee/xee"]
+	path = 3rdparty/xee/xee
+	url = https://github.com/christophemaymard/xee.git

@@ -220,6 +220,7 @@ target_include_directories(vigas PRIVATE
 )
 
 target_link_libraries(vigas PRIVATE 3rdparty::sdl2)
+target_link_libraries(vigas PRIVATE 3rdparty::xee)
 
 # Define vigas as the startup project.
 set_directory_properties(PROPERTIES VS_STARTUP_PROJECT vigas)

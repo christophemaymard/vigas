@@ -55,13 +55,13 @@
 /* maximal channel output (roughly adjusted to match VA4 MD1 PSG/FM balance with 1.5x amplification of PSG output) */
 #define PSG_MAX_VOLUME 2800
 
-static const uint8 noiseShiftWidth[2] = {14,15};
+static const u8 noiseShiftWidth[2] = {14,15};
 
-static const uint8 noiseBitMask[2] = {0x6,0x9};
+static const u8 noiseBitMask[2] = {0x6,0x9};
 
-static const uint8 noiseFeedback[10] = {0,1,1,0,1,0,0,1,1,0};
+static const u8 noiseFeedback[10] = {0,1,1,0,1,0,0,1,1,0};
 
-static const uint16 chanVolume[16] = {
+static const u16 chanVolume[16] = {
   PSG_MAX_VOLUME,               /*  MAX  */
   PSG_MAX_VOLUME * 0.794328234, /* -2dB  */
   PSG_MAX_VOLUME * 0.630957344, /* -4dB  */
@@ -146,7 +146,7 @@ void psg_reset(void)
   psg.clocks = 0;
 }
 
-int psg_context_save(uint8 *state)
+int psg_context_save(u8 *state)
 {
   int bufferptr = 0;
 
@@ -162,7 +162,7 @@ int psg_context_save(uint8 *state)
   return bufferptr;
 }
 
-int psg_context_load(uint8 *state)
+int psg_context_load(u8 *state)
 {
   int delta[2];
   int i, bufferptr = 0;

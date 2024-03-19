@@ -40,7 +40,8 @@
 
 #include <stdio.h>
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/macros.h"
 
 #define cdd scd.cdd_hw
@@ -86,27 +87,27 @@ typedef struct
 /* CDD hardware */
 typedef struct
 {
-  uint32 cycles;
-  uint32 latency;
+  u32 cycles;
+  u32 latency;
   int loaded;
   int index;
   int lba;
   int scanOffset;
-  uint16 fader[2];
-  uint8 status;
-  uint16 sectorSize;
+  u16 fader[2];
+  u8 status;
+  u16 sectorSize;
   toc_t toc;
-  int16 audio[2];
+  s16 audio[2];
 } cdd_t; 
 
 /* Function prototypes */
 extern void cdd_init(int samplerate);
 extern void cdd_reset(void);
-extern int cdd_context_save(uint8 *state);
-extern int cdd_context_load(uint8 *state, const char *version);
+extern int cdd_context_save(u8 *state);
+extern int cdd_context_load(u8 *state, const char *version);
 extern int cdd_load(char *filename, char *header);
 extern void cdd_unload(void);
-extern void cdd_read_data(uint8 *dst, uint8 *subheader);
+extern void cdd_read_data(u8 *dst, u8 *subheader);
 extern void cdd_seek_audio(int index, int lba);
 extern void cdd_read_audio(unsigned int samples);
 extern void cdd_update_audio(unsigned int samples);

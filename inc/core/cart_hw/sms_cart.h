@@ -39,7 +39,7 @@
 #ifndef _SMS_CART_H_
 #define _SMS_CART_H_
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 /* Special hardware */
 #define HW_3D_GLASSES     0x01
@@ -48,11 +48,11 @@
 /* Function prototypes */
 extern void sms_cart_init(void);
 extern void sms_cart_reset(void);
-extern void sms_cart_switch(uint8 mode);
+extern void sms_cart_switch(u8 mode);
 extern int sms_cart_ram_size(void);
 extern int sms_cart_region_detect(void);
-extern int sms_cart_context_save(uint8 *state);
-extern int sms_cart_context_load(uint8 *state);
+extern int sms_cart_context_save(u8 *state);
+extern int sms_cart_context_load(u8 *state);
 
 #endif
 

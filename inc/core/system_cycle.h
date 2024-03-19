@@ -42,13 +42,13 @@
 #ifndef __CORE_SYSTEM_CYCLE_H__
 #define __CORE_SYSTEM_CYCLE_H__
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 //==============================================================================
 
 //------------------------------------------------------------------------------
 
-extern uint32 mcycles_vdp;
-extern int16 SVP_cycles;
+extern u32 mcycles_vdp;
+extern s16 SVP_cycles;
 
 #endif // #ifndef __CORE_SYSTEM_CYCLE_H__

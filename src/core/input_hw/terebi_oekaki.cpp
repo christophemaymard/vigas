@@ -38,13 +38,14 @@
 
 #include "core/input_hw/terebi_oekaki.h"
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/input_hw/input.h"
 
 static struct
 {
-  uint8 axis;
-  uint8 busy;
+  u8 axis;
+  u8 busy;
 } tablet;
 
 void terebi_oekaki_reset(void)
@@ -57,7 +58,7 @@ void terebi_oekaki_reset(void)
 
 unsigned short terebi_oekaki_read(void)
 {
-  uint16 data = (tablet.busy << 15) | input.analog[0][tablet.axis];
+  u16 data = (tablet.busy << 15) | input.analog[0][tablet.axis];
 
   if (!(input.pad[0] & INPUT_B))
   {

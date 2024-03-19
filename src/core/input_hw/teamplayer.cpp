@@ -38,14 +38,15 @@
 
 #include "core/input_hw/teamplayer.h"
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/input_hw/input.h"
 
 static struct
 {
-  uint8 State;
-  uint8 Counter;
-  uint8 Table[12];
+  u8 State;
+  u8 Counter;
+  u8 Table[12];
 } teamplayer[2];
 
 

@@ -11,6 +11,8 @@ extern int scd_68k_irq_ack(int level);
 /* ================================ INCLUDES ============================== */
 /* ======================================================================== */
 
+#include "xee/fnd/data_type.h"
+
 #ifndef BUILD_TABLES
 #include "core/m68k/s68ki_cycles.h"
 #endif
@@ -29,7 +31,7 @@ static unsigned char s68ki_cycles[0x10000];
 static int irq_latency;
 
 /* IRQ priority */
-static const uint8 irq_level[0x40] = 
+static const u8 irq_level[0x40] = 
 {
   0, 1, 2, 2, 3, 3, 3, 3,
   4, 4, 4, 4, 4, 4, 4, 4,
@@ -201,7 +203,7 @@ void s68k_set_fc_callback(void  (*callback)(unsigned int new_fc))
 #endif
 
 extern void error(const char *format, ...);
-extern uint16 v_counter;
+extern u16 v_counter;
 
 /* update IRQ level according to triggered interrupts */
 void s68k_update_irq(unsigned int mask)
@@ -277,7 +279,7 @@ int s68k_cycles(void)
 void s68k_init(void)
 {
 #ifdef BUILD_TABLES
-  static uint emulation_initialized = 0;
+  static u32 emulation_initialized = 0;
 
   /* The first call to this function initializes the opcode handler jump table */
   if(!emulation_initialized)

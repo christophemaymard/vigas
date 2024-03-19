@@ -39,7 +39,8 @@
 
 #include "core/input_hw/gamepad.h"
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
 #include "core/system_hardware.h"
@@ -47,19 +48,19 @@
 
 static struct
 {
-  uint8 State;
-  uint8 Counter;
-  uint8 Timeout;
-  uint32 Latency;
+  u8 State;
+  u8 Counter;
+  u8 Timeout;
+  u32 Latency;
 } gamepad[MAX_DEVICES];
 
 static struct
 {
-  uint8 Latch;
-  uint8 Counter;
+  u8 Latch;
+  u8 Counter;
 } flipflop[2];
 
-static uint8 latch;
+static u8 latch;
 
 
 void gamepad_reset(int port)

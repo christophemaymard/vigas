@@ -40,7 +40,7 @@
 #ifndef __CORE_AUDIO_SUBSYSTEM_H__
 #define __CORE_AUDIO_SUBSYSTEM_H__
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 //==============================================================================
 
@@ -50,7 +50,7 @@ int audio_init(int samplerate, double framerate);
 void audio_set_rate(int samplerate, double framerate);
 void audio_reset(void);
 void audio_shutdown(void);
-int audio_update(int16* buffer);
+int audio_update(s16* buffer);
 void audio_set_equalizer(void);
 
 #endif // #ifndef __CORE_AUDIO_SUBSYSTEM_H__

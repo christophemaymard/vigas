@@ -43,7 +43,8 @@
 
 #include <string.h>
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/snd.h"
 #include "core/system_clock.h"
@@ -64,7 +65,7 @@
 //------------------------------------------------------------------------------
 
 static EQSTATE eq[2];
-static int16 llp, rrp;
+static s16 llp, rrp;
 
 //==============================================================================
 
@@ -204,7 +205,7 @@ void audio_shutdown(void)
 
 //------------------------------------------------------------------------------
 
-int audio_update(int16* buffer)
+int audio_update(s16* buffer)
 {
   /* run sound chips until end of frame */
   int size = sound_update(mcycles_vdp);
@@ -237,13 +238,13 @@ int audio_update(int16* buffer)
   /* Audio filtering */
   if (config.filter) {
     int samples = size;
-    int16* out = buffer;
-    int32 l, r;
+    s16* out = buffer;
+    s32 l, r;
 
     if (config.filter & 1) {
       /* single-pole low-pass filter (6 dB/octave) */
-      uint32 factora = config.lp_range;
-      uint32 factorb = 0x10000 - factora;
+      u32 factora = config.lp_range;
+      u32 factorb = 0x10000 - factora;
 
       /* restore previous sample */
       l = llp;
@@ -287,7 +288,7 @@ int audio_update(int16* buffer)
 
   /* Mono output mixing */
   if (config.mono) {
-    int16 out;
+    s16 out;
     int samples = size;
     do {
       out = (buffer[0] + buffer[1]) / 2;

@@ -139,7 +139,7 @@
 #ifndef _HVC_H_
 #define _HVC_H_
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 /***************************************************************/
 /*                                                             */
@@ -173,7 +173,7 @@
 /*                                                             */
 /***************************************************************/
 
-static const uint8 cycle2hc32[3420] =
+static const u8 cycle2hc32[3420] =
 {
   /* end of active display (14 pixels -> 140 Mcycles) , H interrupt triggered, Vcounter increment */
   0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85,
@@ -414,7 +414,7 @@ static const uint8 cycle2hc32[3420] =
   0x84, 0x84, 0x84, 0x84, 0x84, 0x84, 0x84, 0x84, 0x84, 0x84, 0x84, 0x84
 };
 
-static const uint8 cycle2hc40[3420] =
+static const u8 cycle2hc40[3420] =
 {
   /* end of active display (16 pixels -> 128 Mcycles) , HINT triggered , Vcounter increment */
   0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5,

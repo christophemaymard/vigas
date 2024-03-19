@@ -45,6 +45,8 @@
 
 #include <string.h>
 
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/loadrom.h"
 #include "core/m68k/m68k.h"
@@ -68,50 +70,50 @@
 /* Cart database entry */
 typedef struct
 {
-  uint16 chk_1;       /* header checksum */
-  uint16 chk_2;       /* real checksum */
-  uint8 bank_start;   /* first mapped bank in $400000-$7fffff region */
-  uint8 bank_end;     /* last mapped bank in $400000-$7fffff region */
+  u16 chk_1;       /* header checksum */
+  u16 chk_2;       /* real checksum */
+  u8 bank_start;   /* first mapped bank in $400000-$7fffff region */
+  u8 bank_end;     /* last mapped bank in $400000-$7fffff region */
   cart_hw_t cart_hw;  /* hardware description */
 } md_entry_t;
 
 /* Function prototypes */
-static void mapper_sega_w(uint32 data);
-static void mapper_512k_w(uint32 address, uint32 data);
-static void mapper_ssf2_w(uint32 address, uint32 data);
-static void mapper_sf001_w(uint32 address, uint32 data);
-static void mapper_sf002_w(uint32 address, uint32 data);
-static void mapper_sf004_w(uint32 address, uint32 data);
-static uint32 mapper_sf004_r(uint32 address);
-static void mapper_t5740_w(uint32 address, uint32 data);
-static uint32 mapper_t5740_r(uint32 address);
-static void mapper_flashkit_w(uint32 address, uint32 data);
-static uint32 mapper_flashkit_r(uint32 address);
-static uint32 mapper_smw_64_r(uint32 address);
-static void mapper_smw_64_w(uint32 address, uint32 data);
-static void mapper_realtec_w(uint32 address, uint32 data);
-static uint32 mapper_realtec_r(uint32 address);
-static void mapper_seganet_w(uint32 address, uint32 data);
-static void mapper_32k_w(uint32 data);
-static void mapper_64k_w(uint32 data);
-static void mapper_64k_multi_w(uint32 address);
-static uint32 mapper_128k_multi_r(uint32 address);
-static void mapper_256k_multi_w(uint32 address, uint32 data);
-static void mapper_wd1601_w(uint32 address, uint32 data);
-static uint32 mapper_64k_radica_r(uint32 address);
-static uint32 mapper_128k_radica_r(uint32 address);
-static void mapper_sr16v1_w(uint32 address, uint32 data);
-static void default_time_w(uint32 address, uint32 data);
-static void default_regs_w(uint32 address, uint32 data);
-static uint32 default_regs_r(uint32 address);
-static uint32 default_regs_r_16(uint32 address);
-static uint32 custom_regs_r(uint32 address);
-static void custom_regs_w(uint32 address, uint32 data);
-static void custom_alt_regs_w(uint32 address, uint32 data);
-static uint32 topshooter_r(uint32 address);
-static void topshooter_w(uint32 address, uint32 data);
-static uint32 tekken_regs_r(uint32 address);
-static void tekken_regs_w(uint32 address, uint32 data);
+static void mapper_sega_w(u32 data);
+static void mapper_512k_w(u32 address, u32 data);
+static void mapper_ssf2_w(u32 address, u32 data);
+static void mapper_sf001_w(u32 address, u32 data);
+static void mapper_sf002_w(u32 address, u32 data);
+static void mapper_sf004_w(u32 address, u32 data);
+static u32 mapper_sf004_r(u32 address);
+static void mapper_t5740_w(u32 address, u32 data);
+static u32 mapper_t5740_r(u32 address);
+static void mapper_flashkit_w(u32 address, u32 data);
+static u32 mapper_flashkit_r(u32 address);
+static u32 mapper_smw_64_r(u32 address);
+static void mapper_smw_64_w(u32 address, u32 data);
+static void mapper_realtec_w(u32 address, u32 data);
+static u32 mapper_realtec_r(u32 address);
+static void mapper_seganet_w(u32 address, u32 data);
+static void mapper_32k_w(u32 data);
+static void mapper_64k_w(u32 data);
+static void mapper_64k_multi_w(u32 address);
+static u32 mapper_128k_multi_r(u32 address);
+static void mapper_256k_multi_w(u32 address, u32 data);
+static void mapper_wd1601_w(u32 address, u32 data);
+static u32 mapper_64k_radica_r(u32 address);
+static u32 mapper_128k_radica_r(u32 address);
+static void mapper_sr16v1_w(u32 address, u32 data);
+static void default_time_w(u32 address, u32 data);
+static void default_regs_w(u32 address, u32 data);
+static u32 default_regs_r(u32 address);
+static u32 default_regs_r_16(u32 address);
+static u32 custom_regs_r(u32 address);
+static void custom_regs_w(u32 address, u32 data);
+static void custom_alt_regs_w(u32 address, u32 data);
+static u32 topshooter_r(u32 address);
+static void topshooter_w(u32 address, u32 data);
+static u32 tekken_regs_r(u32 address);
+static void tekken_regs_w(u32 address, u32 data);
 
 /* Games that need extra hardware emulation:
   - copy protection device
@@ -679,7 +681,7 @@ void md_cart_init(void)
     sram.start = 0x200000;
     sram.end = 0x201fff;
   }
-  else if ((*(uint16 *)(cart.rom + 0x08) == 0x6000) && (*(uint16 *)(cart.rom + 0x0a) == 0x01f6) && (rominfo.realchecksum == 0xf894))
+  else if ((*(u16 *)(cart.rom + 0x08) == 0x6000) && (*(u16 *)(cart.rom + 0x0a) == 0x01f6) && (rominfo.realchecksum == 0xf894))
   {
     /* Super Mario World 64 (unlicensed) mapper */
     for (i=0x08; i<0x10; i++)
@@ -711,7 +713,7 @@ void md_cart_init(void)
       zbank_memory_map[i].write = mapper_smw_64_w;
     }
   }
-  else if ((*(uint16 *)(cart.rom + 0x04) == 0x0000) && (*(uint16 *)(cart.rom + 0x06) == 0x0104) && (rominfo.checksum == 0x31fc))
+  else if ((*(u16 *)(cart.rom + 0x04) == 0x0000) && (*(u16 *)(cart.rom + 0x06) == 0x0104) && (rominfo.checksum == 0x31fc))
   {
     /* Micro Machines (USA) custom TMSS bypass logic */
     m68k.memory_map[0xa1].write8  = mapper_sr16v1_w;
@@ -781,7 +783,7 @@ void md_cart_init(void)
             for (i=0; i<0x200000; i+=2)
             {
               /* Byteswap ROM */
-              uint8 temp = cart.rom[i + 0x400000];
+              u8 temp = cart.rom[i + 0x400000];
               cart.rom[i + 0x400000] = cart.rom[i + 0x400000 + 1];
               cart.rom[i + 0x400000 + 1] = temp;
             }
@@ -789,7 +791,7 @@ void md_cart_init(void)
             for (i=0; i<0x40000; i+=2)
             {
               /* Byteswap ROM */
-              uint8 temp = cart.rom[i + 0x600000];
+              u8 temp = cart.rom[i + 0x600000];
               cart.rom[i + 0x600000] = cart.rom[i + 0x600000 + 1];
               cart.rom[i + 0x600000 + 1] = temp;
             }
@@ -904,11 +906,11 @@ void md_cart_reset(int hard_reset)
   }
 }
 
-int md_cart_context_save(uint8 *state)
+int md_cart_context_save(u8 *state)
 {
   int i;
   int bufferptr = 0;
-  uint8 *base;
+  u8 *base;
 
   /* cartridge mapping */
   for (i=0; i<0x40; i++)
@@ -953,11 +955,11 @@ int md_cart_context_save(uint8 *state)
   return bufferptr;
 }
 
-int md_cart_context_load(uint8 *state)
+int md_cart_context_load(u8 *state)
 {
   int i;
   int bufferptr = 0;
-  uint8 offset;
+  u8 offset;
 
   /* cartridge mapping */
   for (i=0; i<0x40; i++)
@@ -1022,7 +1024,7 @@ int md_cart_context_load(uint8 *state)
 /* 
   "official" ROM/SRAM bankswitch (Phantasy Star IV, Story of Thor/Beyond Oasis, Sonic 3 & Knuckles)
 */
-static void mapper_sega_w(uint32 data)
+static void mapper_sega_w(u32 data)
 {
   int i;
 
@@ -1100,12 +1102,12 @@ static void mapper_sega_w(uint32 data)
    Everdrive extended SSF ROM bankswitch
    documented by Krikzz (http://krikzz.com/pub/support/mega-ed/dev/extended_ssf.txt) 
 */
-static void mapper_512k_w(uint32 address, uint32 data)
+static void mapper_512k_w(u32 address, u32 data)
 {
-  uint32 i;
+  u32 i;
 
   /* 512K ROM paging */
-  uint8 *src = cart.rom + ((data << 19) & cart.mask);
+  u8 *src = cart.rom + ((data << 19) & cart.mask);
 
   /* cartridge area ($000000-$3FFFFF) is divided into 8 x 512K banks */
   address = (address << 2) & 0x38;
@@ -1121,7 +1123,7 @@ static void mapper_512k_w(uint32 address, uint32 data)
    Super Street Fighter 2 ROM bankswitch
    documented by Bart Trzynadlowski (http://emu-docs.org/Genesis/ssf2.txt) 
 */
-static void mapper_ssf2_w(uint32 address, uint32 data)
+static void mapper_ssf2_w(u32 address, u32 data)
 {
   /* only banks 1-7 are remappable, bank 0 remains unchanged */
   if (address & 0x0E)
@@ -1133,7 +1135,7 @@ static void mapper_ssf2_w(uint32 address, uint32 data)
 /* 
   SF-001 mapper
 */
-static void mapper_sf001_w(uint32 address, uint32 data)
+static void mapper_sf001_w(u32 address, u32 data)
 {
   switch ((address >> 8) & 0xf)
   {
@@ -1229,7 +1231,7 @@ static void mapper_sf001_w(uint32 address, uint32 data)
 /* 
   SF-002 mapper
 */
-static void mapper_sf002_w(uint32 address, uint32 data)
+static void mapper_sf002_w(u32 address, u32 data)
 {
   int i;
   if (data & 0x80)
@@ -1253,7 +1255,7 @@ static void mapper_sf002_w(uint32 address, uint32 data)
 /* 
   SF-004 mapper
 */
-static void mapper_sf004_w(uint32 address, uint32 data)
+static void mapper_sf004_w(u32 address, u32 data)
 {
   int i;
   switch ((address >> 8) & 0xf)
@@ -1309,7 +1311,7 @@ static void mapper_sf004_w(uint32 address, uint32 data)
       else if (data & 0x40)
       {
         /* first page ROM bank */
-        uint8 base = (m68k.memory_map[0x00].base - cart.rom) >> 16;
+        u8 base = (m68k.memory_map[0x00].base - cart.rom) >> 16;
 
         /* 5 x 256K ROM banks mapped to $000000-$13FFFF, starting from first page ROM bank */
         for (i=0x00; i<0x14; i++)
@@ -1355,7 +1357,7 @@ static void mapper_sf004_w(uint32 address, uint32 data)
     case 0x0f:
     {
       /* bits 6-4: select first page ROM bank (8 x 256K ROM banks) */
-      uint8 base = ((data >> 4) & 7) << 2;
+      u8 base = ((data >> 4) & 7) << 2;
 
       if (m68k.memory_map[0].base == m68k.memory_map[4].base)
       {
@@ -1385,7 +1387,7 @@ static void mapper_sf004_w(uint32 address, uint32 data)
   }
 }
 
-static uint32 mapper_sf004_r(uint32 address)
+static u32 mapper_sf004_r(u32 address)
 {
   /* return first page 256K bank index ($00,$10,$20,...,$70) */
   return (((m68k.memory_map[0x00].base - cart.rom) >> 18) << 4);
@@ -1394,10 +1396,10 @@ static uint32 mapper_sf004_r(uint32 address)
 /* 
   T-5740xx-xx mapper
 */
-static void mapper_t5740_w(uint32 address, uint32 data)
+static void mapper_t5740_w(u32 address, u32 data)
 {
   int i;
-  uint8 *base;
+  u8 *base;
 
   switch (address & 0xff)
   {
@@ -1459,7 +1461,7 @@ static void mapper_t5740_w(uint32 address, uint32 data)
   }
 }
 
-static uint32 mapper_t5740_r(uint32 address)
+static u32 mapper_t5740_r(u32 address)
 {
   /* By default, first 32K of each eight 512K pages mapped in $000000-$3FFFFF are mirrored in the 512K page   */
   /* mirroring is disabled/enabled when a specific number of words is being read from specific ROM addresses  */
@@ -1476,7 +1478,7 @@ static uint32 mapper_t5740_r(uint32 address)
 /* 
   FlashKit MD mapper (very limited M29W320xx Flash memory support -- enough for unlicensed games using device signature as protection) 
 */
-static void mapper_flashkit_w(uint32 address, uint32 data)
+static void mapper_flashkit_w(u32 address, u32 data)
 {
   /* Increment Bus Write counter */
   cart.hw.regs[0]++;
@@ -1497,7 +1499,7 @@ static void mapper_flashkit_w(uint32 address, uint32 data)
   }
 }
 
-static uint32 mapper_flashkit_r(uint32 address)
+static u32 mapper_flashkit_r(u32 address)
 {
   /* hard-coded device signature */
   switch (address & 0x06)
@@ -1514,7 +1516,7 @@ static uint32 mapper_flashkit_r(uint32 address)
 /* 
   Super Mario World 64 (unlicensed) mapper
 */
-static void mapper_smw_64_w(uint32 address, uint32 data)
+static void mapper_smw_64_w(u32 address, u32 data)
 {
   /* internal registers (saved to backup RAM) */
   switch ((address >> 16) & 0x07)
@@ -1621,7 +1623,7 @@ static void mapper_smw_64_w(uint32 address, uint32 data)
   }
 }
 
-static uint32 mapper_smw_64_r(uint32 address)
+static u32 mapper_smw_64_r(u32 address)
 {
   /* internal registers (saved to backup RAM) */
   switch ((address >> 16) & 0x03)
@@ -1643,7 +1645,7 @@ static uint32 mapper_smw_64_r(uint32 address)
 
     case 0x03:  /* $67xxxx */
     {
-      uint8 data = (sram.sram[0x02] & 0x80) ? ((sram.sram[0x05] & 0x40) ? (sram.sram[0x03] & sram.sram[0x04]) : (sram.sram[0x03] ^ 0xFF)) : 0x00;
+      u8 data = (sram.sram[0x02] & 0x80) ? ((sram.sram[0x05] & 0x40) ? (sram.sram[0x03] & sram.sram[0x04]) : (sram.sram[0x03] ^ 0xFF)) : 0x00;
 
       if (address & 2)
       {
@@ -1682,7 +1684,7 @@ static uint32 mapper_smw_64_r(uint32 address)
   Realtec ROM bankswitch (Earth Defend, Balloon Boy & Funny World, Whac-A-Critter, Tom Clown)
   Verified with real cartridge hardware (slightly different from behavior described in TascoDlx documentation)
 */
-static void mapper_realtec_w(uint32 address, uint32 data)
+static void mapper_realtec_w(u32 address, u32 data)
 {
   switch (address)
   {
@@ -1720,7 +1722,7 @@ static void mapper_realtec_w(uint32 address, uint32 data)
           for (i=0x00; i<0x40; i++)
           {
             /* 0x000000-0x07ffff mapped area is mirrored in 4MB cartridge range (VA21-VA19 not connected) */
-            uint32 base = i & 7;
+            u32 base = i & 7;
 
             /* adjust 64k mapped area ROM base address according to fixed ROM bank configuration (see above) */
             base = (base & ~cart.hw.regs[1]) | (cart.hw.regs[2] & cart.hw.regs[1]);
@@ -1736,7 +1738,7 @@ static void mapper_realtec_w(uint32 address, uint32 data)
   }
 }
 
-static uint32 mapper_realtec_r(uint32 address)
+static u32 mapper_realtec_r(u32 address)
 {
   /* /VRES is asserted to bypass TMSS licensing screen when first read access to cartridge ROM header is detected */
   if ((address == 0x100) && (m68k.memory_map[0].base = cart.base))
@@ -1746,11 +1748,11 @@ static uint32 mapper_realtec_r(uint32 address)
   }
 
   /* default ROM area read handler */
-  return *(uint16 *)(m68k.memory_map[0].base + (address & 0xfffe));
+  return *(u16 *)(m68k.memory_map[0].base + (address & 0xfffe));
 }
 
 /* Game no Kanzume Otokuyou ROM Mapper */
-static void mapper_seganet_w(uint32 address, uint32 data)
+static void mapper_seganet_w(u32 address, u32 data)
 {
   if ((address & 0xff) == 0xf1)
   {
@@ -1781,7 +1783,7 @@ static void mapper_seganet_w(uint32 address, uint32 data)
 /* 
   Custom ROM Bankswitch used in Soul Edge VS Samurai Spirits, Top Fighter, Mulan, Pocket Monsters II, Lion King 3, Super King Kong 99, Pokemon Stadium
 */
-static void mapper_32k_w(uint32 data)
+static void mapper_32k_w(u32 data)
 {
   int i;
   
@@ -1811,7 +1813,7 @@ static void mapper_32k_w(uint32 data)
 /* 
   Custom ROM Bankswitch used in Chinese Fighter III
 */
-static void mapper_64k_w(uint32 data)
+static void mapper_64k_w(u32 data)
 {
   int i;
 
@@ -1837,7 +1839,7 @@ static void mapper_64k_w(uint32 data)
 /* 
   Custom ROM Bankswitch used in pirate "Multi-in-1" cartridges, A Bug's Life, King of Fighter 99, Pocket Monster, Rockman X3
  */
-static void mapper_64k_multi_w(uint32 address)
+static void mapper_64k_multi_w(u32 address)
 {
   int i;
 
@@ -1851,7 +1853,7 @@ static void mapper_64k_multi_w(uint32 address)
 /* 
   Custom ROM Bankswitch used in pirate "1800-in-1" cartridge
  */
-static uint32 mapper_128k_multi_r(uint32 address)
+static u32 mapper_128k_multi_r(u32 address)
 {
   int i;
 
@@ -1889,7 +1891,7 @@ static uint32 mapper_128k_multi_r(uint32 address)
 /* 
   Custom ROM Bankswitch used in pirate "Golden Mega 250-in-1" cartridge
  */
-static void mapper_256k_multi_w(uint32 address, uint32 data)
+static void mapper_256k_multi_w(u32 address, u32 data)
 {
   int i;
 
@@ -1915,7 +1917,7 @@ static void mapper_256k_multi_w(uint32 address, uint32 data)
   Custom ROM Bankswitch used in "Canon - Legend of the New Gods" 
   (uses WD1601 QFPL V1.01 board also used in chinese X-in-1 pirates sold by mindkids)
  */
-static void mapper_wd1601_w(uint32 address, uint32 data)
+static void mapper_wd1601_w(u32 address, u32 data)
 {
   int i;
 
@@ -1953,7 +1955,7 @@ static void mapper_wd1601_w(uint32 address, uint32 data)
    Other games support both 64KB or 128KB mapping so it's not clear what exact board they are using but none require SRAM so we use 64KB mapper by default.
    Note that Radica Volume 3 uses similar ROM mapping as Sensible Soccer Plus edition so it might be using same 128KB board, without any SRAM chip connected.
 */
-static uint32 mapper_64k_radica_r(uint32 address)
+static u32 mapper_64k_radica_r(u32 address)
 {
   int i = 0;
 
@@ -2007,7 +2009,7 @@ static uint32 mapper_64k_radica_r(uint32 address)
   return 0xffff;
 }
 
-static uint32 mapper_128k_radica_r(uint32 address)
+static u32 mapper_128k_radica_r(u32 address)
 {
   int i = 0;
 
@@ -2054,7 +2056,7 @@ static uint32 mapper_128k_radica_r(uint32 address)
    /VRES is asserted to bypass TMSS security checks when write access to 0xA141xx 
    with D0=1 is detected (access to cartridge ROM enabled instead of TMSS Boot ROM)
 */
-static void mapper_sr16v1_w(uint32 address, uint32 data)
+static void mapper_sr16v1_w(u32 address, u32 data)
 {
   /* default I/O and Control registers write handler */
   ctrl_io_write_byte(address, data);
@@ -2075,7 +2077,7 @@ static void mapper_sr16v1_w(uint32 address, uint32 data)
           default !TIME signal handler 
 *************************************************************/
 
-static void default_time_w(uint32 address, uint32 data)
+static void default_time_w(u32 address, u32 data)
 {
   /* enable multi-game cartridge mapper by default */
   if (address < 0xa13060)
@@ -2104,7 +2106,7 @@ static void default_time_w(uint32 address, uint32 data)
           Internal register handlers
 *************************************************************/
 
-static uint32 default_regs_r(uint32 address)
+static u32 default_regs_r(u32 address)
 {
   int i;
   for (i=0; i<4; i++)
@@ -2117,7 +2119,7 @@ static uint32 default_regs_r(uint32 address)
   return m68k_read_bus_8(address);
 }
 
-static uint32 default_regs_r_16(uint32 address)
+static u32 default_regs_r_16(u32 address)
 {
   int i;
   for (i=0; i<4; i++)
@@ -2130,7 +2132,7 @@ static uint32 default_regs_r_16(uint32 address)
   return m68k_read_bus_16(address);
 }
 
-static void default_regs_w(uint32 address, uint32 data)
+static void default_regs_w(u32 address, u32 data)
 {
   int i;
   for (i=0; i<4; i++)
@@ -2145,7 +2147,7 @@ static void default_regs_w(uint32 address, uint32 data)
 }
 
 /* basic register shifting hardware (Bug's Life, Pocket Monster) */
-static uint32 custom_regs_r(uint32 address)
+static u32 custom_regs_r(u32 address)
 {
   int i;
   for (i=0; i<4; i++)
@@ -2160,9 +2162,9 @@ static uint32 custom_regs_r(uint32 address)
 }
 
 /* custom register hardware (Top Fighter, Lion King III, Super Donkey Kong  99, Mulan, Pocket Monsters II, Pokemon Stadium) */
-static void custom_regs_w(uint32 address, uint32 data)
+static void custom_regs_w(u32 address, u32 data)
 {
-  uint8 temp;
+  u8 temp;
   
   /* ROM bankswitch */
   if ((address >> 16) > 0x6f)
@@ -2200,7 +2202,7 @@ static void custom_regs_w(uint32 address, uint32 data)
 }
 
 /* alternate custom register hardware (Chinese Fighters III) */
-static void custom_alt_regs_w(uint32 address, uint32 data)
+static void custom_alt_regs_w(u32 address, u32 data)
 {
   /* ROM bankswitch */
   if ((address >> 16) > 0x5f)
@@ -2215,7 +2217,7 @@ static void custom_alt_regs_w(uint32 address, uint32 data)
 
 
 /* "Tekken 3 Special" custom register hardware */
-static uint32 tekken_regs_r(uint32 address)
+static u32 tekken_regs_r(u32 address)
 {
   /* data output */
   if ((address & 0x0e) == 0x02)
@@ -2227,7 +2229,7 @@ static uint32 tekken_regs_r(uint32 address)
   return m68k_read_bus_16(address);
 }
 
-static void tekken_regs_w(uint32 address, uint32 data)
+static void tekken_regs_w(u32 address, u32 data)
 {
   switch (address & 0x0e)
   {
@@ -2270,11 +2272,11 @@ static void tekken_regs_w(uint32 address, uint32 data)
 }
 
 /* "Top Shooter" arcade board hardware */
-static uint32 topshooter_r(uint32 address)
+static u32 topshooter_r(u32 address)
 {
   if (address < 0x202000)
   {
-    uint8 temp = 0xff;
+    u8 temp = 0xff;
 
     switch (address & 0xff)
     {
@@ -2324,7 +2326,7 @@ static uint32 topshooter_r(uint32 address)
   return READ_BYTE(sram.sram , address & 0xffff);
 }
 
-static void topshooter_w(uint32 address, uint32 data)
+static void topshooter_w(u32 address, u32 data)
 {
   if (address >= 0x202000)
   {
@@ -2369,12 +2371,12 @@ Unused write16 00300000 = ACDC (000057B2)
 Unused write16 00380000 = 0000 (000057BC)
 Unused read16 00300000 (000057C6)
 
-static uint32 sega_channel_r(uint32 address)
+static u32 sega_channel_r(u32 address)
 {
   return m68k_read_bus_16(address);;
 }
 
-static void sega_channel_w(uint32 address, uint32 data)
+static void sega_channel_w(u32 address, u32 data)
 {
   m68k_unused_16_w(address, data);
 }

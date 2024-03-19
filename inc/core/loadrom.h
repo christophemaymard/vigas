@@ -40,7 +40,7 @@
 #ifndef _LOADROM_H_
 #define _LOADROM_H_
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 #ifndef MAXROMSIZE
 #define MAXROMSIZE 10485760
@@ -59,13 +59,13 @@ typedef struct
   unsigned int romstart;        /* ROM start address */
   unsigned int romend;          /* ROM end address */
   char country[18];             /* Country flag */
-  uint16 peripherals;           /* Supported peripherals */
+  u16 peripherals;           /* Supported peripherals */
 } ROMINFO;
 
 
 /* Global variables */
 extern ROMINFO rominfo;
-extern uint8 romtype;
+extern u8 romtype;
 
 /* Function prototypes */
 extern int load_bios(int system);

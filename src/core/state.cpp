@@ -40,6 +40,8 @@
 
 #include <string.h>
 
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
@@ -142,8 +144,8 @@ int state_load(unsigned char *state)
   /* 68000 */
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
   {
-    uint16 tmp16;
-    uint32 tmp32;
+    u16 tmp16;
+    u32 tmp32;
     load_param(&tmp32, 4); m68k_set_reg(M68K_REG_D0, tmp32);
     load_param(&tmp32, 4); m68k_set_reg(M68K_REG_D1, tmp32);
     load_param(&tmp32, 4); m68k_set_reg(M68K_REG_D2, tmp32);
@@ -241,8 +243,8 @@ int state_save(unsigned char *state)
   /* 68000 */ 
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
   {
-    uint16 tmp16;
-    uint32 tmp32;
+    u16 tmp16;
+    u32 tmp32;
     tmp32 = m68k_get_reg(M68K_REG_D0);  save_param(&tmp32, 4);
     tmp32 = m68k_get_reg(M68K_REG_D1);  save_param(&tmp32, 4);
     tmp32 = m68k_get_reg(M68K_REG_D2);  save_param(&tmp32, 4);

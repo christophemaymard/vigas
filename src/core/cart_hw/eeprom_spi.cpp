@@ -40,7 +40,8 @@
 
 #include <string.h>
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/cart_hw/sram.h"
 
 /* max supported size 64KB (25x512/95x512) */
@@ -64,14 +65,14 @@ typedef enum
 
 typedef struct
 {
-  uint8 cs;           /* !CS line state */
-  uint8 clk;          /* SCLK line state */
-  uint8 out;          /* SO line state */
-  uint8 status;       /* status register */
-  uint8 opcode;       /* 8-bit opcode */
-  uint8 buffer;       /* 8-bit data buffer */
-  uint16 addr;        /* 16-bit address */
-  uint32 cycles;      /* current operation cycle */
+  u8 cs;           /* !CS line state */
+  u8 clk;          /* SCLK line state */
+  u8 out;          /* SO line state */
+  u8 status;       /* status register */
+  u8 opcode;       /* 8-bit opcode */
+  u8 buffer;       /* 8-bit data buffer */
+  u16 addr;        /* 16-bit address */
+  u32 cycles;      /* current operation cycle */
   T_STATE_SPI state;  /* current operation state */
 } T_EEPROM_SPI;
 

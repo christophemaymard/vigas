@@ -40,7 +40,8 @@
 
 #include <string.h>
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/m68k/m68k.h"
 #include "core/genesis.h"
@@ -51,18 +52,18 @@
 
 static struct
 {
-  uint8 enabled;
-  uint8 status;
-  uint8 ram[0x10000];
-  uint16 regs[13];
-  uint16 old[4];
-  uint16 data[4];
-  uint32 addr[4];
+  u8 enabled;
+  u8 status;
+  u8 ram[0x10000];
+  u16 regs[13];
+  u16 old[4];
+  u16 data[4];
+  u32 addr[4];
 } action_replay;
 
-static void ar_write_regs(uint32 address, uint32 data);
-static void ar2_write_reg(uint32 address, uint32 data);
-static void ar_write_ram_8(uint32 address, uint32 data);
+static void ar_write_regs(u32 address, u32 data);
+static void ar2_write_reg(u32 address, u32 data);
+static void ar_write_ram_8(u32 address, u32 data);
 
 void areplay_init(void)
 {
@@ -86,7 +87,7 @@ void areplay_init(void)
     else
     {
       /* Read stack pointer MSB */
-      uint8 sp = cart.lockrom[0x01];
+      u8 sp = cart.lockrom[0x01];
 
       /* Detect board version */
       if ((sp == 0x42) && !memcmp(cart.lockrom + 0x120, "ACTION REPLAY 2 ", 16))
@@ -124,7 +125,7 @@ void areplay_init(void)
       for (i= 0; i<0x10000; i+=2)
       {
         /* Byteswap ROM */
-        uint8 temp = cart.lockrom[i];
+        u8 temp = cart.lockrom[i];
         cart.lockrom[i] = cart.lockrom[i+1];
         cart.lockrom[i+1] = temp;
       }
@@ -196,10 +197,10 @@ void areplay_set_status(int status)
         if (action_replay.status == AR_SWITCH_ON)
         {
           /* restore original data */
-          *(uint16 *)(cart.rom + action_replay.addr[0]) = action_replay.old[0];
-          *(uint16 *)(cart.rom + action_replay.addr[1]) = action_replay.old[1];
-          *(uint16 *)(cart.rom + action_replay.addr[2]) = action_replay.old[2];
-          *(uint16 *)(cart.rom + action_replay.addr[3]) = action_replay.old[3];
+          *(u16 *)(cart.rom + action_replay.addr[0]) = action_replay.old[0];
+          *(u16 *)(cart.rom + action_replay.addr[1]) = action_replay.old[1];
+          *(u16 *)(cart.rom + action_replay.addr[2]) = action_replay.old[2];
+          *(u16 *)(cart.rom + action_replay.addr[3]) = action_replay.old[3];
         }
         break;
       }
@@ -222,16 +223,16 @@ void areplay_set_status(int status)
           action_replay.addr[3] = (action_replay.regs[11] | ((action_replay.regs[12]  & 0x3f00) << 8)) << 1;
 
           /* save original data */
-          action_replay.old[0] = *(uint16 *)(cart.rom + action_replay.addr[0]);
-          action_replay.old[1] = *(uint16 *)(cart.rom + action_replay.addr[1]);
-          action_replay.old[2] = *(uint16 *)(cart.rom + action_replay.addr[2]);
-          action_replay.old[3] = *(uint16 *)(cart.rom + action_replay.addr[3]);
+          action_replay.old[0] = *(u16 *)(cart.rom + action_replay.addr[0]);
+          action_replay.old[1] = *(u16 *)(cart.rom + action_replay.addr[1]);
+          action_replay.old[2] = *(u16 *)(cart.rom + action_replay.addr[2]);
+          action_replay.old[3] = *(u16 *)(cart.rom + action_replay.addr[3]);
 
           /* patch new data */
-          *(uint16 *)(cart.rom + action_replay.addr[0]) = action_replay.data[0];
-          *(uint16 *)(cart.rom + action_replay.addr[1]) = action_replay.data[1];
-          *(uint16 *)(cart.rom + action_replay.addr[2]) = action_replay.data[2];
-          *(uint16 *)(cart.rom + action_replay.addr[3]) = action_replay.data[3];
+          *(u16 *)(cart.rom + action_replay.addr[0]) = action_replay.data[0];
+          *(u16 *)(cart.rom + action_replay.addr[1]) = action_replay.data[1];
+          *(u16 *)(cart.rom + action_replay.addr[2]) = action_replay.data[2];
+          *(u16 *)(cart.rom + action_replay.addr[3]) = action_replay.data[3];
         }
         break;
       }
@@ -247,7 +248,7 @@ void areplay_set_status(int status)
   }
 }
 
-static void ar_write_regs(uint32 address, uint32 data)
+static void ar_write_regs(u32 address, u32 data)
 {
   /* register offset */
   int offset = (address & 0xffff) >> 1;
@@ -276,7 +277,7 @@ static void ar_write_regs(uint32 address, uint32 data)
   }
 }
 
-static void ar2_write_reg(uint32 address, uint32 data)
+static void ar2_write_reg(u32 address, u32 data)
 {
   /* enable Cartridge ROM */
   if (((address & 0xff) == 0x78) && (data == 0xffff))
@@ -285,8 +286,8 @@ static void ar2_write_reg(uint32 address, uint32 data)
   }
 }
 
-static void ar_write_ram_8(uint32 address, uint32 data)
+static void ar_write_ram_8(u32 address, u32 data)
 {
   /* byte writes are handled as word writes, with LSB duplicated in MSB (/LWR is not used) */
-  *(uint16 *)(action_replay.ram + (address & 0xfffe)) = (data | (data << 8));
+  *(u16 *)(action_replay.ram + (address & 0xfffe)) = (data | (data << 8));
 }

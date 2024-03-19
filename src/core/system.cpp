@@ -43,7 +43,8 @@
 
 #include <string.h>
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "osd.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
@@ -63,7 +64,7 @@
 #include "core/cart_hw/svp/ssp16.h"
 #include "core/cart_hw/sms_cart.h"
 
-static uint8 pause_b;
+static u8 pause_b;
 
 /****************************************************************
  * Virtual System emulation

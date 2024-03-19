@@ -14,7 +14,8 @@
 
 #include <string.h>
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
+
 #include "core/m68k/m68k.h"
 #include "core/genesis.h"
 #include "core/membnk.h"
@@ -23,9 +24,9 @@
 
 svp_t *svp;
 
-static void svp_write_dram(uint32 address, uint32 data)
+static void svp_write_dram(u32 address, u32 data)
 {
-  *(uint16 *)(svp->dram + (address & 0x1fffe)) = data;
+  *(u16 *)(svp->dram + (address & 0x1fffe)) = data;
   if (data)
   {
     if (address == 0x30fe06) svp->ssp1601.emu_status &= ~SSP_WAIT_30FE06;
@@ -33,21 +34,21 @@ static void svp_write_dram(uint32 address, uint32 data)
   }
 }
 
-static uint32 svp_read_cell_1(uint32 address)
+static u32 svp_read_cell_1(u32 address)
 {
   address = (address & 0xe002) | ((address & 0x7c) << 6) | ((address & 0x1f80) >> 5);
-  return *(uint16 *)(svp->dram + address);
+  return *(u16 *)(svp->dram + address);
 }
 
-static uint32 svp_read_cell_2(uint32 address)
+static u32 svp_read_cell_2(u32 address)
 {
   address = (address & 0xf002) | ((address & 0x3c) << 6) | ((address & 0xfc0) >> 4);
-  return *(uint16 *)(svp->dram + address);
+  return *(u16 *)(svp->dram + address);
 }
 
-static uint32 svp_read_cell_byte(uint32 address)
+static u32 svp_read_cell_byte(u32 address)
 {
-  uint16 data = m68k.memory_map[address >> 16].read16(address);
+  u16 data = m68k.memory_map[address >> 16].read16(address);
 
   if (address & 0x01)
   {

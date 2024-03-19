@@ -43,7 +43,7 @@
 #ifndef _RENDER_H_
 #define _RENDER_H_
 
-#include "core/types.h"
+#include "xee/fnd/data_type.h"
 
 /* 3:3:2 RGB */
 #if defined(USE_8BPP_RENDERING)
@@ -89,9 +89,9 @@
 { \
   PIXEL_OUT_T pixel_out = table[*in++]; \
   PIXEL_OUT_T pixel_old  = *out; \
-  uint8 r = GET_R(pixel_out); \
-  uint8 g = GET_G(pixel_out); \
-  uint8 b = GET_B(pixel_out); \
+  u8 r = GET_R(pixel_out); \
+  u8 g = GET_G(pixel_out); \
+  u8 b = GET_B(pixel_out); \
   int r_decay = GET_R(pixel_old) - r; \
   int g_decay = GET_G(pixel_old) - g; \
   int b_decay = GET_B(pixel_old) - b; \
@@ -102,7 +102,7 @@
 }
 
 /* Global variables */
-extern uint16 spr_col;
+extern u16 spr_col;
 
 /* Function prototypes */
 extern void render_init(void);
