@@ -27,7 +27,7 @@ void blip_clear( blip_t* );
 #ifndef BLIP_MONO
 
 /** Adds positive/negative deltas into stereo buffers at specified clock time. */
-void blip_add_delta( blip_t*, unsigned time, int delta_l, int delta_r );
+void blip_add_delta( blip_t*, unsigned int time, int delta_l, int delta_r );
 
 /** Same as blip_add_delta(), but uses faster, lower-quality synthesis. */
 void blip_add_delta_fast( blip_t*, unsigned int clock_time, int delta_l, int delta_r );

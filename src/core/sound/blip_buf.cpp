@@ -231,7 +231,7 @@ int blip_clocks_needed( const blip_t* m, int samples )
 	return (needed - m->offset + m->factor - 1) / m->factor;
 }
 
-void blip_end_frame( blip_t* m, unsigned t )
+void blip_end_frame( blip_t* m, unsigned int t )
 {
 	m->offset += t * m->factor;
 
@@ -462,7 +462,7 @@ simply ignoring the low half. */
 
 #ifndef BLIP_MONO
 
-void blip_add_delta( blip_t* m, unsigned time, int delta_l, int delta_r )
+void blip_add_delta( blip_t* m, unsigned int time, int delta_l, int delta_r )
 {
   if (delta_l | delta_r)
   {
@@ -585,7 +585,7 @@ void blip_add_delta( blip_t* m, unsigned time, int delta_l, int delta_r )
   }
 }
 
-void blip_add_delta_fast( blip_t* m, unsigned time, int delta_l, int delta_r )
+void blip_add_delta_fast( blip_t* m, unsigned int time, int delta_l, int delta_r )
 {
   if (delta_l | delta_r)
   {
@@ -629,7 +629,7 @@ void blip_add_delta_fast( blip_t* m, unsigned time, int delta_l, int delta_r )
 
 #else
 
-void blip_add_delta( blip_t* m, unsigned time, int delta )
+void blip_add_delta( blip_t* m, unsigned int time, int delta )
 {
 	unsigned fixed = (unsigned) ((time * m->factor + m->offset) >> pre_shift);
 	buf_t* out = SAMPLES( m ) + (fixed >> frac_bits);
@@ -667,7 +667,7 @@ void blip_add_delta( blip_t* m, unsigned time, int delta )
 	out [15] += in[0]*delta + in[0-half_width]*delta2;
 }
 
-void blip_add_delta_fast( blip_t* m, unsigned time, int delta )
+void blip_add_delta_fast( blip_t* m, unsigned int time, int delta )
 {
 	unsigned fixed = (unsigned) ((time * m->factor + m->offset) >> pre_shift);
 	buf_t* out = SAMPLES( m ) + (fixed >> frac_bits);
