@@ -24,23 +24,11 @@ blip_max_ratio = 1 << 20 };
 /** Clears entire buffer. Afterwards, blip_samples_avail() == 0. */
 void blip_clear( blip_t* );
 
-#ifndef BLIP_MONO
-
 /** Adds positive/negative deltas into stereo buffers at specified clock time. */
 void blip_add_delta( blip_t*, unsigned int time, int delta_l, int delta_r );
 
 /** Same as blip_add_delta(), but uses faster, lower-quality synthesis. */
 void blip_add_delta_fast( blip_t*, unsigned int clock_time, int delta_l, int delta_r );
-
-#else
-
-/** Adds positive/negative delta into buffer at specified clock time. */
-void blip_add_delta( blip_t*, unsigned int clock_time, int delta );
-
-/** Same as blip_add_delta(), but uses faster, lower-quality synthesis. */
-void blip_add_delta_fast( blip_t*, unsigned int clock_time, int delta );
-
-#endif
 
 /** Length of time frame, in clocks, needed to make sample_count additional
 samples available. */

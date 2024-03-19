@@ -11,7 +11,7 @@ Repository on GitHub: https://github.com/ekeeke/Genesis-Plus-GX
 | ALT_RENDERER |  |  |
 | BLIP_ASSERT |  |  |
 | BLIP_INVERT |  |  |
-| BLIP_MONO |  |  |
+| BLIP_MONO | Removed | The core does not handle the case where BLIP_MONO is defined. |
 | BUILD_TABLES |  |  |
 | CD_TRAY_CALLBACK |  |  |
 | CHEATS_UPDATE |  |  |
