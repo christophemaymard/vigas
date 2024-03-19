@@ -4,10 +4,6 @@
 #ifndef BLIP_BUF_H 
 #define BLIP_BUF_H
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
 /** First parameter of most functions is blip_t*, or const blip_t* if nothing
 is changed. */
 typedef struct blip_t blip_t;
@@ -77,9 +73,5 @@ void blip_delete( blip_t* );
 
 /* Deprecated */
 typedef blip_t blip_buffer_t;
-
-#ifdef __cplusplus
-	}
-#endif
 
 #endif
