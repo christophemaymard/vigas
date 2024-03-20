@@ -52,7 +52,6 @@
 #include "core/state.h"
 
 #include "core/cd_hw/scd.h"
-#include "core/sound/blip_buf.h"
 
 #define PCM_SCYCLES_RATIO (384 * 4)
 
@@ -62,7 +61,7 @@ void pcm_init(double clock, int samplerate)
 {
   /* PCM chip is running at original rate and is synchronized with SUB-CPU  */
   /* Chip output is resampled to desired rate using Blip Buffer. */
-  blip_set_rates(snd.blips[1], clock / PCM_SCYCLES_RATIO, samplerate);
+  snd.blips[1]->blip_set_rates(clock / PCM_SCYCLES_RATIO, samplerate);
 }
 
 void pcm_reset(void)
@@ -87,7 +86,7 @@ void pcm_reset(void)
   pcm.cycles = 0;
 
   /* clear blip buffers */
-  blip_clear(snd.blips[1]);
+  snd.blips[1]->blip_clear();
 }
 
 int pcm_context_save(u8 *state)
@@ -205,7 +204,7 @@ void pcm_run(unsigned int length)
       r = (r * config.pcm_volume) / 100;
 
       /* update blip buffer */
-      blip_add_delta_fast(snd.blips[1], i, l-prev_l, r-prev_r);
+      snd.blips[1]->blip_add_delta_fast(i, l - prev_l, r - prev_r);
       prev_l = l;
       prev_r = r;
     }
@@ -219,14 +218,14 @@ void pcm_run(unsigned int length)
     /* check if PCM output was not muted */
     if (prev_l | prev_r)
     {
-      blip_add_delta_fast(snd.blips[1], 0, -prev_l, -prev_r);
+      snd.blips[1]->blip_add_delta_fast(0, -prev_l, -prev_r);
       pcm.out[0] = 0;
       pcm.out[1] = 0;
     }
   }
 
   /* end of blip buffer frame */
-  blip_end_frame(snd.blips[1], length);
+  snd.blips[1]->blip_end_frame(length);
 
   /* update PCM master clock counter */
   pcm.cycles += length * PCM_SCYCLES_RATIO;
@@ -235,7 +234,7 @@ void pcm_run(unsigned int length)
 void pcm_update(unsigned int samples)
 {
   /* get number of internal clocks (samples) needed */
-  unsigned int clocks = blip_clocks_needed(snd.blips[1], samples);
+  unsigned int clocks = snd.blips[1]->blip_clocks_needed(samples);
 
   /* run PCM chip */
   if (clocks > 0)

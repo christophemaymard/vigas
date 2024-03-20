@@ -51,7 +51,6 @@
 
 #include "core/cart_hw/megasd.h"
 #include "core/cd_hw/scd.h"
-#include "core/sound/blip_buf.h"
 
 #define SUPPORTED_EXT 10
 
@@ -156,7 +155,7 @@ void cdd_init(int samplerate)
 {
   /* CD-DA is running by default at 44100 Hz */
   /* Audio stream is resampled to desired rate using Blip Buffer */
-  blip_set_rates(snd.blips[2], 44100, samplerate);
+  snd.blips[2]->blip_set_rates(44100, samplerate);
 }
 
 void cdd_reset(void)
@@ -1033,7 +1032,7 @@ void cdd_read_audio(unsigned int samples)
         r = (r * config.cdda_volume) / 100;
 
         /* update blip buffer */
-        blip_add_delta_fast(snd.blips[2], i, l-prev_l, r-prev_r);
+        snd.blips[2]->blip_add_delta_fast(i, l - prev_l, r - prev_r);
         prev_l = l;
         prev_r = r;
 
@@ -1069,7 +1068,7 @@ void cdd_read_audio(unsigned int samples)
     if (prev_l | prev_r)
     {
       /* update blip buffer */
-      blip_add_delta_fast(snd.blips[2], 0, -prev_l, -prev_r);
+      snd.blips[2]->blip_add_delta_fast(0, -prev_l, -prev_r);
 
       /* save audio output for next frame */
       cdd.audio[0] = 0;
@@ -1078,13 +1077,13 @@ void cdd_read_audio(unsigned int samples)
   }
 
   /* end of blip buffer timeframe */
-  blip_end_frame(snd.blips[2], samples);
+  snd.blips[2]->blip_end_frame(samples);
 }
 
 void cdd_update_audio(unsigned int samples)
 {
   /* get number of internal clocks (CD-DA samples) needed */
-  samples = blip_clocks_needed(snd.blips[2], samples);
+  samples = snd.blips[2]->blip_clocks_needed(samples);
 
   if (cart.special & HW_MEGASD)
   {

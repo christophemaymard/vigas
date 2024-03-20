@@ -47,7 +47,6 @@
 #include "osd.h"
 #include "core/snd.h"
 #include "core/state.h"
-#include "core/sound/blip_buf.h"
 
 /* internal clock = input clock : 16 = (master clock : 15) : 16 */
 #define PSG_MCYCLES_RATIO (15*16)
@@ -218,11 +217,11 @@ int psg_context_load(u8 *state)
   /* update mixed channels output */
   if (config.hq_psg)
   {
-    blip_add_delta(snd.blips[0], psg.clocks, delta[0], delta[1]);
+    snd.blips[0]->blip_add_delta(psg.clocks, delta[0], delta[1]);
   }
   else
   {
-    blip_add_delta_fast(snd.blips[0], psg.clocks, delta[0], delta[1]);
+    snd.blips[0]->blip_add_delta_fast(psg.clocks, delta[0], delta[1]);
   }
 
   return bufferptr;
@@ -470,11 +469,11 @@ static void psg_update(unsigned int clocks)
       /* update channel output */
       if (config.hq_psg)
       {
-        blip_add_delta(snd.blips[0], psg.clocks, psg.chanDelta[i][0], psg.chanDelta[i][1]);
+        snd.blips[0]->blip_add_delta(psg.clocks, psg.chanDelta[i][0], psg.chanDelta[i][1]);
       }
       else
       {
-        blip_add_delta_fast(snd.blips[0], psg.clocks, psg.chanDelta[i][0], psg.chanDelta[i][1]);
+        snd.blips[0]->blip_add_delta_fast( psg.clocks, psg.chanDelta[i][0], psg.chanDelta[i][1]);
       }
 
       /* clear pending channel volume variations */
@@ -500,11 +499,11 @@ static void psg_update(unsigned int clocks)
         /* update channel output */
         if (config.hq_psg)
         {
-          blip_add_delta(snd.blips[0], timestamp, polarity*psg.chanOut[i][0], polarity*psg.chanOut[i][1]);
+          snd.blips[0]->blip_add_delta(timestamp, polarity * psg.chanOut[i][0], polarity * psg.chanOut[i][1]);
         }
         else
         {
-          blip_add_delta_fast(snd.blips[0], timestamp, polarity*psg.chanOut[i][0], polarity*psg.chanOut[i][1]);
+          snd.blips[0]->blip_add_delta_fast(timestamp, polarity * psg.chanOut[i][0], polarity * psg.chanOut[i][1]);
         }
 
         /* timestamp of next transition */
@@ -550,11 +549,11 @@ static void psg_update(unsigned int clocks)
           /* update noise channel output */
           if (config.hq_psg)
           {
-            blip_add_delta(snd.blips[0], timestamp, shiftOutput*psg.chanOut[3][0], shiftOutput*psg.chanOut[3][1]);
+            snd.blips[0]->blip_add_delta(timestamp, shiftOutput * psg.chanOut[3][0], shiftOutput * psg.chanOut[3][1]);
           }
           else
           {
-            blip_add_delta_fast(snd.blips[0], timestamp, shiftOutput*psg.chanOut[3][0], shiftOutput*psg.chanOut[3][1]);
+            snd.blips[0]->blip_add_delta_fast(timestamp, shiftOutput * psg.chanOut[3][0], shiftOutput * psg.chanOut[3][1]);
           }
         }
 

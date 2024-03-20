@@ -332,7 +332,7 @@ int sound_update(unsigned int cycles)
         /* left & right channels */
         l = ((*ptr++ * preamp) / 100);
         r = ((*ptr++ * preamp) / 100);
-        blip_add_delta(snd.blips[0], time, l-prev_l, r-prev_r);
+        snd.blips[0]->blip_add_delta(time, l - prev_l, r - prev_r);
         prev_l = l;
         prev_r = r;
 
@@ -349,7 +349,7 @@ int sound_update(unsigned int cycles)
         /* left & right channels */
         l = ((*ptr++ * preamp) / 100);
         r = ((*ptr++ * preamp) / 100);
-        blip_add_delta_fast(snd.blips[0], time, l-prev_l, r-prev_r);
+        snd.blips[0]->blip_add_delta_fast(time, l - prev_l, r - prev_r);
         prev_l = l;
         prev_r = r;
 
@@ -379,10 +379,10 @@ int sound_update(unsigned int cycles)
   }
 
   /* end of blip buffer time frame */
-  blip_end_frame(snd.blips[0], cycles);
+  snd.blips[0]->blip_end_frame(cycles);
 
   /* return number of available samples */
-  return blip_samples_avail(snd.blips[0]);
+  return snd.blips[0]->blip_samples_avail();
 }
 
 int sound_context_save(u8 *state)

@@ -57,8 +57,9 @@
 #include "core/cd_hw/cdd.h"
 #include "core/cd_hw/pcm.h"
 #include "core/cd_hw/scd.h"
-#include "core/sound/blip_buf.h"
 #include "core/sound/eq.h"
+
+#include "gpgx/sound/blip_buffer.h"
 
 //==============================================================================
 
@@ -80,7 +81,7 @@ int audio_init(int samplerate, double framerate)
   memset(&snd, 0, sizeof(snd));
 
   /* Initialize Blip Buffers */
-  snd.blips[0] = blip_new(samplerate / 10);
+  snd.blips[0] = gpgx::sound::BlipBuffer::blip_new(samplerate / 10);
   if (!snd.blips[0]) {
     return -1;
   }
@@ -88,8 +89,8 @@ int audio_init(int samplerate, double framerate)
   /* Mega CD sound hardware */
   if (system_hw == SYSTEM_MCD) {
     /* allocate blip buffers */
-    snd.blips[1] = blip_new(samplerate / 10);
-    snd.blips[2] = blip_new(samplerate / 10);
+    snd.blips[1] = gpgx::sound::BlipBuffer::blip_new(samplerate / 10);
+    snd.blips[2] = gpgx::sound::BlipBuffer::blip_new(samplerate / 10);
     if (!snd.blips[1] || !snd.blips[2]) {
       audio_shutdown();
       return -1;
@@ -139,7 +140,7 @@ void audio_set_rate(int samplerate, double framerate)
   /* master clock timebase so they remain perfectly synchronized together, while still */
   /* being synchronized with 68K and Z80 CPUs as well. Mixed sound chip output is then */
   /* resampled to desired rate at the end of each frame, using Blip Buffer.            */
-  blip_set_rates(snd.blips[0], mclk, samplerate);
+  snd.blips[0]->blip_set_rates(mclk, samplerate);
 
   /* Mega CD sound hardware enabled ? */
   if (snd.blips[1] && snd.blips[2]) {
@@ -167,7 +168,7 @@ void audio_reset(void)
   /* Clear blip buffers */
   for (i = 0; i < 3; i++) {
     if (snd.blips[i]) {
-      blip_clear(snd.blips[i]);
+      snd.blips[i]->blip_clear();
     }
   }
 
@@ -198,8 +199,11 @@ void audio_shutdown(void)
 
   /* Delete blip buffers */
   for (i = 0; i < 3; i++) {
-    blip_delete(snd.blips[i]);
-    snd.blips[i] = 0;
+    if (snd.blips[i]) {
+      snd.blips[i]->blip_delete();
+      delete snd.blips[i];
+      snd.blips[i] = nullptr;
+    }
   }
 }
 
@@ -224,7 +228,7 @@ int audio_update(s16* buffer)
 #endif
 
     /* resample & mix FM/PSG, PCM & CD-DA streams to output buffer */
-    blip_mix_samples(snd.blips[0], snd.blips[1], snd.blips[2], buffer, size);
+    snd.blips[0]->blip_mix_samples(snd.blips[1], snd.blips[2], buffer, size);
   } else {
 #ifdef ALIGN_SND
     /* return an aligned number of samples if required */
@@ -232,7 +236,7 @@ int audio_update(s16* buffer)
 #endif
 
     /* resample FM/PSG mixed stream to output buffer */
-    blip_read_samples(snd.blips[0], buffer, size);
+    snd.blips[0]->blip_read_samples(buffer, size);
   }
 
   /* Audio filtering */
