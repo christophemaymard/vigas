@@ -46,12 +46,14 @@ endif()
 if (MSVC)
     add_compile_options(
         /permissive-    # Conformance mode: Yes
-        /W3             # Warning level: Level3
         /sdl-           # Security Development Lifecycle (SDL) checks: No
         /Zc:inline      # Remove unreferenced code and data: Yes
         /WX-            # Treat warnings as errors: No
         /EHsc           # Enable C++ exceptions: Yes
     )
+    
+    # Warning level: Level4 if Debug, otherwise Level3.
+    add_compile_options("$<IF:$<CONFIG:Debug>,/W4,/W3>")
     
     # Security check: Enable if Debug, otherwise Disable
     add_compile_options("$<IF:$<CONFIG:Debug>,/GS,/GS->")
