@@ -58,8 +58,4 @@ int blip_mix_samples( blip_t* m1, blip_t* m2, blip_t* m3, short out [], int coun
 /** Frees buffer. No effect if NULL is passed. */
 void blip_delete( blip_t* );
 
-
-/* Deprecated */
-typedef blip_t blip_buffer_t;
-
 #endif

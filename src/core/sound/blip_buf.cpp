@@ -12,7 +12,6 @@
 #ifdef BLIP_ASSERT
 #include <assert.h>
 #endif
-#include <limits.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -27,30 +26,13 @@ details. You should have received a copy of the GNU Lesser General Public
 License along with this module; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
+#include "xee/fnd/data_type.h"
 
-#if defined (BLARGG_TEST) && BLARGG_TEST
-	#include "blargg_test.h"
-#endif
-
-/* Equivalent to ULONG_MAX >= 0xFFFFFFFF00000000.
-Avoids constants that don't fit in 32 bits. */
-#if ULONG_MAX/0xFFFFFFFF > 0xFFFFFFFF
-	typedef unsigned long fixed_t;
-	enum { pre_shift = 32 };
-
-#elif defined(ULLONG_MAX)
-	typedef unsigned long long fixed_t;
-	enum { pre_shift = 32 };
-
-#else
-	typedef unsigned fixed_t;
-	enum { pre_shift = 0 };
-
-#endif
+enum { pre_shift = 32 };
 
 enum { time_bits = pre_shift + 20 };
 
-static fixed_t const time_unit = (fixed_t) 1 << time_bits;
+static u64 const time_unit = (u64) 1 << time_bits;
 
 enum { bass_shift  = 9 }; /* affects high-pass filter breakpoint frequency */
 enum { end_frame_extra = 2 }; /* allows deltas slightly after frame length */
@@ -69,15 +51,13 @@ limit the total buffered samples to blip_max_frame. That could only be
 increased by decreasing time_bits, which would reduce resample ratio accuracy.
 */
 
-typedef int buf_t;
-
 struct blip_t
 {
-	fixed_t factor;
-	fixed_t offset;
+	u64 factor;
+	u64 offset;
 	int size;
   int integrator[2];
-  buf_t* buffer[2];
+  s32* buffer[2];
 };
 
 /* Arithmetic (sign-preserving) right shift */
@@ -113,7 +93,7 @@ static void check_assumptions( void )
 	assert( n == min_sample );
 	
 	assert( blip_max_ratio <= time_unit );
-	assert( blip_max_frame <= (fixed_t) -1 >> time_bits );
+	assert( blip_max_frame <= (u64) -1 >> time_bits );
 }
 #endif
 
@@ -128,8 +108,8 @@ blip_t* blip_new( int size )
 
 	if ( m )
 	{
-    m->buffer[0] = (buf_t*) malloc( (size + buf_extra) * sizeof (buf_t));
-    m->buffer[1] = (buf_t*) malloc( (size + buf_extra) * sizeof (buf_t));
+    m->buffer[0] = (s32*) malloc( (size + buf_extra) * sizeof (s32));
+    m->buffer[1] = (s32*) malloc( (size + buf_extra) * sizeof (s32));
     if ((m->buffer[0] == NULL) || (m->buffer[1] == NULL))
     {
       blip_delete(m);
@@ -164,7 +144,7 @@ void blip_delete( blip_t* m )
 void blip_set_rates( blip_t* m, double clock_rate, double sample_rate )
 {
 	double factor = time_unit * sample_rate / clock_rate;
-	m->factor = (fixed_t) factor;
+	m->factor = (u64) factor;
 	
 #ifdef BLIP_ASSERT
 	/* Fails if clock_rate exceeds maximum, relative to sample_rate */
@@ -192,20 +172,20 @@ void blip_clear( blip_t* m )
 
 	m->integrator[0] = 0;
 	m->integrator[1] = 0;
-	memset( m->buffer[0], 0, (m->size + buf_extra) * sizeof (buf_t) );
-	memset( m->buffer[1], 0, (m->size + buf_extra) * sizeof (buf_t) );
+	memset( m->buffer[0], 0, (m->size + buf_extra) * sizeof (s32) );
+	memset( m->buffer[1], 0, (m->size + buf_extra) * sizeof (s32) );
 }
 
 int blip_clocks_needed( const blip_t* m, int samples )
 {
-	fixed_t needed;
+	u64 needed;
 
 #ifdef BLIP_ASSERT
 	/* Fails if buffer can't hold that many more samples */
 	assert( (samples >= 0) && (((m->offset >> time_bits) + samples) <= m->size) );
 #endif
 
-  needed = (fixed_t) samples * time_unit;
+  needed = (u64) samples * time_unit;
 	if ( needed < m->offset )
 		return 0;
 
@@ -229,17 +209,17 @@ int blip_samples_avail( const blip_t* m )
 
 static void remove_samples( blip_t* m, int count )
 {
-	buf_t* buf = m->buffer[0];
+	s32* buf = m->buffer[0];
   
   int remain = (m->offset >> time_bits) + buf_extra - count;
   m->offset -= count * time_unit;
 
-	memmove( &buf [0], &buf [count], remain * sizeof (buf_t) );
-	memset( &buf [remain], 0, count * sizeof (buf_t) );
+	memmove( &buf [0], &buf [count], remain * sizeof (s32) );
+	memset( &buf [remain], 0, count * sizeof (s32) );
   
 	buf = m->buffer[1];
-	memmove( &buf [0], &buf [count], remain * sizeof (buf_t) );
-	memset( &buf [remain], 0, count * sizeof (buf_t) );
+	memmove( &buf [0], &buf [count], remain * sizeof (s32) );
+	memset( &buf [remain], 0, count * sizeof (s32) );
 }
 
 int blip_read_samples( blip_t* m, short out [], int count)
@@ -253,12 +233,12 @@ int blip_read_samples( blip_t* m, short out [], int count)
 	if ( count )
 #endif
   {
-		buf_t const* in = m->buffer[0];
-		buf_t const* in2 = m->buffer[1];
+		s32 const* in = m->buffer[0];
+		s32 const* in2 = m->buffer[1];
 		int sum = m->integrator[0];
 		int sum2 = m->integrator[1];
     
-		buf_t const* end = in + count;
+		s32 const* end = in + count;
 		do
 		{
 			/* Eliminate fraction */
@@ -311,12 +291,12 @@ int blip_mix_samples( blip_t* m1, blip_t* m2, blip_t* m3, short out [], int coun
   if ( count )
 #endif
   {
-    buf_t const* end;
-    buf_t const* in[3];
+    s32 const* end;
+    s32 const* in[3];
     
     int sum = m1->integrator[0];
     int sum2 = m1->integrator[1];
-    buf_t const* in2[3];
+    s32 const* in2[3];
     in[0] = m1->buffer[0];
     in[1] = m2->buffer[0];
     in[2] = m3->buffer[0];
@@ -413,7 +393,7 @@ static short const bl_step [phase_count + 1] [half_width] =
 };
 
 /* Shifting by pre_shift allows calculation using unsigned int rather than
-possibly-wider fixed_t. On 32-bit platforms, this is likely more efficient.
+possibly-wider u64. On 32-bit platforms, this is likely more efficient.
 And by having pre_shift 32, a 32-bit platform can easily do the shift by
 simply ignoring the low half. */
 
@@ -429,11 +409,11 @@ void blip_add_delta( blip_t* m, unsigned int time, int delta_l, int delta_r )
     int pos = fixed >> frac_bits;
 
 #ifdef BLIP_INVERT
-    buf_t* out_l = m->buffer[1] + pos;
-    buf_t* out_r = m->buffer[0] + pos;
+    s32* out_l = m->buffer[1] + pos;
+    s32* out_r = m->buffer[0] + pos;
 #else
-    buf_t* out_l = m->buffer[0] + pos;
-    buf_t* out_r = m->buffer[1] + pos;
+    s32* out_l = m->buffer[0] + pos;
+    s32* out_r = m->buffer[1] + pos;
 #endif
 
     int delta;
@@ -445,7 +425,7 @@ void blip_add_delta( blip_t* m, unsigned int time, int delta_l, int delta_r )
 
     if (delta_l == delta_r)
     {
-      buf_t out;
+      s32 out;
       delta = (delta_l * interp) >> delta_bits;
       delta_l -= delta;
       out = in[0]*delta_l + in[half_width+0]*delta;
@@ -549,11 +529,11 @@ void blip_add_delta_fast( blip_t* m, unsigned int time, int delta_l, int delta_r
     int pos = fixed >> frac_bits;
 
 #ifdef STEREO_INVERT
-    buf_t* out_l = m->buffer[1] + pos;
-    buf_t* out_r = m->buffer[0] + pos;
+    s32* out_l = m->buffer[1] + pos;
+    s32* out_r = m->buffer[0] + pos;
 #else
-    buf_t* out_l = m->buffer[0] + pos;
-    buf_t* out_r = m->buffer[1] + pos;
+    s32* out_l = m->buffer[0] + pos;
+    s32* out_r = m->buffer[1] + pos;
 #endif
 
     int delta = delta_l * interp;
