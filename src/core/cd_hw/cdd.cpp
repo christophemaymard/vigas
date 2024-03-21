@@ -38,10 +38,10 @@
 
 #include "core/cd_hw/cdd.h"
 
-#include <string.h>
 #include <math.h>
 
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/m68k/m68k.h"
@@ -299,7 +299,7 @@ int cdd_load(char *filename, char *header)
   fname[256] = 0;
 
   /* check loaded file extension */
-  if (memcmp("cue", &filename[strlen(filename) - 3], 3) && memcmp("CUE", &filename[strlen(filename) - 3], 3))
+  if (xee::mem::Memcmp("cue", &filename[strlen(filename) - 3], 3) && xee::mem::Memcmp("CUE", &filename[strlen(filename) - 3], 3))
   {
     int len;
 
@@ -309,7 +309,7 @@ int cdd_load(char *filename, char *header)
     cdStreamRead(header, 0x10, 1, fd);
 
     /* auto-detect valid Sega CD image */
-    if (!memcmp("SEGADISCSYSTEM", header, 14))
+    if (!xee::mem::Memcmp("SEGADISCSYSTEM", header, 14))
     {
       /* COOKED CD-ROM image (2048 bytes data blocks) */
       cdd.sectorSize = 2048;
@@ -319,7 +319,7 @@ int cdd_load(char *filename, char *header)
     }
 
     /* auto-detect CD-ROM synchro pattern */
-    else if (!memcmp(sync, header, 12))
+    else if (!xee::mem::Memcmp(sync, header, 12))
     {
       /* RAW CD-ROM image (2352 bytes data blocks) */
       cdd.sectorSize = 2352;
@@ -399,7 +399,7 @@ int cdd_load(char *filename, char *header)
       while (*lptr == 0x20) lptr++;
 
       /* decode FILE commands */
-      if (!(memcmp(lptr, "FILE", 4)))
+      if (!(xee::mem::Memcmp(lptr, "FILE", 4)))
       {
         /* retrieve current path */
         ptr = fname + strlen(fname) - 1;
@@ -451,14 +451,14 @@ int cdd_load(char *filename, char *header)
           cdStreamSeek(cdd.toc.tracks[cdd.toc.last].fd, 0, SEEK_SET);
 
           /* autodetect WAVE file */
-          if (!memcmp(head, "RIFF", 4) && !memcmp(head + 8, "WAVE", 4))
+          if (!xee::mem::Memcmp(head, "RIFF", 4) && !xee::mem::Memcmp(head + 8, "WAVE", 4))
           {
             /* look for 'data' chunk */
             int chunkSize, dataOffset = 0;
             cdStreamSeek(cdd.toc.tracks[cdd.toc.last].fd, 12, SEEK_SET);
             while (cdStreamRead(head, 8, 1, cdd.toc.tracks[cdd.toc.last].fd))
             {
-              if (!memcmp(head, "data", 4))
+              if (!xee::mem::Memcmp(head, "data", 4))
               {
                 dataOffset = cdStreamTell(cdd.toc.tracks[cdd.toc.last].fd);
                 cdStreamSeek(cdd.toc.tracks[cdd.toc.last].fd, 0, SEEK_SET);
@@ -695,14 +695,14 @@ int cdd_load(char *filename, char *header)
       cdStreamSeek(fd, 0, SEEK_SET);
 
       /* autodetect WAVE file */
-      if (!memcmp(head, "RIFF", 4) && !memcmp(head + 8, "WAVE", 4))
+      if (!xee::mem::Memcmp(head, "RIFF", 4) && !xee::mem::Memcmp(head + 8, "WAVE", 4))
       {
         /* look for 'data' chunk */
         int chunkSize, dataOffset = 0;
         cdStreamSeek(fd, 12, SEEK_SET);
         while (cdStreamRead(head, 8, 1, fd))
         {
-          if (!memcmp(head, "data", 4))
+          if (!xee::mem::Memcmp(head, "data", 4))
           {
             dataOffset = cdStreamTell(fd);
             cdStreamSeek(fd, 0, SEEK_SET);
@@ -888,7 +888,7 @@ int cdd_load(char *filename, char *header)
     cdd.loaded = isMSDfile ? HW_ADDON_MEGASD : HW_ADDON_MEGACD;
 
     /* Automatically try to open associated subcode data file */
-    memcpy(&fname[strlen(fname) - 4], ".sub", 4);
+    xee::mem::Memcpy(&fname[strlen(fname) - 4], ".sub", 4);
     cdd.toc.sub = cdStreamOpen(fname);
 
     /* return 1 if loaded file is CD image file */
@@ -933,7 +933,7 @@ void cdd_unload(void)
   }
 
   /* reset TOC */
-  memset(&cdd.toc, 0x00, sizeof(cdd.toc));
+  xee::mem::Memset(&cdd.toc, 0x00, sizeof(cdd.toc));
 
   /* no CD-ROM track */
   cdd.sectorSize = 0;

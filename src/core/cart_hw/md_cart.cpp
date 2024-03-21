@@ -43,9 +43,10 @@
 
 #include "core/cart_hw/md_cart.h"
 
-#include <string.h>
+#include <cstring>
 
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/loadrom.h"
@@ -359,12 +360,12 @@ void md_cart_init(void)
     if (size < MAXROMSIZE)
     {
       /* ROM is padded up to 2^k bytes */
-      memset(cart.rom + cart.romsize, 0xff, size - cart.romsize);
+      xee::mem::Memset(cart.rom + cart.romsize, 0xff, size - cart.romsize);
     }
     else
     {
       /* ROM is padded up to max ROM size */
-      memset(cart.rom + cart.romsize, 0xff, MAXROMSIZE - cart.romsize);
+      xee::mem::Memset(cart.rom + cart.romsize, 0xff, MAXROMSIZE - cart.romsize);
     }
   }
 
@@ -485,7 +486,7 @@ void md_cart_init(void)
   /**********************************************
         CARTRIDGE EXTRA HARDWARE
   ***********************************************/
-  memset(&cart.hw, 0, sizeof(cart.hw));
+  xee::mem::Memset(&cart.hw, 0, sizeof(cart.hw));
 
   /* initialize default $200000-$20ffff mapping (for games using SRAM & ROM bankswitching) */
   cart.hw.regs[0] = (0x200000 & cart.mask) >> 16;
@@ -500,7 +501,7 @@ void md_cart_init(void)
       int j = rom_database[i].bank_start;
 
       /* retrieve hardware information */
-      memcpy(&cart.hw, &(rom_database[i].cart_hw), sizeof(cart.hw));
+      xee::mem::Memcpy(&cart.hw, &(rom_database[i].cart_hw), sizeof(cart.hw));
 
       /* initialize memory handlers for $400000-$7FFFFF region */
       while (j <= rom_database[i].bank_end)
@@ -531,7 +532,7 @@ void md_cart_init(void)
     /* copy 8KB Boot ROM after cartridge ROM area */
     for (i=0; i<8; i++)
     {
-      memcpy(cart.rom + 0x400000 + i*0x2000, cart.rom + 0x7e000, 0x2000);
+      xee::mem::Memcpy(cart.rom + 0x400000 + i*0x2000, cart.rom + 0x7e000, 0x2000);
     }
 
     /* specific read handler for ROM header area */
@@ -770,7 +771,7 @@ void md_cart_init(void)
       if (load_archive(SK_ROM, cart.rom + 0x400000, 0x200000, NULL) == 0x200000)
       {
         /* check ROM header */
-        if (!memcmp(cart.rom + 0x400000 + 0x120, "SONIC & KNUCKLES",16))
+        if (!xee::mem::Memcmp(cart.rom + 0x400000 + 0x120, "SONIC & KNUCKLES",16))
         {
           /* try to load Sonic 2 & Knuckles upmem ROM file (256KB) */
           if (load_archive(SK_UPMEM, cart.rom + 0x600000, 0x40000, NULL) == 0x40000)
@@ -1798,8 +1799,8 @@ static void mapper_32k_w(u32 data)
       m68k.memory_map[i].base = &cart.rom[0x400000 + (i << 16)];
 
       /* address = address OR (value << 15) */
-      memcpy(m68k.memory_map[i].base, cart.rom + ((i << 16) | (data & 0x3f) << 15), 0x8000);
-      memcpy(m68k.memory_map[i].base + 0x8000, cart.rom + ((i << 16) | ((data | 1) & 0x3f) << 15), 0x8000);
+      xee::mem::Memcpy(m68k.memory_map[i].base, cart.rom + ((i << 16) | (data & 0x3f) << 15), 0x8000);
+      xee::mem::Memcpy(m68k.memory_map[i].base + 0x8000, cart.rom + ((i << 16) | ((data | 1) & 0x3f) << 15), 0x8000);
     }
   }
   else

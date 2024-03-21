@@ -41,9 +41,8 @@
 
 #include "core/audio_subsystem.h"
 
-#include <string.h>
-
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/snd.h"
@@ -78,7 +77,7 @@ int audio_init(int samplerate, f64 framerate)
   audio_shutdown();
 
   /* Clear the sound data context */
-  memset(&snd, 0, sizeof(snd));
+  xee::mem::Memset(&snd, 0, sizeof(snd));
 
   /* Initialize Blip Buffers */
   snd.blips[0] = gpgx::sound::BlipBuffer::blip_new(samplerate / 10);

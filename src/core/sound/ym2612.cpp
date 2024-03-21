@@ -149,11 +149,11 @@
 
 #include "core/sound/ym2612.h"
 
-#include <string.h>
 #include <math.h>
 
 #include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "core/macros.h"
 #include "core/state.h"
@@ -1914,7 +1914,7 @@ static void init_tables(void)
 /* initialize ym2612 emulator */
 void YM2612Init(void)
 {
-  memset(&ym2612,0,sizeof(YM2612));
+  xee::mem::Memset(&ym2612,0,sizeof(YM2612));
   init_tables();
 }
 

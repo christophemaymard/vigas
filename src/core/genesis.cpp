@@ -42,9 +42,9 @@
 #include "core/genesis.h"
 
 #include <stdlib.h>
-#include <string.h>
 
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/m68k/m68k.h"
@@ -274,8 +274,8 @@ void gen_reset(int hard_reset)
     m68k.cycles = ((lines_per_frame - 192 + 159 - (27 * vdp_pal)) * MCYCLES_PER_LINE) + 1004;
 
     /* clear RAM (on real hardware, RAM values are random / undetermined on Power ON) */
-    memset(work_ram, 0x00, sizeof (work_ram));
-    memset(zram, 0x00, sizeof (zram));
+    xee::mem::Memset(work_ram, 0x00, sizeof (work_ram));
+    xee::mem::Memset(zram, 0x00, sizeof (zram));
   }
   else
   {
@@ -332,7 +332,7 @@ void gen_reset(int hard_reset)
       int i;
 
       /* clear TMSS register */
-      memset(tmss, 0x00, sizeof(tmss));
+      xee::mem::Memset(tmss, 0x00, sizeof(tmss));
 
       /* VDP access is locked by default */
       for (i=0xc0; i<0xe0; i+=8)
@@ -365,7 +365,7 @@ void gen_reset(int hard_reset)
     if ((system_hw == SYSTEM_MARKIII) || ((system_hw & SYSTEM_SMS) && (region_code == REGION_JAPAN_NTSC)))
     {
       /* some korean games rely on RAM to be initialized with values different from $00 or $ff */
-      memset(work_ram, 0xf0, sizeof(work_ram));
+      xee::mem::Memset(work_ram, 0xf0, sizeof(work_ram));
     }
 
     /* reset cartridge hardware */
@@ -421,7 +421,7 @@ void gen_tmss_w(unsigned int offset, unsigned int data)
   WRITE_WORD(tmss, offset, data);
 
   /* VDP requires "SEGA" value to be written in TMSS register */
-  if (memcmp((char *)tmss, "SEGA", 4) == 0)
+  if (xee::mem::Memcmp((char *)tmss, "SEGA", 4) == 0)
   {
     for (i=0xc0; i<0xe0; i+=8)
     {

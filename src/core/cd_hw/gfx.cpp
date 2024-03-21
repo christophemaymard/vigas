@@ -38,10 +38,9 @@
 
 #include "core/cd_hw/gfx.h"
 
-#include <string.h>
-
 #include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #ifdef LOG_SCD
 #include "osd.h"
@@ -324,7 +323,7 @@ void gfx_init(void)
   u16 offset;
   u8 mask, row, col, temp;
 
-  memset(&gfx, 0, sizeof(gfx_t));
+  xee::mem::Memset(&gfx, 0, sizeof(gfx_t));
 
   /* Initialize cell image lookup table */
   /* $220000-$22FFFF corresponds to $200000-$20FFFF */

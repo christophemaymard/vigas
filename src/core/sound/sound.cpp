@@ -39,10 +39,9 @@
 
 #include "core/sound/sound.h"
 
-#include <string.h>
-
 #include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/snd.h"
@@ -240,9 +239,9 @@ void sound_init( void )
     if (config.ym3438)
     {
       /* Nuked OPN2 */
-      memset(&ym3438, 0, sizeof(ym3438));
-      memset(&ym3438_sample, 0, sizeof(ym3438_sample));
-      memset(&ym3438_accm, 0, sizeof(ym3438_accm));
+      xee::mem::Memset(&ym3438, 0, sizeof(ym3438));
+      xee::mem::Memset(&ym3438_sample, 0, sizeof(ym3438_sample));
+      xee::mem::Memset(&ym3438_accm, 0, sizeof(ym3438_accm));
       YM_Update = YM3438_Update;
       fm_reset = YM3438_Reset;
       fm_write = YM3438_Write;

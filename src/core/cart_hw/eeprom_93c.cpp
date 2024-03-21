@@ -38,7 +38,7 @@
 
 #include "core/cart_hw/eeprom_93c.h"
 
-#include <string.h>
+#include "xee/mem/memory.h"
 
 #include "core/cart_hw/sram.h"
 
@@ -53,7 +53,7 @@ T_EEPROM_93C eeprom_93c;
 void eeprom_93c_init(void)
 {
   /* default eeprom state */
-  memset(&eeprom_93c, 0, sizeof(T_EEPROM_93C));
+  xee::mem::Memset(&eeprom_93c, 0, sizeof(T_EEPROM_93C));
   eeprom_93c.data = 1;
   eeprom_93c.state = WAIT_START;
   sram.custom = 3;
@@ -146,7 +146,7 @@ void eeprom_93c_write(unsigned char data)
                     /* ERASE ALL */
                     if (eeprom_93c.we)
                     {
-                      memset(sram.sram, 0xFF, 128);
+                      xee::mem::Memset(sram.sram, 0xFF, 128);
                     }
 
                     /* wait for next command */

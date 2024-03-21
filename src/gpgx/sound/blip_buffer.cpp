@@ -34,9 +34,9 @@
 
 #include <cstdlib>
 #include <new> // For std::nothrow.
-#include <string>
 
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 namespace gpgx::sound {
 
@@ -194,8 +194,8 @@ void BlipBuffer::blip_clear()
 
   m_integrator[0] = 0;
   m_integrator[1] = 0;
-  ::memset(m_buffer[0], 0, (m_size + kBufExtra) * sizeof(s32));
-  ::memset(m_buffer[1], 0, (m_size + kBufExtra) * sizeof(s32));
+  xee::mem::Memset(m_buffer[0], 0, (m_size + kBufExtra) * sizeof(s32));
+  xee::mem::Memset(m_buffer[1], 0, (m_size + kBufExtra) * sizeof(s32));
 }
 
 //------------------------------------------------------------------------------
@@ -514,12 +514,12 @@ void BlipBuffer::remove_samples(int count)
   m_offset -= count * kTimeUnit;
 
   s32* buf = m_buffer[0];
-  ::memmove(&buf[0], &buf[count], remain * sizeof(s32));
-  ::memset(&buf[remain], 0, count * sizeof(s32));
+  xee::mem::Memmove(&buf[0], &buf[count], remain * sizeof(s32));
+  xee::mem::Memset(&buf[remain], 0, count * sizeof(s32));
 
   buf = m_buffer[1];
-  ::memmove(&buf[0], &buf[count], remain * sizeof(s32));
-  ::memset(&buf[remain], 0, count * sizeof(s32));
+  xee::mem::Memmove(&buf[0], &buf[count], remain * sizeof(s32));
+  xee::mem::Memset(&buf[remain], 0, count * sizeof(s32));
 }
 
 //------------------------------------------------------------------------------

@@ -38,9 +38,8 @@
 
 #include "core/cart_hw/megasd.h"
 
-#include <string.h>
-
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "core/m68k/m68k.h"
 #include "core/system_hardware.h"
@@ -95,7 +94,7 @@ static const unsigned char megasd_id[4] = {0x42,0x41,0x54,0x45};
 void megasd_reset(void)
 {
   /* reset MegaSD mapper */
-  memset(&megasd_hw, 0x00, sizeof (megasd_hw));
+  xee::mem::Memset(&megasd_hw, 0x00, sizeof (megasd_hw));
 
   /* cartridge area bank #7 default mapping */
   megasd_hw.special = 0x07;
@@ -519,7 +518,7 @@ static void megasd_ctrl_write_word(unsigned int address, unsigned int data)
       {
         case 0x10:  /* Get MegaSD version & serial number */
         {
-          memcpy(megasd_hw.buffer, megasd_version, sizeof(megasd_version));
+          xee::mem::Memcpy(megasd_hw.buffer, megasd_version, sizeof(megasd_version));
           return;
         }
 

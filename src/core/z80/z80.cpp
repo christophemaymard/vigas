@@ -127,10 +127,9 @@
 
 #include "core/z80/z80.h"
 
-#include <string.h>
-
 #include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "core/z80/osd_cpu.h"
 
@@ -3383,7 +3382,7 @@ void z80_init(const void *config, int (*irqcallback)(int))
   }
 
   /* Initialize Z80 */
-  memset(&Z80, 0, sizeof(Z80));
+  xee::mem::Memset(&Z80, 0, sizeof(Z80));
   Z80.daisy = (z80_irq_daisy_chain*)config;
   Z80.irq_callback = irqcallback;
 #ifdef Z80_OVERCLOCK_SHIFT

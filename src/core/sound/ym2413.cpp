@@ -44,11 +44,11 @@ to do:
 
 #include "core/sound/ym2413.h"
 
-#include <string.h>
 #include <math.h>
 
 #include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "core/macros.h"
 
@@ -1710,7 +1710,7 @@ void YM2413Init(void)
   init_tables();
 
   /* clear */
-  memset(&ym2413,0,sizeof(YM2413));
+  xee::mem::Memset(&ym2413,0,sizeof(YM2413));
 
   /* init global tables */
   OPLL_initalize();

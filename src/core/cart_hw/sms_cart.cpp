@@ -41,9 +41,8 @@
 
 #include "core/cart_hw/sms_cart.h"
 
-#include <string.h>
-
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/loadrom.h"
@@ -510,7 +509,7 @@ void sms_cart_init(void)
   u32 crc = crc32(0, cart.rom, cart.romsize);
 
   /* unmapped memory return $FF on read (mapped to unused cartridge areas $510000-$5103FF & $510400-$5107FF) */
-  memset(cart.rom + 0x510000, 0xFF, 0x800);
+  xee::mem::Memset(cart.rom + 0x510000, 0xFF, 0x800);
 
   /* default cartridge ROM mapper */
   cart_rom.mapper = (cart.romsize > 0xC000) ? MAPPER_SEGA : MAPPER_NONE;
@@ -795,8 +794,8 @@ void sms_cart_switch(u8 mode)
       if (cart.romsize <= 0x100000)
       {
         /* copy to BIOS ROM */
-        memcpy(cart.rom + 0x400000, cart.rom, cart.romsize);
-        memcpy(bios_rom.fcr, cart_rom.fcr, 4);
+        xee::mem::Memcpy(cart.rom + 0x400000, cart.rom, cart.romsize);
+        xee::mem::Memcpy(bios_rom.fcr, cart_rom.fcr, 4);
         bios_rom.mapper = cart_rom.mapper;
         bios_rom.pages = cart_rom.pages;
 
@@ -869,7 +868,7 @@ int sms_cart_region_detect(void)
   if (system_hw >= SYSTEM_SMS)
   {
     /* missing header or valid header with Japan region code */
-    if (!rominfo.country[0] || !memcmp(rominfo.country,"SMS Japan",9) || !memcmp(rominfo.country,"GG Japan",8))
+    if (!rominfo.country[0] || !xee::mem::Memcmp(rominfo.country,"SMS Japan",9) || !xee::mem::Memcmp(rominfo.country,"GG Japan",8))
     {
       /* assume Japan region (fixes BIOS support) */
       return REGION_JAPAN_NTSC;

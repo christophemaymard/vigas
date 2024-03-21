@@ -38,9 +38,8 @@
 
 #include "core/cart_hw/eeprom_spi.h"
 
-#include <string.h>
-
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "core/cart_hw/sram.h"
 
@@ -81,7 +80,7 @@ static T_EEPROM_SPI spi_eeprom;
 void eeprom_spi_init(void)
 {
   /* reset eeprom state */
-  memset(&spi_eeprom, 0, sizeof(T_EEPROM_SPI));
+  xee::mem::Memset(&spi_eeprom, 0, sizeof(T_EEPROM_SPI));
   spi_eeprom.out = 1;
   spi_eeprom.state = GET_OPCODE;
 

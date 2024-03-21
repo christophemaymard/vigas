@@ -40,9 +40,9 @@
 #include "SDL_thread.h"
 
 #include <stdio.h>
-#include <string.h>
 
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/loadrom.h"
@@ -110,15 +110,15 @@ static short soundframe[SOUND_SAMPLES_SIZE];
 static void sdl_sound_callback(void *userdata, Uint8 *stream, int len)
 {
   if(sdl_sound.current_emulated_samples < len) {
-    memset(stream, 0, len);
+    xee::mem::Memset(stream, 0, len);
   }
   else {
-    memcpy(stream, sdl_sound.buffer, len);
+    xee::mem::Memcpy(stream, sdl_sound.buffer, len);
     /* loop to compensate desync */
     do {
       sdl_sound.current_emulated_samples -= len;
     } while(sdl_sound.current_emulated_samples > 2 * len);
-    memcpy(sdl_sound.buffer,
+    xee::mem::Memcpy(sdl_sound.buffer,
            sdl_sound.current_pos - sdl_sound.current_emulated_samples,
            sdl_sound.current_emulated_samples);
     sdl_sound.current_pos = sdl_sound.buffer + sdl_sound.current_emulated_samples;
@@ -153,7 +153,7 @@ static int sdl_sound_init()
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "Can't allocate audio buffer", sdl_video.window);
     return 0;
   }
-  memset(sdl_sound.buffer, 0, n);
+  xee::mem::Memset(sdl_sound.buffer, 0, n);
   sdl_sound.current_pos = sdl_sound.buffer;
   return 1;
 }
@@ -789,7 +789,7 @@ int main (int argc, char **argv)
   system_bios = 0;
 
   /* Genesis BOOT ROM support (2KB max) */
-  memset(boot_rom, 0xFF, 0x800);
+  xee::mem::Memset(boot_rom, 0xFF, 0x800);
   fp = fopen(MD_BIOS, "rb");
   if (fp != NULL)
   {
@@ -800,7 +800,7 @@ int main (int argc, char **argv)
     fclose(fp);
 
     /* check BOOT ROM */
-    if (!memcmp((char *)(boot_rom + 0x120),"GENESIS OS", 10))
+    if (!xee::mem::Memcmp((char *)(boot_rom + 0x120),"GENESIS OS", 10))
     {
       /* mark Genesis BIOS as loaded */
       system_bios = SYSTEM_MD;
@@ -827,7 +827,7 @@ int main (int argc, char **argv)
 
   /* initialize Genesis virtual system */
   SDL_LockSurface(sdl_video.surf_bitmap);
-  memset(&bitmap, 0, sizeof(t_bitmap));
+  xee::mem::Memset(&bitmap, 0, sizeof(t_bitmap));
   bitmap.width        = 720;
   bitmap.height       = 576;
 #if defined(USE_8BPP_RENDERING)
@@ -868,17 +868,17 @@ int main (int argc, char **argv)
     }
 
     /* check if internal backup RAM is formatted */
-    if (memcmp(scd.bram + 0x2000 - 0x20, brm_format + 0x20, 0x20))
+    if (xee::mem::Memcmp(scd.bram + 0x2000 - 0x20, brm_format + 0x20, 0x20))
     {
       /* clear internal backup RAM */
-      memset(scd.bram, 0x00, 0x200);
+      xee::mem::Memset(scd.bram, 0x00, 0x200);
 
       /* Internal Backup RAM size fields */
       brm_format[0x10] = brm_format[0x12] = brm_format[0x14] = brm_format[0x16] = 0x00;
       brm_format[0x11] = brm_format[0x13] = brm_format[0x15] = brm_format[0x17] = (sizeof(scd.bram) / 64) - 3;
 
       /* format internal backup RAM */
-      memcpy(scd.bram + 0x2000 - 0x40, brm_format, 0x40);
+      xee::mem::Memcpy(scd.bram + 0x2000 - 0x40, brm_format, 0x40);
     }
 
     /* load cartridge backup RAM */
@@ -892,17 +892,17 @@ int main (int argc, char **argv)
       }
 
       /* check if cartridge backup RAM is formatted */
-      if (memcmp(scd.cartridge.area + scd.cartridge.mask + 1 - 0x20, brm_format + 0x20, 0x20))
+      if (xee::mem::Memcmp(scd.cartridge.area + scd.cartridge.mask + 1 - 0x20, brm_format + 0x20, 0x20))
       {
         /* clear cartridge backup RAM */
-        memset(scd.cartridge.area, 0x00, scd.cartridge.mask + 1);
+        xee::mem::Memset(scd.cartridge.area, 0x00, scd.cartridge.mask + 1);
 
         /* Cartridge Backup RAM size fields */
         brm_format[0x10] = brm_format[0x12] = brm_format[0x14] = brm_format[0x16] = (((scd.cartridge.mask + 1) / 64) - 3) >> 8;
         brm_format[0x11] = brm_format[0x13] = brm_format[0x15] = brm_format[0x17] = (((scd.cartridge.mask + 1) / 64) - 3) & 0xff;
 
         /* format cartridge backup RAM */
-        memcpy(scd.cartridge.area + scd.cartridge.mask + 1 - sizeof(brm_format), brm_format, sizeof(brm_format));
+        xee::mem::Memcpy(scd.cartridge.area + scd.cartridge.mask + 1 - sizeof(brm_format), brm_format, sizeof(brm_format));
       }
     }
   }
@@ -969,7 +969,7 @@ int main (int argc, char **argv)
   if (system_hw == SYSTEM_MCD)
   {
     /* save internal backup RAM (if formatted) */
-    if (!memcmp(scd.bram + 0x2000 - 0x20, brm_format + 0x20, 0x20))
+    if (!xee::mem::Memcmp(scd.bram + 0x2000 - 0x20, brm_format + 0x20, 0x20))
     {
       fp = fopen("./scd.brm", "wb");
       if (fp!=NULL)
@@ -982,7 +982,7 @@ int main (int argc, char **argv)
     /* save cartridge backup RAM (if formatted) */
     if (scd.cartridge.id)
     {
-      if (!memcmp(scd.cartridge.area + scd.cartridge.mask + 1 - 0x20, brm_format + 0x20, 0x20))
+      if (!xee::mem::Memcmp(scd.cartridge.area + scd.cartridge.mask + 1 - 0x20, brm_format + 0x20, 0x20))
       {
         fp = fopen("./cart.brm", "wb");
         if (fp!=NULL)

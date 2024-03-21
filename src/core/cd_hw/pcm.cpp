@@ -38,11 +38,10 @@
 
 #include "core/cd_hw/pcm.h"
 
-#include <string.h>
-
 #include "osd.h"
 #include "core/snd.h"
 #include "core/genesis.h"
+#include "xee/mem/memory.h"
 
 #ifdef LOG_PCM
 #include "core/m68k/m68k.h"
@@ -67,7 +66,7 @@ void pcm_init(f64 clock, int samplerate)
 void pcm_reset(void)
 {
   /* reset chip & clear external RAM */
-  memset(&pcm, 0, sizeof(pcm_t));
+  xee::mem::Memset(&pcm, 0, sizeof(pcm_t));
 
   /* reset default bank */
   pcm.bank = pcm.ram;

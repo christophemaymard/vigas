@@ -41,9 +41,8 @@
 
 #include "core/cart_hw/ggenie.h"
 
-#include <string.h>
-
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/m68k/m68k.h"
@@ -84,7 +83,7 @@ void ggenie_init(void)
 #endif
 
     /* $0000-$7fff mirrored into $8000-$ffff */
-    memcpy(cart.lockrom + 0x8000, cart.lockrom, 0x8000);
+    xee::mem::Memcpy(cart.lockrom + 0x8000, cart.lockrom, 0x8000);
 
     /* Game Genie hardware is enabled */
     ggenie.enabled = 1;
@@ -110,10 +109,10 @@ void ggenie_reset(int hard)
       ggenie_switch(0);
 
       /* reset internal state */
-      memset(ggenie.regs,0,sizeof(ggenie.regs));
-      memset(ggenie.old,0,sizeof(ggenie.old));
-      memset(ggenie.data,0,sizeof(ggenie.data));
-      memset(ggenie.addr,0,sizeof(ggenie.addr));
+      xee::mem::Memset(ggenie.regs,0,sizeof(ggenie.regs));
+      xee::mem::Memset(ggenie.old,0,sizeof(ggenie.old));
+      xee::mem::Memset(ggenie.data,0,sizeof(ggenie.data));
+      xee::mem::Memset(ggenie.addr,0,sizeof(ggenie.addr));
     }
 
     /* Game Genie ROM is mapped at $000000-$007fff */

@@ -38,7 +38,9 @@
 
 #include "core/cart_hw/sram.h"
 
-#include <string.h>
+#include <cstring>
+
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/macros.h"
@@ -75,12 +77,12 @@ void sram_init(void)
   if (strstr(rominfo.international,"Sonic 1 Remastered"))
   {
     /* Sonic 1 Remastered hack crashes if backup RAM is not initialized to zero */
-    memset(sram.sram, 0x00, 0x10000);
+    xee::mem::Memset(sram.sram, 0x00, 0x10000);
   }
   else
   {
     /* by default, assume backup RAM is initialized to 0xFF (Micro Machines 2, Dino Dini Soccer)  */
-    memset(sram.sram, 0xFF, 0x10000);
+    xee::mem::Memset(sram.sram, 0xFF, 0x10000);
   }
 
   sram.crc = crc32(0, sram.sram, 0x10000);

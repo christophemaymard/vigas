@@ -38,10 +38,9 @@
 
 #include "core/cd_hw/scd.h"
 
-#include <string.h>
-
 #include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #if defined(LOG_CDD) || defined(LOGERROR) || defined(LOG_SCD)
 #include "osd.h"
@@ -1797,10 +1796,10 @@ void scd_init(void)
   scd.cycles_per_line = (u32) (MCYCLES_PER_LINE * ((f32)SCD_CLOCK / (f32)system_clock));
 
   /* Clear RAM */
-  memset(scd.prg_ram, 0x00, sizeof(scd.prg_ram));
-  memset(scd.word_ram, 0x00, sizeof(scd.word_ram));
-  memset(scd.word_ram_2M, 0x00, sizeof(scd.word_ram_2M));
-  memset(scd.bram, 0x00, sizeof(scd.bram));
+  xee::mem::Memset(scd.prg_ram, 0x00, sizeof(scd.prg_ram));
+  xee::mem::Memset(scd.word_ram, 0x00, sizeof(scd.word_ram));
+  xee::mem::Memset(scd.word_ram_2M, 0x00, sizeof(scd.word_ram_2M));
+  xee::mem::Memset(scd.bram, 0x00, sizeof(scd.bram));
 }
 
 void scd_reset(int hard)
@@ -1810,7 +1809,7 @@ void scd_reset(int hard)
     int i;
 
     /* Clear all ASIC registers by default */
-    memset(scd.regs, 0, sizeof(scd.regs));
+    xee::mem::Memset(scd.regs, 0, sizeof(scd.regs));
 
     /* Clear pending DMNA write status */
     scd.dmna = 0;
@@ -1878,7 +1877,7 @@ void scd_reset(int hard)
     /* Clear only SUB-CPU side registers (communication registers are not cleared, see msu-md-sample.bin) */
     scd.regs[0x04>>1].w = 0x0000;
     scd.regs[0x0c>>1].w = 0x0000;
-    memset(&scd.regs[0x30>>1], 0, sizeof(scd.regs) - 0x30);
+    xee::mem::Memset(&scd.regs[0x30>>1], 0, sizeof(scd.regs) - 0x30);
   }
 
   /* SUB-CPU side default values */
@@ -1903,8 +1902,8 @@ void scd_reset(int hard)
   scd.pending = 0;
 
   /* Clear CPU polling detection */
-  memset(&m68k.poll, 0, sizeof(m68k.poll));
-  memset(&s68k.poll, 0, sizeof(s68k.poll));
+  xee::mem::Memset(&m68k.poll, 0, sizeof(m68k.poll));
+  xee::mem::Memset(&s68k.poll, 0, sizeof(s68k.poll));
 
   /* reset CDD cycle counter */
   cdd.cycles = (scd.cycles - s68k.cycles) * 3;

@@ -38,9 +38,8 @@
 
 #include "core/cart_hw/areplay.h"
 
-#include <string.h>
-
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/m68k/m68k.h"
@@ -73,13 +72,13 @@ void areplay_init(void)
   if (load_archive(AR_ROM, cart.lockrom, 0x10000, NULL) > 0)
   {
     /* detect Action Replay board type */
-    if (!memcmp(cart.lockrom + 0x120, "ACTION REPLAY   ", 16))
+    if (!xee::mem::Memcmp(cart.lockrom + 0x120, "ACTION REPLAY   ", 16))
     {
       /* normal Action Replay (32KB ROM) */
       action_replay.enabled = TYPE_AR;
 
       /* $0000-$7fff mirrored into $8000-$ffff */
-      memcpy(cart.lockrom + 0x8000, cart.lockrom, 0x8000);
+      xee::mem::Memcpy(cart.lockrom + 0x8000, cart.lockrom, 0x8000);
 
       /* internal registers mapped at $010000-$01ffff */
       m68k.memory_map[0x01].write16 = ar_write_regs;
@@ -90,7 +89,7 @@ void areplay_init(void)
       u8 sp = cart.lockrom[0x01];
 
       /* Detect board version */
-      if ((sp == 0x42) && !memcmp(cart.lockrom + 0x120, "ACTION REPLAY 2 ", 16))
+      if ((sp == 0x42) && !xee::mem::Memcmp(cart.lockrom + 0x120, "ACTION REPLAY 2 ", 16))
       {
         /* PRO Action Replay (2x32KB ROM) */
         action_replay.enabled = TYPE_PRO1;
@@ -98,7 +97,7 @@ void areplay_init(void)
         /* internal registers mapped at $010000-$01ffff */
         m68k.memory_map[0x01].write16 = ar_write_regs;
       }
-      else if ((sp == 0x60) && !memcmp(cart.lockrom + 0x3c6, "ACTION REPLAY II", 16))
+      else if ((sp == 0x60) && !xee::mem::Memcmp(cart.lockrom + 0x3c6, "ACTION REPLAY II", 16))
       {
         /* PRO Action Replay 2 (2x32KB ROM) */
         action_replay.enabled = TYPE_PRO2;
@@ -150,10 +149,10 @@ void areplay_reset(int hard)
     if (hard || (action_replay.status == AR_SWITCH_TRAINER))
     {
       /* reset internal registers */
-      memset(action_replay.regs, 0, sizeof(action_replay.regs));
-      memset(action_replay.old, 0, sizeof(action_replay.old));
-      memset(action_replay.data, 0, sizeof(action_replay.data));
-      memset(action_replay.addr, 0, sizeof(action_replay.addr));
+      xee::mem::Memset(action_replay.regs, 0, sizeof(action_replay.regs));
+      xee::mem::Memset(action_replay.old, 0, sizeof(action_replay.old));
+      xee::mem::Memset(action_replay.data, 0, sizeof(action_replay.data));
+      xee::mem::Memset(action_replay.addr, 0, sizeof(action_replay.addr));
 
       /* by default, internal ROM is mapped at $000000-$00FFFF */
       m68k.memory_map[0].base = cart.lockrom;
@@ -161,7 +160,7 @@ void areplay_reset(int hard)
       /* reset internal RAM on power-on */
       if (hard)
       {
-        memset(action_replay.ram,0xff,0x10000);
+        xee::mem::Memset(action_replay.ram,0xff,0x10000);
       }
     }
   }

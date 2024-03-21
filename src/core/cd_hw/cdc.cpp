@@ -38,9 +38,8 @@
 
 #include "core/cd_hw/cdc.h"
 
-#include <string.h>
-
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #if defined(LOG_CDC) || defined(LOG_SCD)
 #include "osd.h"
@@ -84,7 +83,7 @@
 
 void cdc_init(void)
 {
-  memset(&cdc, 0, sizeof(cdc_t));
+  xee::mem::Memset(&cdc, 0, sizeof(cdc_t));
 
   /* autodetect CDC configuration */
   if ((scd.type == CD_TYPE_WONDERMEGA_M2) || (scd.type == CD_TYPE_CDX))
@@ -579,7 +578,7 @@ void cdc_decoder_update(u32 header)
       if (offset > 0x4000)
       {
         /* data should be written at the start of buffer */
-        memcpy(cdc.ram, cdc.ram + 0x4000, offset - 0x4000);
+        xee::mem::Memcpy(cdc.ram, cdc.ram + 0x4000, offset - 0x4000);
       }
     }
   }

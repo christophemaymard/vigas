@@ -38,7 +38,7 @@
 
 #include "core/cd_hw/cd_cart.h"
 
-#include <string.h>
+#include "xee/mem/memory.h"
 
 #include "core/m68k/m68k.h"
 #include "core/genesis.h"
@@ -206,10 +206,10 @@ void cd_cart_init(void)
   if (scd.cartridge.id)
   {
     /* disable cartridge backup memory */
-    memset(&sram, 0, sizeof (T_SRAM));
+    xee::mem::Memset(&sram, 0, sizeof (T_SRAM));
 
     /* clear backup RAM */
-    memset(scd.cartridge.area, 0x00, sizeof(scd.cartridge.area));
+    xee::mem::Memset(scd.cartridge.area, 0x00, sizeof(scd.cartridge.area));
 
     /* backup RAM size mask */
     scd.cartridge.mask = (1 << (scd.cartridge.id + 13)) - 1;

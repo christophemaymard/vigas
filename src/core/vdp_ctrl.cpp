@@ -41,9 +41,8 @@
 
 #include "core/vdp_ctrl.h"
 
-#include <string.h>
-
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/macros.h"
@@ -278,11 +277,11 @@ void vdp_reset(void)
 {
   int i;
 
-  memset ((char *) sat, 0, sizeof (sat));
-  memset ((char *) vram, 0, sizeof (vram));
-  memset ((char *) cram, 0, sizeof (cram));
-  memset ((char *) vsram, 0, sizeof (vsram));
-  memset ((char *) reg, 0, sizeof (reg));
+  xee::mem::Memset ((char *) sat, 0, sizeof (sat));
+  xee::mem::Memset ((char *) vram, 0, sizeof (vram));
+  xee::mem::Memset ((char *) cram, 0, sizeof (cram));
+  xee::mem::Memset ((char *) vsram, 0, sizeof (vsram));
+  xee::mem::Memset ((char *) reg, 0, sizeof (reg));
 
   addr            = 0;
   addr_latch      = 0;
@@ -320,8 +319,8 @@ void vdp_reset(void)
 
   /* reset pattern cache changes */
   bg_list_index = 0;
-  memset ((char *) bg_name_dirty, 0, sizeof (bg_name_dirty));
-  memset ((char *) bg_name_list, 0, sizeof (bg_name_list));
+  xee::mem::Memset ((char *) bg_name_dirty, 0, sizeof (bg_name_dirty));
+  xee::mem::Memset ((char *) bg_name_list, 0, sizeof (bg_name_list));
 
   /* default Window clipping */
   window_clip(0,0);
@@ -1627,7 +1626,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
           int i;
           
           /* make temporary copy of 16KB VRAM */
-          memcpy(vram + 0x4000, vram, 0x4000);
+          xee::mem::Memcpy(vram + 0x4000, vram, 0x4000);
 
           /* re-arrange 16KB VRAM address decoding */
           if (d & 0x80)

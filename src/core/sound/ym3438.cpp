@@ -29,7 +29,7 @@
 
 #include "core/sound/ym3438.h"
 
-#include <string.h>
+#include "xee/mem/memory.h"
 
 #define SIGN_EXTEND(bit_index, value) (((value) & ((1u << (bit_index)) - 1u)) - ((value) & (1u << (bit_index))))
 
@@ -1187,7 +1187,7 @@ static void OPN2_KeyOn(ym3438_t*chip)
 void OPN2_Reset(ym3438_t *chip)
 {
     u32 i;
-    memset(chip, 0, sizeof(ym3438_t));
+    xee::mem::Memset(chip, 0, sizeof(ym3438_t));
     for (i = 0; i < 24; i++)
     {
         chip->eg_out[i] = 0x3ff;

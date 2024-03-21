@@ -41,13 +41,12 @@
 
 #include "gpgx/sound/sn76489.h"
 
-#include <string>
+#include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/snd.h"
 #include "core/state.h"
-
-#include "xee/fnd/data_type.h"
 
 namespace gpgx::sound {
 
@@ -89,13 +88,13 @@ Sn76489::Sn76489()
   m_noiseShiftValue = 0;
   m_noiseShiftWidth = 0;
   m_noiseBitMask = 0;
-  ::memset(&m_regs[0], 0, sizeof(m_regs));
-  ::memset(&m_freqInc[0], 0, sizeof(m_freqInc));
-  ::memset(&m_freqCounter[0], 0, sizeof(m_freqCounter));
-  ::memset(&m_polarity[0], 0, sizeof(m_polarity));
-  ::memset(&m_chanDelta[0], 0, sizeof(m_chanDelta));
-  ::memset(&m_chanOut[0], 0, sizeof(m_chanOut));
-  ::memset(&m_chanAmp[0], 0, sizeof(m_chanAmp));
+  xee::mem::Memset(&m_regs[0], 0, sizeof(m_regs));
+  xee::mem::Memset(&m_freqInc[0], 0, sizeof(m_freqInc));
+  xee::mem::Memset(&m_freqCounter[0], 0, sizeof(m_freqCounter));
+  xee::mem::Memset(&m_polarity[0], 0, sizeof(m_polarity));
+  xee::mem::Memset(&m_chanDelta[0], 0, sizeof(m_chanDelta));
+  xee::mem::Memset(&m_chanOut[0], 0, sizeof(m_chanOut));
+  xee::mem::Memset(&m_chanAmp[0], 0, sizeof(m_chanAmp));
 }
 
 //------------------------------------------------------------------------------

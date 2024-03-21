@@ -41,8 +41,6 @@
 
 #include "core/system.h"
 
-#include <string.h>
-
 #include "xee/fnd/data_type.h"
 
 #include "osd.h"

@@ -38,10 +38,11 @@
 
 #include "core/cart_hw/eeprom_i2c.h"
 
-#include <string.h>
+#include <cstring>
 
 #include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "core/loadrom.h"
 #include "core/m68k/m68k.h"
@@ -200,7 +201,7 @@ void eeprom_i2c_init(void)
   sram.custom = 0;
 
   /* initialize I2C EEPROM state */
-  memset(&eeprom_i2c, 0, sizeof(eeprom_i2c));
+  xee::mem::Memset(&eeprom_i2c, 0, sizeof(eeprom_i2c));
   eeprom_i2c.sda = eeprom_i2c.old_sda = 1;
   eeprom_i2c.scl = eeprom_i2c.old_scl = 1;
   eeprom_i2c.state = STAND_BY;
@@ -225,7 +226,7 @@ void eeprom_i2c_init(void)
         if (i2c_database[i].eeprom_type > NO_EEPROM)
         {
           /* get EEPROM characteristics */
-          memcpy(&eeprom_i2c.spec, &i2c_specs[i2c_database[i].eeprom_type], sizeof(T_I2C_SPEC));
+          xee::mem::Memcpy(&eeprom_i2c.spec, &i2c_specs[i2c_database[i].eeprom_type], sizeof(T_I2C_SPEC));
 
           /* serial EEPROM game found */
           sram.on = sram.custom = 1;
@@ -248,7 +249,7 @@ void eeprom_i2c_init(void)
       sram.custom = 1;
 
       /* assume SEGA mapper as default */
-      memcpy(&eeprom_i2c.spec, &i2c_specs[EEPROM_X24C01], sizeof(T_I2C_SPEC));
+      xee::mem::Memcpy(&eeprom_i2c.spec, &i2c_specs[EEPROM_X24C01], sizeof(T_I2C_SPEC));
       mapper_i2c_sega_init();
     }
   }

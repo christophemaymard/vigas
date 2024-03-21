@@ -38,9 +38,8 @@
 
 #include "core/state.h"
 
-#include <string.h>
-
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/m68k/m68k.h"
@@ -65,7 +64,7 @@ int state_load(unsigned char *state)
   char version[17];
   load_param(version,16);
   version[16] = 0;
-  if (memcmp(version,STATE_VERSION,11))
+  if (xee::mem::Memcmp(version,STATE_VERSION,11))
   {
     return 0;
   }
@@ -186,7 +185,7 @@ int state_load(unsigned char *state)
     id[4] = 0;
 
     /* check if CD hardware was enabled before attempting to restore */
-    if (memcmp(id,"SCD!",4))
+    if (xee::mem::Memcmp(id,"SCD!",4))
     {
        return 0;
     }
@@ -216,7 +215,7 @@ int state_save(unsigned char *state)
 
   /* version string */
   char version[16];
-  memcpy(version,STATE_VERSION,16);
+  xee::mem::Memcpy(version,STATE_VERSION,16);
   save_param(version, 16);
 
   /* GENESIS */
@@ -280,7 +279,7 @@ int state_save(unsigned char *state)
   {
     /* CD hardware ID flag */
     char id[4];
-    memcpy(id,"SCD!",4);
+    xee::mem::Memcpy(id,"SCD!",4);
     save_param(id, 4);
 
     /* CD hardware */

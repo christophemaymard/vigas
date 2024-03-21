@@ -43,11 +43,11 @@
 #define STATE_VERSION "GENPLUS-GX 1.7.6"
 
 #define load_param(param, size) \
-  memcpy(param, &state[bufferptr], size); \
+  xee::mem::Memcpy(param, &state[bufferptr], size); \
   bufferptr+= size;
 
 #define save_param(param, size) \
-  memcpy(&state[bufferptr], param, size); \
+  xee::mem::Memcpy(&state[bufferptr], param, size); \
   bufferptr+= size;
 
 /* Function prototypes */

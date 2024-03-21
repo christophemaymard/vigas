@@ -12,9 +12,8 @@
 
 #include "core/cart_hw/svp/svp.h"
 
-#include <string.h>
-
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "core/m68k/m68k.h"
 #include "core/genesis.h"
@@ -61,7 +60,7 @@ static u32 svp_read_cell_byte(u32 address)
 void svp_init(void)
 {
   svp = (svp_t*) ((char *)cart.rom + 0x200000);
-  memset(svp, 0, sizeof(*svp));
+  xee::mem::Memset(svp, 0, sizeof(*svp));
 
   m68k.memory_map[0x30].base    = svp->dram;
   m68k.memory_map[0x30].read8   = NULL;
@@ -89,7 +88,7 @@ void svp_init(void)
 
 void svp_reset(void)
 {
-  memcpy(svp->iram_rom + 0x800, cart.rom + 0x800, 0x20000 - 0x800);
+  xee::mem::Memcpy(svp->iram_rom + 0x800, cart.rom + 0x800, 0x20000 - 0x800);
   ssp1601_reset(&svp->ssp1601);
 }
 

@@ -39,10 +39,11 @@
 
 #include "core/loadrom.h"
 
-#include <string.h>
+#include <cstring>
 #include <ctype.h>
 
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/system_bios.h"
@@ -240,7 +241,7 @@ static void deinterleave_block(u8 * src)
 {
   int i;
   u8 block[0x4000];
-  memcpy (block, src, 0x4000);
+  xee::mem::Memcpy (block, src, 0x4000);
   for (i = 0; i < 0x2000; i += 1)
   {
     src[i * 2 + 0] = block[0x2000 + (i)];
@@ -255,15 +256,15 @@ static void deinterleave_block(u8 * src)
 void getrominfo(char *romheader)
 {
   /* Clear ROM info structure */
-  memset (&rominfo, 0, sizeof (ROMINFO));
+  xee::mem::Memset (&rominfo, 0, sizeof (ROMINFO));
 
   /* Genesis ROM header support */
   if (system_hw & SYSTEM_MD)
   {
     int i,j;
 
-    memcpy (&rominfo.consoletype, romheader + ROMCONSOLE, 16);
-    memcpy (&rominfo.copyright, romheader + ROMCOPYRIGHT, 16);
+    xee::mem::Memcpy (&rominfo.consoletype, romheader + ROMCONSOLE, 16);
+    xee::mem::Memcpy (&rominfo.copyright, romheader + ROMCOPYRIGHT, 16);
 
     /* Domestic (japanese) name */
     rominfo.domestic[0] = romheader[ROMDOMESTIC];
@@ -292,12 +293,12 @@ void getrominfo(char *romheader)
     rominfo.international[j] = 0;
 
     /* ROM informations */
-    memcpy (&rominfo.ROMType, romheader + ROMTYPE, 2);
-    memcpy (&rominfo.product, romheader + ROMPRODUCT, 12);
-    memcpy (&rominfo.checksum, romheader + ROMCHECKSUM, 2);
-    memcpy (&rominfo.romstart, romheader + ROMROMSTART, 4);
-    memcpy (&rominfo.romend, romheader + ROMROMEND, 4);
-    memcpy (&rominfo.country, romheader + ROMCOUNTRY, 16);
+    xee::mem::Memcpy (&rominfo.ROMType, romheader + ROMTYPE, 2);
+    xee::mem::Memcpy (&rominfo.product, romheader + ROMPRODUCT, 12);
+    xee::mem::Memcpy (&rominfo.checksum, romheader + ROMCHECKSUM, 2);
+    xee::mem::Memcpy (&rominfo.romstart, romheader + ROMROMSTART, 4);
+    xee::mem::Memcpy (&rominfo.romend, romheader + ROMROMEND, 4);
+    xee::mem::Memcpy (&rominfo.country, romheader + ROMCOUNTRY, 16);
 
     /* Checksums */
 #ifdef LSB_FIRST
@@ -317,15 +318,15 @@ void getrominfo(char *romheader)
     u16 offset = 0;
 
     /* detect Master System ROM header */
-    if (!memcmp (&romheader[0x1ff0], "TMR SEGA", 8))
+    if (!xee::mem::Memcmp (&romheader[0x1ff0], "TMR SEGA", 8))
     {
       offset = 0x1ff0;
     }
-    else if (!memcmp (&romheader[0x3ff0], "TMR SEGA", 8))
+    else if (!xee::mem::Memcmp (&romheader[0x3ff0], "TMR SEGA", 8))
     {
       offset = 0x3ff0;
     }
-    else if (!memcmp (&romheader[0x7ff0], "TMR SEGA", 8))
+    else if (!xee::mem::Memcmp (&romheader[0x7ff0], "TMR SEGA", 8))
     {
       offset = 0x7ff0;
     }
@@ -438,17 +439,17 @@ int load_bios(int system)
         if (size > 0)
         {
           /* auto-detect CD hardware model */
-          if (!memcmp(&scd.bootrom[0x120], "WONDER-MEGA BOOT", 16))
+          if (!xee::mem::Memcmp(&scd.bootrom[0x120], "WONDER-MEGA BOOT", 16))
           {
             /* Wondermega CD hardware */
             scd.type = CD_TYPE_WONDERMEGA;
           }
-          else if (!memcmp(&scd.bootrom[0x120], "WONDERMEGA2 BOOT", 16))
+          else if (!xee::mem::Memcmp(&scd.bootrom[0x120], "WONDERMEGA2 BOOT", 16))
           {
             /* Wondermega M2 / X'Eye CD hardware */
             scd.type = CD_TYPE_WONDERMEGA_M2;
           }
-          else if (!memcmp(&scd.bootrom[0x120], "CDX BOOT ROM    ", 16))
+          else if (!xee::mem::Memcmp(&scd.bootrom[0x120], "CDX BOOT ROM    ", 16))
           {
             /* CDX / Multi-Mega CD hardware */
             scd.type = CD_TYPE_CDX;
@@ -637,17 +638,17 @@ int load_rom(char *filename)
     *(u32 *)(extension) &= 0xdfdfdfdf;
 
     /* auto-detect system hardware from ROM file extension */
-    if (!memcmp("SMS", &extension[0], 3))
+    if (!xee::mem::Memcmp("SMS", &extension[0], 3))
     {
       /* Master System II hardware */
       system_hw = SYSTEM_SMS2;
     }
-    else if (!memcmp("GG", &extension[1], 2))
+    else if (!xee::mem::Memcmp("GG", &extension[1], 2))
     {
       /* Game Gear hardware (GG mode) */
       system_hw = SYSTEM_GG;
     }
-    else if (!memcmp("SG", &extension[1], 2))
+    else if (!xee::mem::Memcmp("SG", &extension[1], 2))
     {
       /* SG-1000 hardware */
       system_hw = SYSTEM_SG;
@@ -658,7 +659,7 @@ int load_rom(char *filename)
       system_hw = SYSTEM_MD;
 
       /* decode .MDX format */
-      if (!memcmp("MDX", &extension[0], 3))
+      if (!xee::mem::Memcmp("MDX", &extension[0], 3))
       {
         for (i = 4; i < size - 1; i++)
         {
@@ -668,10 +669,10 @@ int load_rom(char *filename)
       }
 
       /* auto-detect byte-swapped dumps */
-      if (!memcmp((char *)(cart.rom + 0x100),"ESAGM GE ARDVI E", 16) ||
-          !memcmp((char *)(cart.rom + 0x100),"ESAGG NESESI", 12) ||
-          !memcmp((char *)(cart.rom + 0x80000 + 0x100),"ESAGM GE ARDVI E", 16) ||
-          !memcmp((char *)(cart.rom + 0x80000 + 0x100),"ESAGG NESESI", 12))
+      if (!xee::mem::Memcmp((char *)(cart.rom + 0x100),"ESAGM GE ARDVI E", 16) ||
+          !xee::mem::Memcmp((char *)(cart.rom + 0x100),"ESAGG NESESI", 12) ||
+          !xee::mem::Memcmp((char *)(cart.rom + 0x80000 + 0x100),"ESAGM GE ARDVI E", 16) ||
+          !xee::mem::Memcmp((char *)(cart.rom + 0x80000 + 0x100),"ESAGG NESESI", 12))
       {
         for(i = 0; i < size; i += 2)
         {
@@ -683,11 +684,11 @@ int load_rom(char *filename)
     }
 
     /* auto-detect 512 byte extra header */
-    if (memcmp((char *)(cart.rom + 0x100), "SEGA", 4) && ((size / 512) & 1) && !(size % 512))
+    if (xee::mem::Memcmp((char *)(cart.rom + 0x100), "SEGA", 4) && ((size / 512) & 1) && !(size % 512))
     {
       /* remove header */
       size -= 512;
-      memmove (cart.rom, cart.rom + 512, size);
+      xee::mem::Memmove (cart.rom, cart.rom + 512, size);
 
       /* assume interleaved Mega Drive / Genesis ROM format (.smd) */
       if (system_hw == SYSTEM_MD)
@@ -824,7 +825,7 @@ int load_rom(char *filename)
       scd.cartridge.boot = 0x00;
 
       /* copy ROM to BOOTROM area */
-      memcpy(scd.bootrom, cart.rom, sizeof(scd.bootrom));
+      xee::mem::Memcpy(scd.bootrom, cart.rom, sizeof(scd.bootrom));
 
       /* mark CD BIOS as being loaded */
       system_bios = system_bios | 0x10;
@@ -1081,13 +1082,13 @@ void get_region(char *romheader)
       int country = 0;
 
       /* from Gens */
-      if (!memcmp(rominfo.country, "eur", 3)) country |= 8;
-      else if (!memcmp(rominfo.country, "EUR", 3)) country |= 8;
-      else if (!memcmp(rominfo.country, "Europe", 3)) country |= 8;
-      else if (!memcmp(rominfo.country, "jap", 3)) country |= 1;
-      else if (!memcmp(rominfo.country, "JAP", 3)) country |= 1;
-      else if (!memcmp(rominfo.country, "usa", 3)) country |= 4;
-      else if (!memcmp(rominfo.country, "USA", 3)) country |= 4;
+      if (!xee::mem::Memcmp(rominfo.country, "eur", 3)) country |= 8;
+      else if (!xee::mem::Memcmp(rominfo.country, "EUR", 3)) country |= 8;
+      else if (!xee::mem::Memcmp(rominfo.country, "Europe", 3)) country |= 8;
+      else if (!xee::mem::Memcmp(rominfo.country, "jap", 3)) country |= 1;
+      else if (!xee::mem::Memcmp(rominfo.country, "JAP", 3)) country |= 1;
+      else if (!xee::mem::Memcmp(rominfo.country, "usa", 3)) country |= 4;
+      else if (!xee::mem::Memcmp(rominfo.country, "USA", 3)) country |= 4;
       else
       {
         int i;

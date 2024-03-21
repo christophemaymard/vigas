@@ -42,11 +42,11 @@
 
 #include "core/vdp_render.h"
 
-#include <string.h>
 #include <math.h>
 
 #include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
+#include "xee/mem/memory.h"
 
 #include "osd.h"
 #include "core/macros.h"
@@ -1211,7 +1211,7 @@ void render_bg_m1(int line)
   int width = 40;
 
   /* Left border (8 pixels) */
-  memset (lb, 0x40, 8);
+  xee::mem::Memset (lb, 0x40, 8);
   lb += 8;
 
   do
@@ -1228,7 +1228,7 @@ void render_bg_m1(int line)
   while (--width);
 
   /* Right borders (8 pixels) */
-  memset(lb, 0x40, 8);
+  xee::mem::Memset(lb, 0x40, 8);
 }
 
 /* Text + extended PG */
@@ -1256,7 +1256,7 @@ void render_bg_m1x(int line)
   pg = &vram[((0x2000 + ((line & 0xC0) << 5)) & pg_mask) + (line & 7)];
 
   /* Left border (8 pixels) */
-  memset (lb, 0x40, 8);
+  xee::mem::Memset (lb, 0x40, 8);
   lb += 8;
 
   do
@@ -1273,7 +1273,7 @@ void render_bg_m1x(int line)
   while (--width);
 
   /* Right borders (8 pixels) */
-  memset(lb, 0x40, 8);
+  xee::mem::Memset(lb, 0x40, 8);
 }
 
 /* Graphics II */
@@ -1396,7 +1396,7 @@ void render_bg_inv(int line)
   int width = 40;
 
   /* Left border (8 pixels) */
-  memset (lb, 0x40, 8);
+  xee::mem::Memset (lb, 0x40, 8);
   lb += 8;
 
   do
@@ -1411,7 +1411,7 @@ void render_bg_inv(int line)
   while (--width);
 
   /* Right borders (8 pixels) */
-  memset(lb, 0x40, 8);
+  xee::mem::Memset(lb, 0x40, 8);
 }
 
 /* Mode 4 */
@@ -1470,7 +1470,7 @@ void render_bg_m4(int line)
   /* Clip left-most column if required */
   if (shift)
   {
-    memset(&linebuf[0][0x20], 0, shift);
+    xee::mem::Memset(&linebuf[0][0x20], 0, shift);
     index++;
   }
 
@@ -3666,14 +3666,14 @@ void render_obj_tms(int line)
     int line = v_counter - (bitmap.viewport.h - 144) / 2;
     if ((line < 0) || (line >= 144))
     {
-      memset(&linebuf[0][0x20], 0x40, 256);
+      xee::mem::Memset(&linebuf[0][0x20], 0x40, 256);
     }
     else
     {
       if (bitmap.viewport.x > 0)
       {
-        memset(&linebuf[0][0x20], 0x40, 48);
-        memset(&linebuf[0][0x20+48+160], 0x40, 48);
+        xee::mem::Memset(&linebuf[0][0x20], 0x40, 48);
+        xee::mem::Memset(&linebuf[0][0x20+48+160], 0x40, 48);
       }
     }
   }
@@ -3781,14 +3781,14 @@ void render_obj_m4(int line)
     int line = v_counter - (bitmap.viewport.h - 144) / 2;
     if ((line < 0) || (line >= 144))
     {
-      memset(&linebuf[0][0x20], 0x40, 256);
+      xee::mem::Memset(&linebuf[0][0x20], 0x40, 256);
     }
     else
     {
       if (bitmap.viewport.x > 0)
       {
-        memset(&linebuf[0][0x20], 0x40, 48);
-        memset(&linebuf[0][0x20+48+160], 0x40, 48);
+        xee::mem::Memset(&linebuf[0][0x20], 0x40, 48);
+        xee::mem::Memset(&linebuf[0][0x20+48+160], 0x40, 48);
       }
     }
   }
@@ -3921,7 +3921,7 @@ void render_obj_m5_ste(int line)
   int count = object_count[line];
 
   /* Clear sprite line buffer */
-  memset(&linebuf[1][0], 0, bitmap.viewport.w + 0x40);
+  xee::mem::Memset(&linebuf[1][0], 0, bitmap.viewport.w + 0x40);
 
   /* Draw sprites in front-to-back order */
   while (count--)
@@ -4150,7 +4150,7 @@ void render_obj_m5_im2_ste(int line)
   int count = object_count[line];
 
   /* Clear sprite line buffer */
-  memset(&linebuf[1][0], 0, bitmap.viewport.w + 0x40);
+  xee::mem::Memset(&linebuf[1][0], 0, bitmap.viewport.w + 0x40);
 
   /* Draw sprites in front-to-back order */
   while (count--)
@@ -4727,16 +4727,16 @@ void render_init(void)
 void render_reset(void)
 {
   /* Clear display bitmap */
-  memset(bitmap.data, 0, bitmap.pitch * bitmap.height);
+  xee::mem::Memset(bitmap.data, 0, bitmap.pitch * bitmap.height);
 
   /* Clear line buffers */
-  memset(linebuf, 0, sizeof(linebuf));
+  xee::mem::Memset(linebuf, 0, sizeof(linebuf));
 
   /* Clear color palettes */
-  memset(pixel, 0, sizeof(pixel));
+  xee::mem::Memset(pixel, 0, sizeof(pixel));
 
   /* Clear pattern cache */
-  memset ((char *) bg_pattern_cache, 0, sizeof (bg_pattern_cache));
+  xee::mem::Memset ((char *) bg_pattern_cache, 0, sizeof (bg_pattern_cache));
 
   /* Reset Sprite infos */
   spr_ovr = spr_col = object_count[0] = object_count[1] = 0;
@@ -4770,7 +4770,7 @@ void render_line(int line)
     {
       if (system_hw >= SYSTEM_MARKIII)
       {
-        memset(&linebuf[0][0x20], 0x40, 8);
+        xee::mem::Memset(&linebuf[0][0x20], 0x40, 8);
       }
     }
 
@@ -4783,8 +4783,8 @@ void render_line(int line)
     /* Horizontal borders */
     if (bitmap.viewport.x > 0)
     {
-      memset(&linebuf[0][0x20 - bitmap.viewport.x], 0x40, bitmap.viewport.x);
-      memset(&linebuf[0][0x20 + bitmap.viewport.w], 0x40, bitmap.viewport.x);
+      xee::mem::Memset(&linebuf[0][0x20 - bitmap.viewport.x], 0x40, bitmap.viewport.x);
+      xee::mem::Memset(&linebuf[0][0x20 + bitmap.viewport.w], 0x40, bitmap.viewport.x);
     }
   }
   else
@@ -4801,7 +4801,7 @@ void render_line(int line)
     }
 
     /* Blanked line */
-    memset(&linebuf[0][0x20 - bitmap.viewport.x], 0x40, bitmap.viewport.w + 2*bitmap.viewport.x);
+    xee::mem::Memset(&linebuf[0][0x20 - bitmap.viewport.x], 0x40, bitmap.viewport.w + 2*bitmap.viewport.x);
   }
 
   /* Pixel color remapping */
@@ -4810,7 +4810,7 @@ void render_line(int line)
 
 void blank_line(int line, int offset, int width)
 {
-  memset(&linebuf[0][0x20 + offset], 0x40, width);
+  xee::mem::Memset(&linebuf[0][0x20 + offset], 0x40, width);
   remap_line(line);
 }
 
