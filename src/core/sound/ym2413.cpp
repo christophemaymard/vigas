@@ -47,6 +47,7 @@ to do:
 #include <string.h>
 #include <math.h>
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #include "core/macros.h"
@@ -592,7 +593,7 @@ static s32  LFO_PM;
 static YM2413 ym2413;
 
 /* advance LFO to next sample */
-INLINE void advance_lfo(void)
+static XEE_INLINE void advance_lfo(void)
 {
   /* LFO */
   ym2413.lfo_am_cnt += ym2413.lfo_am_inc;
@@ -606,7 +607,7 @@ INLINE void advance_lfo(void)
 }
 
 /* advance to next sample */
-INLINE void advance(void)
+static XEE_INLINE void advance(void)
 {
   YM2413_OPLL_CH *CH;
   YM2413_OPLL_SLOT *op;
@@ -845,7 +846,7 @@ INLINE void advance(void)
 }
 
 
-INLINE signed int op_calc(u32 phase, unsigned int env, signed int pm, unsigned int wave_tab)
+static XEE_INLINE signed int op_calc(u32 phase, unsigned int env, signed int pm, unsigned int wave_tab)
 {
   u32 p = (env<<5) + sin_tab[wave_tab + ((((signed int)((phase & ~FREQ_MASK) + (pm<<17))) >> FREQ_SH ) & SIN_MASK) ];
 
@@ -854,7 +855,7 @@ INLINE signed int op_calc(u32 phase, unsigned int env, signed int pm, unsigned i
   return tl_tab[p];
 }
 
-INLINE signed int op_calc1(u32 phase, unsigned int env, signed int pm, unsigned int wave_tab)
+static XEE_INLINE signed int op_calc1(u32 phase, unsigned int env, signed int pm, unsigned int wave_tab)
 {
   u32 p = (env<<5) + sin_tab[wave_tab + ((((signed int)((phase & ~FREQ_MASK) + pm)) >> FREQ_SH ) & SIN_MASK) ];
 
@@ -866,7 +867,7 @@ INLINE signed int op_calc1(u32 phase, unsigned int env, signed int pm, unsigned 
 #define volume_calc(OP) (((OP)-> state != EG_OFF) ? (OP)->TLL + ((u32)(OP)->volume) + (LFO_AM & (OP)->AMmask) : ENV_QUIET)
 
 /* calculate output */
-INLINE void chan_calc( YM2413_OPLL_CH *CH )
+static XEE_INLINE void chan_calc( YM2413_OPLL_CH *CH )
 {
   YM2413_OPLL_SLOT *SLOT;
   unsigned int env;
@@ -937,7 +938,7 @@ number   number    BLK/FNUM2 FNUM    Drum  Hat   Drum  Tom  Cymbal
 
 /* calculate rhythm */
 
-INLINE void rhythm_calc( YM2413_OPLL_CH *CH, unsigned int noise )
+static XEE_INLINE void rhythm_calc( YM2413_OPLL_CH *CH, unsigned int noise )
 {
   YM2413_OPLL_SLOT *SLOT;
   signed int out;
@@ -1197,7 +1198,7 @@ static void OPLL_initalize(void)
   ym2413.eg_timer_overflow = ( 1 ) * (1<<EG_SH);
 }
 
-INLINE void KEY_ON(YM2413_OPLL_SLOT *SLOT, u32 key_set)
+static XEE_INLINE void KEY_ON(YM2413_OPLL_SLOT *SLOT, u32 key_set)
 {
   if( !SLOT->key )
   {
@@ -1208,7 +1209,7 @@ INLINE void KEY_ON(YM2413_OPLL_SLOT *SLOT, u32 key_set)
   SLOT->key |= key_set;
 }
 
-INLINE void KEY_OFF(YM2413_OPLL_SLOT *SLOT, u32 key_clr)
+static XEE_INLINE void KEY_OFF(YM2413_OPLL_SLOT *SLOT, u32 key_clr)
 {
   if( SLOT->key )
   {
@@ -1223,7 +1224,7 @@ INLINE void KEY_OFF(YM2413_OPLL_SLOT *SLOT, u32 key_clr)
 }
 
 /* update phase increment counter of operator (also update the EG rates if necessary) */
-INLINE void CALC_FCSLOT(YM2413_OPLL_CH *CH,YM2413_OPLL_SLOT *SLOT)
+static XEE_INLINE void CALC_FCSLOT(YM2413_OPLL_CH *CH,YM2413_OPLL_SLOT *SLOT)
 {
   int ksr;
   u32 SLOT_rs;
@@ -1278,7 +1279,7 @@ INLINE void CALC_FCSLOT(YM2413_OPLL_CH *CH,YM2413_OPLL_SLOT *SLOT)
 }
 
 /* set multi,am,vib,EG-TYP,KSR,mul */
-INLINE void set_mul(int slot,int v)
+static XEE_INLINE void set_mul(int slot,int v)
 {
   YM2413_OPLL_CH   *CH   = &ym2413.P_CH[slot/2];
   YM2413_OPLL_SLOT *SLOT = &CH->SLOT[slot&1];
@@ -1292,7 +1293,7 @@ INLINE void set_mul(int slot,int v)
 }
 
 /* set ksl, tl */
-INLINE void set_ksl_tl(int chan,int v)
+static XEE_INLINE void set_ksl_tl(int chan,int v)
 {
   YM2413_OPLL_CH   *CH   = &ym2413.P_CH[chan];
   /* modulator */
@@ -1306,7 +1307,7 @@ INLINE void set_ksl_tl(int chan,int v)
 }
 
 /* set ksl , waveforms, feedback */
-INLINE void set_ksl_wave_fb(int chan,int v)
+static XEE_INLINE void set_ksl_wave_fb(int chan,int v)
 {
   YM2413_OPLL_CH   *CH   = &ym2413.P_CH[chan];
   /* modulator */
@@ -1323,7 +1324,7 @@ INLINE void set_ksl_wave_fb(int chan,int v)
 }
 
 /* set attack rate & decay rate  */
-INLINE void set_ar_dr(int slot,int v)
+static XEE_INLINE void set_ar_dr(int slot,int v)
 {
   YM2413_OPLL_CH   *CH   = &ym2413.P_CH[slot/2];
   YM2413_OPLL_SLOT *SLOT = &CH->SLOT[slot&1];
@@ -1357,7 +1358,7 @@ INLINE void set_ar_dr(int slot,int v)
 }
 
 /* set sustain level & release rate */
-INLINE void set_sl_rr(int slot,int v)
+static XEE_INLINE void set_sl_rr(int slot,int v)
 {
   YM2413_OPLL_CH   *CH   = &ym2413.P_CH[slot/2];
   YM2413_OPLL_SLOT *SLOT = &CH->SLOT[slot&1];

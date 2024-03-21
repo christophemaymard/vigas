@@ -40,13 +40,13 @@
 
 #include <string.h>
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #if defined(LOG_CDD) || defined(LOGERROR) || defined(LOG_SCD)
 #include "osd.h"
 #endif
 
-#include "core/macros.h"
 #include "core/m68k/m68k.h"
 #include "core/system_clock.h"
 #include "core/system_cycle.h"
@@ -763,7 +763,7 @@ static unsigned int scd_read_word(unsigned int address)
   return scd.regs[address >> 1].w;
 }
 
-INLINE void word_ram_switch(u8 mode)
+static XEE_INLINE void word_ram_switch(u8 mode)
 {
   int i;
   u16 *ptr1 = (u16 *)(scd.word_ram_2M);

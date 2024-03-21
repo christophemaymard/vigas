@@ -41,10 +41,10 @@
 
 #include "core/memz80.h"
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #include "osd.h"
-#include "core/macros.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
 #include "core/system_hardware.h"
@@ -62,14 +62,14 @@
 /*  machine lock up.                                                        */
 /*--------------------------------------------------------------------------*/
 
-INLINE void z80_unused_w(unsigned int address, unsigned char data)
+static XEE_INLINE void z80_unused_w(unsigned int address, unsigned char data)
 {
 #ifdef LOGERROR
   error("Z80 unused write %04X = %02X (%x)\n", address, data, Z80.pc.w.l);
 #endif
 }
 
-INLINE unsigned char z80_unused_r(unsigned int address)
+static XEE_INLINE unsigned char z80_unused_r(unsigned int address)
 {
 #ifdef LOGERROR
   error("Z80 unused read %04X (%x)\n", address, Z80.pc.w.l);
@@ -77,7 +77,7 @@ INLINE unsigned char z80_unused_r(unsigned int address)
   return 0xFF;
 }
 
-INLINE void z80_lockup_w(unsigned int address, unsigned char data)
+static XEE_INLINE void z80_lockup_w(unsigned int address, unsigned char data)
 {
 #ifdef LOGERROR
   error("Z80 lockup write %04X = %02X (%x)\n", address, data, Z80.pc.w.l);
@@ -89,7 +89,7 @@ INLINE void z80_lockup_w(unsigned int address, unsigned char data)
   }
 }
 
-INLINE unsigned char z80_lockup_r(unsigned int address)
+static XEE_INLINE unsigned char z80_lockup_r(unsigned int address)
 {
 #ifdef LOGERROR
   error("Z80 lockup read %04X (%x)\n", address, Z80.pc.w.l);

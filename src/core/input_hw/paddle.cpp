@@ -38,6 +38,7 @@
 
 #include "core/input_hw/paddle.h"
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #include "core/io_ctrl.h"
@@ -56,7 +57,7 @@ void paddle_reset(int port)
   paddle[port>>2].Counter = 0;
 }
 
-INLINE unsigned char paddle_read(int port)
+static XEE_INLINE unsigned char paddle_read(int port)
 {
   /* FIRE button status (active low) */
   unsigned char temp = ~(input.pad[port] & 0x10);
@@ -96,7 +97,7 @@ INLINE unsigned char paddle_read(int port)
   return temp;
 }
 
-INLINE void paddle_write(int index, unsigned char data, unsigned char mask)
+static XEE_INLINE void paddle_write(int index, unsigned char data, unsigned char mask)
 {
   /* update bits set as output only */
   paddle[index].State = (paddle[index].State & ~mask) | (data & mask);

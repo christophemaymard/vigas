@@ -38,6 +38,7 @@
 
 #include "core/input_hw/sportspad.h"
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #include "core/input_hw/input.h"
@@ -56,7 +57,7 @@ void sportspad_reset(int index)
   sportspad[index>>2].Counter = 0;
 }
 
-INLINE unsigned char sportspad_read(int port)
+static XEE_INLINE unsigned char sportspad_read(int port)
 {
   /* Buttons 1(B) & 2(C) status (active low) */
   unsigned char temp = ~(input.pad[port] & 0x30);
@@ -102,7 +103,7 @@ INLINE unsigned char sportspad_read(int port)
   return temp;
 }
 
-INLINE void sportspad_write(int index, unsigned char data, unsigned char mask)
+static XEE_INLINE void sportspad_write(int index, unsigned char data, unsigned char mask)
 {
   /* update bits set as output only */
   data = (sportspad[index].State & ~mask) | (data & mask);

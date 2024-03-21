@@ -40,9 +40,9 @@
 
 #include <string.h>
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
-#include "core/macros.h"
 #include "core/loadrom.h"
 #include "core/m68k/m68k.h"
 #include "core/genesis.h"
@@ -259,7 +259,7 @@ void eeprom_i2c_init(void)
 /* I2C EEPROM internal                                   			*/
 /********************************************************************/
 
-INLINE void Detect_START(void)
+static XEE_INLINE void Detect_START(void)
 {
   /* detect SDA HIGH to LOW transition while SCL is held HIGH */
   if (eeprom_i2c.old_scl && eeprom_i2c.scl)
@@ -286,7 +286,7 @@ INLINE void Detect_START(void)
   }
 }
 
-INLINE void Detect_STOP(void)
+static XEE_INLINE void Detect_STOP(void)
 {
   /* detect SDA LOW to HIGH transition while SCL is held HIGH */
   if (eeprom_i2c.old_scl && eeprom_i2c.scl)

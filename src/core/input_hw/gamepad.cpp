@@ -39,6 +39,7 @@
 
 #include "core/input_hw/gamepad.h"
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #include "core/m68k/m68k.h"
@@ -103,7 +104,7 @@ void gamepad_end_frame(int port, unsigned int cycles)
   }
 }
 
-INLINE unsigned char gamepad_read(int port)
+static XEE_INLINE unsigned char gamepad_read(int port)
 {
   /* D7 is not connected, D6 returns TH input state */
   unsigned int data = gamepad[port].State | 0x3F;
@@ -186,7 +187,7 @@ INLINE unsigned char gamepad_read(int port)
   return data;
 }
 
-INLINE void gamepad_write(int port, unsigned char data, unsigned char mask)
+static XEE_INLINE void gamepad_write(int port, unsigned char data, unsigned char mask)
 {
   /* Check TH pin direction */
   if (mask & 0x40)

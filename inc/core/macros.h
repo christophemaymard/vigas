@@ -37,15 +37,6 @@
 #define M_PI 3.14159265358979323846264338327f
 #endif /* M_PI */
 
-/* Set to your compiler's static inline keyword to enable it, or
- * set it to blank to disable it.
- * If you define INLINE in makefile or osd.h, it will override this value.
- * NOTE: not enabling inline functions will SEVERELY slow down emulation.
- */
-#ifndef INLINE
-#define INLINE static __inline__
-#endif /* INLINE */
-
 /* Alignment macros for cross compiler compatibility */
 #if defined(_MSC_VER)
 #define ALIGNED_(x) __declspec(align(x))

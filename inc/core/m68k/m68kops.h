@@ -1,11 +1,12 @@
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 /* ======================================================================== */
 /* ============== CYCLE-ACCURATE DIV/MUL EXECUTION ======================== */
 /* ======================================================================== */
 
-INLINE void UseDivuCycles(u32 dst, u32 src)
+static XEE_INLINE void UseDivuCycles(u32 dst, u32 src)
 {
   int i;
 
@@ -49,7 +50,7 @@ INLINE void UseDivuCycles(u32 dst, u32 src)
   }
 }
 
-INLINE void UseDivsCycles(s32 dst, s16 src)
+static XEE_INLINE void UseDivsCycles(s32 dst, s16 src)
 {
   /* minimum cycle time */
   u32 mcycles = 12 * MUL;
@@ -97,7 +98,7 @@ INLINE void UseDivsCycles(s32 dst, s16 src)
   }
 }
 
-INLINE void UseMuluCycles(u16 src)
+static XEE_INLINE void UseMuluCycles(u16 src)
 {
   /* minimum cycle time */
   u32 mcycles = 38 * MUL;
@@ -113,7 +114,7 @@ INLINE void UseMuluCycles(u16 src)
   USE_CYCLES(mcycles);
 }
 
-INLINE void UseMulsCycles(s16 src)
+static XEE_INLINE void UseMulsCycles(s16 src)
 {
   /* minimum cycle time */
   u32 mcycles = 38 * MUL;

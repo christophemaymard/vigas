@@ -38,6 +38,7 @@
 
 #include "core/input_hw/teamplayer.h"
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #include "core/input_hw/input.h"
@@ -84,7 +85,7 @@ void teamplayer_reset(int port)
   teamplayer[port].Counter = 0;
 }
 
-INLINE unsigned int teamplayer_read(int port)
+static XEE_INLINE unsigned int teamplayer_read(int port)
 {
   unsigned int counter = teamplayer[port].Counter;
 
@@ -137,7 +138,7 @@ INLINE unsigned int teamplayer_read(int port)
   }
 }
 
-INLINE void teamplayer_write(int port, unsigned char data, unsigned char mask)
+static XEE_INLINE void teamplayer_write(int port, unsigned char data, unsigned char mask)
 {
   /* update bits set as output only */
   unsigned int state = (teamplayer[port].State & ~mask) | (data & mask);

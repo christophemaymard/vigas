@@ -40,6 +40,7 @@
 
 #include <math.h>
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #include "core/m68k/m68k.h"
@@ -184,7 +185,7 @@ void lightgun_refresh(int port)
 /*  Sega Phaser                                                             */
 /*--------------------------------------------------------------------------*/
 
-INLINE unsigned char phaser_read(int port)
+static XEE_INLINE unsigned char phaser_read(int port)
 {
   /* TL returns TRIGGER (INPUT_A) button status (active low) */
   unsigned char temp = ~((input.pad[port] >> 2) & 0x10);

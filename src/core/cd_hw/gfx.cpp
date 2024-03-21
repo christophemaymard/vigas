@@ -40,13 +40,13 @@
 
 #include <string.h>
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #ifdef LOG_SCD
 #include "osd.h"
 #endif
 
-#include "core/macros.h"
 #include "core/m68k/m68k.h"
 #include "core/genesis.h"
 #include "core/state.h"
@@ -479,7 +479,7 @@ int gfx_context_load(u8 *state)
   return bufferptr;
 }
 
-INLINE void gfx_render(u32 bufferIndex, u32 width)
+static XEE_INLINE void gfx_render(u32 bufferIndex, u32 width)
 {
   u8 pixel_in, pixel_out;
   u16 stamp_data;

@@ -38,6 +38,7 @@
 
 #include "core/input_hw/xe_1ap.h"
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #include "core/input_hw/input.h"
@@ -62,7 +63,7 @@ void xe_1ap_reset(int index)
   xe_1ap[index].Latency = 0;
 }
 
-INLINE unsigned char xe_1ap_read(int index)
+static XEE_INLINE unsigned char xe_1ap_read(int index)
 {
   unsigned char data;
   unsigned int port = index << 2;
@@ -138,7 +139,7 @@ INLINE unsigned char xe_1ap_read(int index)
   return data;
 }
 
-INLINE void xe_1ap_write(int index, unsigned char data, unsigned char mask)
+static XEE_INLINE void xe_1ap_write(int index, unsigned char data, unsigned char mask)
 {
   /* only update bits set as output */
   data = (xe_1ap[index].State & ~mask) | (data & mask);

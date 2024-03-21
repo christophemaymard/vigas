@@ -38,6 +38,7 @@
 
 #include "core/input_hw/activator.h"
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #include "core/input_hw/input.h"
@@ -55,7 +56,7 @@ void activator_reset(int index)
   activator[index].Counter = 0;
 }
 
-INLINE unsigned char activator_read(int index)
+static XEE_INLINE unsigned char activator_read(int index)
 {
   /* IR sensors 1-16 data (active low) */
   u16 data = ~input.pad[index << 2];
@@ -89,7 +90,7 @@ INLINE unsigned char activator_read(int index)
   return temp;
 }
 
-INLINE void activator_write(int index, unsigned char data, unsigned char mask)
+static XEE_INLINE void activator_write(int index, unsigned char data, unsigned char mask)
 {
   /* update bits set as output only */
   data = (activator[index].State & ~mask) | (data & mask);

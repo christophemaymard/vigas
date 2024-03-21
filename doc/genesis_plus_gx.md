@@ -19,7 +19,7 @@ Repository on GitHub: https://github.com/ekeeke/Genesis-Plus-GX
 | HAVE_NO_SPRITE_LIMIT |  |  |
 | HAVE_YM3438 | Removed | Always use YM3438. |
 | HOOK_CPU |  |  |
-| INLINE |  |  |
+| INLINE | Removed | Replaced by compiler abstraction. |
 | LOG_CDC |  |  |
 | LOG_CDD |  |  |
 | LOG_ERROR | Renamed | Renamed to LOGERROR. |

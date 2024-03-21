@@ -41,6 +41,7 @@
 
 #include <string.h>
 
+#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
 #include "osd.h"
@@ -82,7 +83,7 @@ static int ym3438_sample[2];
 static int ym3438_cycles;
 
 /* Run FM chip until required M-cycles */
-INLINE void fm_update(int cycles)
+static XEE_INLINE void fm_update(int cycles)
 {
   if (cycles > fm_cycles_count)
   {

@@ -32,7 +32,6 @@ endif()
 
 add_subdirectory(3rdparty)
 
-add_compile_definitions("INLINE=static inline")
 add_compile_definitions(LSB_FIRST)
 add_compile_definitions(USE_16BPP_RENDERING)
 add_compile_definitions(MAXROMSIZE=33554432)
