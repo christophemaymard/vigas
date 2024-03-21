@@ -24,6 +24,8 @@
 
 #include <cmath>
 
+#include "xee/fnd/data_type.h"
+
 namespace gpgx::sound {
 
 //==============================================================================
@@ -85,39 +87,39 @@ void Equalizer3band::init_3band_state(int lowfreq, int highfreq, int mixfreq)
   m_hg = 1.0;
 
   // Calculate filter cutoff frequencies.
-  m_lf = 2 * ::sin(kPi * ((double)lowfreq / (double)mixfreq));
-  m_hf = 2 * ::sin(kPi * ((double)highfreq / (double)mixfreq));
+  m_lf = 2 * ::sin(kPi * ((f64)lowfreq / (f64)mixfreq));
+  m_hf = 2 * ::sin(kPi * ((f64)highfreq / (f64)mixfreq));
 }
 
 //------------------------------------------------------------------------------
 
-double Equalizer3band::do_3band(int sample)
+f64 Equalizer3band::do_3band(int sample)
 {
   // Filter #1 (lowpass).
 
-  m_f1p0 += (m_lf * ((double)sample - m_f1p0)) + kVsa;
+  m_f1p0 += (m_lf * ((f64)sample - m_f1p0)) + kVsa;
   m_f1p1 += (m_lf * (m_f1p0 - m_f1p1));
   m_f1p2 += (m_lf * (m_f1p1 - m_f1p2));
   m_f1p3 += (m_lf * (m_f1p2 - m_f1p3));
 
   // Low sample value.
-  double l = m_f1p3;
+  f64 l = m_f1p3;
 
   // Filter #2 (highpass).
 
-  m_f2p0 += (m_hf * ((double)sample - m_f2p0)) + kVsa;
+  m_f2p0 += (m_hf * ((f64)sample - m_f2p0)) + kVsa;
   m_f2p1 += (m_hf * (m_f2p0 - m_f2p1));
   m_f2p2 += (m_hf * (m_f2p1 - m_f2p2));
   m_f2p3 += (m_hf * (m_f2p2 - m_f2p3));
 
   // High sample value.
-  double h = m_sdm3 - m_f2p3;
+  f64 h = m_sdm3 - m_f2p3;
 
   // Calculate midrange (signal - (low + high)) value.
 
   // m = es->sdm3 - (h + l);.
   // fix from http://www.musicdsp.org/showArchiveComment.php?ArchiveID=236 ?
-  double m = sample - (h + l);
+  f64 m = sample - (h + l);
 
   // Scale, Combine and store.
 

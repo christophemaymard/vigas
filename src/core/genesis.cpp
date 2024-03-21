@@ -280,7 +280,7 @@ void gen_reset(int hard_reset)
   else
   {
     /* when RESET button is pressed, 68k could be anywhere in VDP frame (Bonkers, Eternal Champions, X-Men 2) */
-    m68k.cycles = (u32)((MCYCLES_PER_LINE * lines_per_frame) * ((double)rand() / (double)RAND_MAX));
+    m68k.cycles = (u32)((MCYCLES_PER_LINE * lines_per_frame) * ((f64)rand() / (f64)RAND_MAX));
 
     /* reset YM2612 (on hard reset, this is done by sound_reset) */
     fm_reset(0);

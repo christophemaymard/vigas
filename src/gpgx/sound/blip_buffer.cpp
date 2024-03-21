@@ -161,9 +161,9 @@ void BlipBuffer::blip_delete()
 
 //------------------------------------------------------------------------------
 
-void BlipBuffer::blip_set_rates(double clock_rate, double sample_rate)
+void BlipBuffer::blip_set_rates(f64 clock_rate, f64 sample_rate)
 {
-  double factor = kTimeUnit * sample_rate / clock_rate;
+  f64 factor = kTimeUnit * sample_rate / clock_rate;
   m_factor = (u64)factor;
 
 #ifdef BLIP_ASSERT

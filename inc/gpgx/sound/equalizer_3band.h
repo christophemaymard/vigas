@@ -23,6 +23,8 @@
 #ifndef __GPGX_SOUND_EQUALIZER_3BAND_H__
 #define __GPGX_SOUND_EQUALIZER_3BAND_H__
 
+#include "xee/fnd/data_type.h"
+
 namespace gpgx::sound {
 
 //==============================================================================
@@ -32,7 +34,7 @@ namespace gpgx::sound {
 class Equalizer3band
 {
 private:
-  static constexpr double kVsa = (1.0 / 4294967295.0); // Very small amount (Denormal Fix).
+  static constexpr f64 kVsa = (1.0 / 4294967295.0); // Very small amount (Denormal Fix).
   static constexpr float kPi = 3.14159265358979323846264338327f;
 public:
   Equalizer3band();
@@ -49,37 +51,37 @@ public:
   // Note that the output will depend on the gain settings for each band 
   // (especially the bass) so may require clipping before output, 
   // but you knew that anyway.
-  double do_3band(int sample);
+  f64 do_3band(int sample);
 
   // Set the gain control of the low band.
-  void SetLowGainControl(double gain) { m_lg = gain; }
+  void SetLowGainControl(f64 gain) { m_lg = gain; }
 
   // Set the gain control of the middle band.
-  void SetMiddleGainControl(double gain) { m_mg = gain; }
+  void SetMiddleGainControl(f64 gain) { m_mg = gain; }
 
   // Set the gain control of the high band.
-  void SetHighGainControl(double gain) { m_hg = gain; }
+  void SetHighGainControl(f64 gain) { m_hg = gain; }
 
 private:
-  double m_lf;      // Filter #1 (Low band): Frequency.
-  double m_f1p0;    // Filter #1 (Low band): Pole 0.
-  double m_f1p1;    // Filter #1 (Low band): Pole 1.
-  double m_f1p2;    // Filter #1 (Low band): Pole 2.
-  double m_f1p3;    // Filter #1 (Low band): Pole 3.
+  f64 m_lf;      // Filter #1 (Low band): Frequency.
+  f64 m_f1p0;    // Filter #1 (Low band): Pole 0.
+  f64 m_f1p1;    // Filter #1 (Low band): Pole 1.
+  f64 m_f1p2;    // Filter #1 (Low band): Pole 2.
+  f64 m_f1p3;    // Filter #1 (Low band): Pole 3.
 
-  double m_hf;      // Filter #2 (High band): Frequency.
-  double m_f2p0;    // Filter #2 (High band): Pole 0.
-  double m_f2p1;    // Filter #2 (High band): Pole 1.
-  double m_f2p2;    // Filter #2 (High band): Pole 2.
-  double m_f2p3;    // Filter #2 (High band): Pole 3.
+  f64 m_hf;      // Filter #2 (High band): Frequency.
+  f64 m_f2p0;    // Filter #2 (High band): Pole 0.
+  f64 m_f2p1;    // Filter #2 (High band): Pole 1.
+  f64 m_f2p2;    // Filter #2 (High band): Pole 2.
+  f64 m_f2p3;    // Filter #2 (High band): Pole 3.
 
-  double m_sdm1;      // Sample history buffer: Sample data minus 1.
-  double m_sdm2;      // Sample history buffer: Sample data minus 2.
-  double m_sdm3;      // Sample history buffer: Sample data minus 3.
+  f64 m_sdm1;      // Sample history buffer: Sample data minus 1.
+  f64 m_sdm2;      // Sample history buffer: Sample data minus 2.
+  f64 m_sdm3;      // Sample history buffer: Sample data minus 3.
 
-  double m_lg;      // Gain Control: low  gain.
-  double m_mg;      // Gain Control: mid  gain.
-  double m_hg;      // Gain Control: high gain.
+  f64 m_lg;      // Gain Control: low  gain.
+  f64 m_mg;      // Gain Control: mid  gain.
+  f64 m_hg;      // Gain Control: high gain.
 };
 
 } // namespace gpgx::sound

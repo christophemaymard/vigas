@@ -1795,7 +1795,7 @@ static void init_tables(void)
 {
   signed int d,i,x;
   signed int n;
-  double o,m;
+  f64 o,m;
 
   /* build Linear Power Table */
   for (x=0; x<TL_RES_LEN; x++)

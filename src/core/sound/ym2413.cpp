@@ -178,7 +178,7 @@ typedef struct {
   u8 address;          /* address register */
   u8 status;          /* status flag       */
 
-  double clock;         /* master clock  (Hz) */
+  f64 clock;         /* master clock  (Hz) */
   int rate;            /* sampling rate (Hz)  */
 } YM2413;
 
@@ -1106,7 +1106,7 @@ static int init_tables(void)
 {
   signed int i,x;
   signed int n;
-  double o,m;
+  f64 o,m;
 
   for (x=0; x<TL_RES_LEN; x++)
   {
@@ -1174,13 +1174,13 @@ static void OPLL_initalize(void)
   int i;
 
   /* YM2413 always running at original frequency */
-  double freqbase = 1.0;
+  f64 freqbase = 1.0;
 
   /* make fnumber -> increment counter table */
   for( i = 0 ; i < 1024; i++ )
   {
     /* OPLL (YM2413) phase increment counter = 18bit */
-    ym2413.fn_tab[i] = (u32)( (double)i * 64 * freqbase * (1<<(FREQ_SH-10)) ); /* -10 because chip works with 10.10 fixed point, while we use 16.16 */
+    ym2413.fn_tab[i] = (u32)( (f64)i * 64 * freqbase * (1<<(FREQ_SH-10)) ); /* -10 because chip works with 10.10 fixed point, while we use 16.16 */
   }
 
   /* Amplitude modulation: 27 output levels (triangle waveform); 1 level takes one of: 192, 256 or 448 samples */

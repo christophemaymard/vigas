@@ -72,7 +72,7 @@ static s16 llp, rrp;
 
 //------------------------------------------------------------------------------
 
-int audio_init(int samplerate, double framerate)
+int audio_init(int samplerate, f64 framerate)
 {
   /* Shutdown first */
   audio_shutdown();
@@ -111,7 +111,7 @@ int audio_init(int samplerate, double framerate)
 
 //------------------------------------------------------------------------------
 
-void audio_set_rate(int samplerate, double framerate)
+void audio_set_rate(int samplerate, f64 framerate)
 {
   /* Number of M-cycles executed per second. */
   /* All emulated chips are kept in sync by using a common oscillator (MCLOCK)            */
@@ -134,7 +134,7 @@ void audio_set_rate(int samplerate, double framerate)
   /* Otherwise, it is set to number of M-cycles emulated per line (fixed) multiplied by   */
   /* number of lines per frame (VDP mode specific) multiplied by input framerate.         */
   /*                                                                                      */
-  double mclk = framerate ? (MCYCLES_PER_LINE * (vdp_pal ? 313 : 262) * framerate) : system_clock;
+  f64 mclk = framerate ? (MCYCLES_PER_LINE * (vdp_pal ? 313 : 262) * framerate) : system_clock;
 
   /* For maximal accuracy, sound chips are running at their original rate using common */
   /* master clock timebase so they remain perfectly synchronized together, while still */
@@ -187,15 +187,15 @@ void audio_set_equalizer(void)
   eq[0].init_3band_state(config.low_freq, config.high_freq, snd.sample_rate);
   eq[1].init_3band_state(config.low_freq, config.high_freq, snd.sample_rate);
 
-  double lg = (double)(config.lg) / 100.0;
+  f64 lg = (f64)(config.lg) / 100.0;
   eq[0].SetLowGainControl(lg);
   eq[1].SetLowGainControl(lg);
 
-  double mg = (double)(config.mg) / 100.0;
+  f64 mg = (f64)(config.mg) / 100.0;
   eq[0].SetMiddleGainControl(mg);
   eq[1].SetMiddleGainControl(mg);
 
-  double hg = (double)(config.hg) / 100.0;
+  f64 hg = (f64)(config.hg) / 100.0;
   eq[0].SetHighGainControl(hg);
   eq[1].SetHighGainControl(hg);
 }

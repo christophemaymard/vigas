@@ -57,7 +57,7 @@
 
 #define pcm scd.pcm_hw
 
-void pcm_init(double clock, int samplerate)
+void pcm_init(f64 clock, int samplerate)
 {
   /* PCM chip is running at original rate and is synchronized with SUB-CPU  */
   /* Chip output is resampled to desired rate using Blip Buffer. */

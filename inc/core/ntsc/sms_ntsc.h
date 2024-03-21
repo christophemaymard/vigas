@@ -6,6 +6,8 @@
 
 #include "core/ntsc/sms_ntsc_config.h"
 
+#include "xee/fnd/data_type.h"
+
 #ifdef __cplusplus
   extern "C" {
 #endif
@@ -15,18 +17,18 @@ in parenthesis and should remain fairly stable in future versions. */
 typedef struct sms_ntsc_setup_t
 {
   /* Basic parameters */
-  double hue;        /* -1 = -180 degrees     +1 = +180 degrees */
-  double saturation; /* -1 = grayscale (0.0)  +1 = oversaturated colors (2.0) */
-  double contrast;   /* -1 = dark (0.5)       +1 = light (1.5) */
-  double brightness; /* -1 = dark (0.5)       +1 = light (1.5) */
-  double sharpness;  /* edge contrast enhancement/blurring */
+  f64 hue;        /* -1 = -180 degrees     +1 = +180 degrees */
+  f64 saturation; /* -1 = grayscale (0.0)  +1 = oversaturated colors (2.0) */
+  f64 contrast;   /* -1 = dark (0.5)       +1 = light (1.5) */
+  f64 brightness; /* -1 = dark (0.5)       +1 = light (1.5) */
+  f64 sharpness;  /* edge contrast enhancement/blurring */
   
   /* Advanced parameters */
-  double gamma;      /* -1 = dark (1.5)       +1 = light (0.5) */
-  double resolution; /* image resolution */
-  double artifacts;  /* artifacts caused by color changes */
-  double fringing;   /* color artifacts caused by brightness changes */
-  double bleed;      /* color bleed (color resolution reduction) */
+  f64 gamma;      /* -1 = dark (1.5)       +1 = light (0.5) */
+  f64 resolution; /* image resolution */
+  f64 artifacts;  /* artifacts caused by color changes */
+  f64 fringing;   /* color artifacts caused by brightness changes */
+  f64 bleed;      /* color bleed (color resolution reduction) */
   float const* decoder_matrix; /* optional RGB decoder matrix, 6 elements */
   
   unsigned char* palette_out;  /* optional RGB palette out, 3 bytes per color */

@@ -87,7 +87,7 @@ public:
 
   // Sets approximate input clock rate and output sample rate.
   // For everyclock_rate input clocks, approximately sample_rate samples are generated.
-  void blip_set_rates(double clock_rate, double sample_rate);
+  void blip_set_rates(f64 clock_rate, f64 sample_rate);
 
   // Clears entire buffer.
   // Afterwards, blip_samples_avail() == 0.

@@ -43,6 +43,7 @@
 #define __CORE_SND_H__
 
 #include "gpgx/sound/blip_buffer.h"
+#include "xee/fnd/data_type.h"
 
 //==============================================================================
 
@@ -51,7 +52,7 @@
 typedef struct
 {
   int sample_rate;      /* Output Sample rate (8000-48000) */
-  double frame_rate;    /* Output Frame rate (usually 50 or 60 frames per second) */
+  f64 frame_rate;       /* Output Frame rate (usually 50 or 60 frames per second) */
   int enabled;          /* 1= sound emulation is enabled */
   gpgx::sound::BlipBuffer* blips[3];     /* Blip Buffer resampling (stereo) */
 } t_snd;
