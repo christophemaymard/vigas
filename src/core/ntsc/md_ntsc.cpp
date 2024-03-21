@@ -6,6 +6,8 @@
 
 #include "core/bitmap.h"
 
+#include "xee/fnd/data_type.h"
+
 /* Copyright (C) 2006 Shay Green. This module is free software; you
 can redistribute it and/or modify it under the terms of the GNU Lesser
 General Public License as published by the Free Software Foundation; either
@@ -66,11 +68,11 @@ void md_ntsc_init( md_ntsc_t* ntsc, md_ntsc_setup_t const* setup )
 
   for ( entry = 0; entry < md_ntsc_palette_size; entry++ )
   {
-    float bb = impl.to_float [entry >> 6 & 7];
-    float gg = impl.to_float [entry >> 3 & 7];
-    float rr = impl.to_float [entry      & 7];
+    f32 bb = impl.to_float [entry >> 6 & 7];
+    f32 gg = impl.to_float [entry >> 3 & 7];
+    f32 rr = impl.to_float [entry      & 7];
 
-    float y, i, q = RGB_TO_YIQ( rr, gg, bb, y, i );
+    f32 y, i, q = RGB_TO_YIQ( rr, gg, bb, y, i );
 
     int r, g, b = YIQ_TO_RGB( y, i, q, impl.to_rgb, int, r, g );
     md_ntsc_rgb_t rgb = PACK_RGB( r, g, b );

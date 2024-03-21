@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <math.h>
 
+#include "xee/fnd/data_type.h"
+
 /* Copyright (C) 2006 Shay Green. This module is free software; you
 can redistribute it and/or modify it under the terms of the GNU Lesser
 General Public License as published by the Free Software Foundation; either
@@ -50,17 +52,17 @@ enum { kernel_size = kernel_half * 2 + 1 };
 
 typedef struct init_t
 {
-  float to_rgb [burst_count * 6];
-  float to_float [gamma_size];
-  float contrast;
-  float brightness;
-  float artifacts;
-  float fringing;
-  float kernel [rescale_out * kernel_size * 2];
+  f32 to_rgb [burst_count * 6];
+  f32 to_float [gamma_size];
+  f32 contrast;
+  f32 brightness;
+  f32 artifacts;
+  f32 fringing;
+  f32 kernel [rescale_out * kernel_size * 2];
 } init_t;
 
 #define ROTATE_IQ( i, q, sin_b, cos_b ) {\
-  float t;\
+  f32 t;\
   t = i * cos_b - q * sin_b;\
   q = i * sin_b + q * cos_b;\
   i = t;\
@@ -69,38 +71,38 @@ typedef struct init_t
 static void init_filters( init_t* impl, sms_ntsc_setup_t const* setup )
 {
 #if rescale_out > 1
-  float kernels [kernel_size * 2];
+  f32 kernels [kernel_size * 2];
 #else
-  float* const kernels = impl->kernel;
+  f32* const kernels = impl->kernel;
 #endif
 
   /* generate luma (y) filter using sinc kernel */
   {
     /* sinc with rolloff (dsf) */
-    float const rolloff = 1 + (float) setup->sharpness * (float) 0.032;
-    float const maxh = 32;
-    float const pow_a_n = (float) pow( rolloff, maxh );
-    float sum;
+    f32 const rolloff = 1 + (f32) setup->sharpness * (f32) 0.032;
+    f32 const maxh = 32;
+    f32 const pow_a_n = (f32) pow( rolloff, maxh );
+    f32 sum;
     int i;
     /* quadratic mapping to reduce negative (blurring) range */
-    float to_angle = (float) setup->resolution + 1;
-    to_angle = PI / maxh * (float) LUMA_CUTOFF * (to_angle * to_angle + 1);
+    f32 to_angle = (f32) setup->resolution + 1;
+    to_angle = PI / maxh * (f32) LUMA_CUTOFF * (to_angle * to_angle + 1);
     
     kernels [kernel_size * 3 / 2] = maxh; /* default center value */
     for ( i = 0; i < kernel_half * 2 + 1; i++ )
     {
       int x = i - kernel_half;
-      float angle = x * to_angle;
+      f32 angle = x * to_angle;
       /* instability occurs at center point with rolloff very close to 1.0 */
-      if ( x || pow_a_n > (float) 1.056 || pow_a_n < (float) 0.981 )
+      if ( x || pow_a_n > (f32) 1.056 || pow_a_n < (f32) 0.981 )
       {
-        float rolloff_cos_a = rolloff * (float) cos( angle );
-        float num = 1 - rolloff_cos_a -
-            pow_a_n * (float) cos( maxh * angle ) +
-            pow_a_n * rolloff * (float) cos( (maxh - 1) * angle );
-        float den = 1 - rolloff_cos_a - rolloff_cos_a + rolloff * rolloff;
-        float dsf = num / den;
-        kernels [kernel_size * 3 / 2 - kernel_half + i] = dsf - (float) 0.5;
+        f32 rolloff_cos_a = rolloff * (f32) cos( angle );
+        f32 num = 1 - rolloff_cos_a -
+            pow_a_n * (f32) cos( maxh * angle ) +
+            pow_a_n * rolloff * (f32) cos( (maxh - 1) * angle );
+        f32 den = 1 - rolloff_cos_a - rolloff_cos_a + rolloff * rolloff;
+        f32 dsf = num / den;
+        kernels [kernel_size * 3 / 2 - kernel_half + i] = dsf - (f32) 0.5;
       }
     }
     
@@ -108,8 +110,8 @@ static void init_filters( init_t* impl, sms_ntsc_setup_t const* setup )
     sum = 0;
     for ( i = 0; i < kernel_half * 2 + 1; i++ )
     {
-      float x = PI * 2 / (kernel_half * 2) * i;
-      float blackman = 0.42f - 0.5f * (float) cos( x ) + 0.08f * (float) cos( x * 2 );
+      f32 x = PI * 2 / (kernel_half * 2) * i;
+      f32 blackman = 0.42f - 0.5f * (f32) cos( x ) + 0.08f * (f32) cos( x * 2 );
       sum += (kernels [kernel_size * 3 / 2 - kernel_half + i] *= blackman);
     }
     
@@ -125,8 +127,8 @@ static void init_filters( init_t* impl, sms_ntsc_setup_t const* setup )
 
   /* generate chroma (iq) filter using gaussian kernel */
   {
-    float const cutoff_factor = -0.03125f;
-    float cutoff = (float) setup->bleed;
+    f32 const cutoff_factor = -0.03125f;
+    f32 cutoff = (f32) setup->bleed;
     int i;
     
     if ( cutoff < 0 )
@@ -140,12 +142,12 @@ static void init_filters( init_t* impl, sms_ntsc_setup_t const* setup )
     cutoff = cutoff_factor - 0.65f * cutoff_factor * cutoff;
     
     for ( i = -kernel_half; i <= kernel_half; i++ )
-      kernels [kernel_size / 2 + i] = (float) exp( i * i * cutoff );
+      kernels [kernel_size / 2 + i] = (f32) exp( i * i * cutoff );
     
     /* normalize even and odd phases separately */
     for ( i = 0; i < 2; i++ )
     {
-      float sum = 0;
+      f32 sum = 0;
       int x;
       for ( x = i; x < kernel_size; x += 2 )
         sum += kernels [x];
@@ -171,18 +173,18 @@ static void init_filters( init_t* impl, sms_ntsc_setup_t const* setup )
   /* generate linear rescale kernels */
   #if rescale_out > 1
   {
-    float weight = 1.0f;
-    float* out = impl->kernel;
+    f32 weight = 1.0f;
+    f32* out = impl->kernel;
     int n = rescale_out;
     do
     {
-      float remain = 0;
+      f32 remain = 0;
       int i;
       weight -= 1.0f / rescale_in;
       for ( i = 0; i < kernel_size * 2; i++ )
       {
-        float cur = kernels [i];
-        float m = cur * weight;
+        f32 cur = kernels [i];
+        f32 m = cur * weight;
         *out++ = m + remain;
         remain = cur - m;
       }
@@ -192,24 +194,24 @@ static void init_filters( init_t* impl, sms_ntsc_setup_t const* setup )
   #endif
 }
 
-static float const default_decoder [6] =
+static f32 const default_decoder [6] =
   { 0.956f, 0.621f, -0.272f, -0.647f, -1.105f, 1.702f };
 
 static void init( init_t* impl, sms_ntsc_setup_t const* setup )
 {
-  impl->brightness = (float) setup->brightness * (0.5f * rgb_unit) + rgb_offset;
-  impl->contrast   = (float) setup->contrast   * (0.5f * rgb_unit) + rgb_unit;
+  impl->brightness = (f32) setup->brightness * (0.5f * rgb_unit) + rgb_offset;
+  impl->contrast   = (f32) setup->contrast   * (0.5f * rgb_unit) + rgb_unit;
   #ifdef default_palette_contrast
     if ( !setup->palette )
       impl->contrast *= default_palette_contrast;
   #endif
   
-  impl->artifacts = (float) setup->artifacts;
+  impl->artifacts = (f32) setup->artifacts;
   if ( impl->artifacts > 0 )
     impl->artifacts *= artifacts_max - artifacts_mid;
   impl->artifacts = impl->artifacts * artifacts_mid + artifacts_mid;
 
-  impl->fringing = (float) setup->fringing;
+  impl->fringing = (f32) setup->fringing;
   if ( impl->fringing > 0 )
     impl->fringing *= fringing_max - fringing_mid;
   impl->fringing = impl->fringing * fringing_mid + fringing_mid;
@@ -219,20 +221,20 @@ static void init( init_t* impl, sms_ntsc_setup_t const* setup )
   /* generate gamma table */
   if ( gamma_size > 1 )
   {
-    float const to_float = 1.0f / (gamma_size - (gamma_size > 1));
-    float const gamma = 1.1333f - (float) setup->gamma * 0.5f;
+    f32 const to_float = 1.0f / (gamma_size - (gamma_size > 1));
+    f32 const gamma = 1.1333f - (f32) setup->gamma * 0.5f;
     /* match common PC's 2.2 gamma to TV's 2.65 gamma */
     int i;
     for ( i = 0; i < gamma_size; i++ )
       impl->to_float [i] =
-          (float) pow( i * to_float, gamma ) * impl->contrast + impl->brightness;
+          (f32) pow( i * to_float, gamma ) * impl->contrast + impl->brightness;
   }
   
   /* setup decoder matricies */
   {
-    float hue = (float) setup->hue * PI + PI / 180 * ext_decoder_hue;
-    float sat = (float) setup->saturation + 1;
-    float const* decoder = setup->decoder_matrix;
+    f32 hue = (f32) setup->hue * PI + PI / 180 * ext_decoder_hue;
+    f32 sat = (f32) setup->saturation + 1;
+    f32 const* decoder = setup->decoder_matrix;
     if ( !decoder )
     {
       decoder = default_decoder;
@@ -241,20 +243,20 @@ static void init( init_t* impl, sms_ntsc_setup_t const* setup )
     }
     
     {
-      float s = (float) sin( hue ) * sat;
-      float c = (float) cos( hue ) * sat;
-      float* out = impl->to_rgb;
+      f32 s = (f32) sin( hue ) * sat;
+      f32 c = (f32) cos( hue ) * sat;
+      f32* out = impl->to_rgb;
       int n;
       
       n = burst_count;
       do
       {
-        float const* in = decoder;
+        f32 const* in = decoder;
         int n = 3;
         do
         {
-          float i = *in++;
-          float q = *in++;
+          f32 i = *in++;
+          f32 q = *in++;
           *out++ = i * c - q * s;
           *out++ = i * s + q * c;
         }
@@ -290,8 +292,8 @@ enum { rgb_bias = rgb_unit * 2 * sms_ntsc_rgb_builder };
 typedef struct pixel_info_t
 {
   int offset;
-  float negate;
-  float kernel [4];
+  f32 negate;
+  f32 kernel [4];
 } pixel_info_t;
 
 #if rescale_in > 1
@@ -312,10 +314,10 @@ typedef struct pixel_info_t
 extern pixel_info_t const sms_ntsc_pixels [alignment_count];
 
 /* Generate pixel at all burst phases and column alignments */
-static void gen_kernel( init_t* impl, float y, float i, float q, sms_ntsc_rgb_t* out )
+static void gen_kernel( init_t* impl, f32 y, f32 i, f32 q, sms_ntsc_rgb_t* out )
 {
   /* generate for each scanline burst phase */
-  float const* to_rgb = impl->to_rgb;
+  f32 const* to_rgb = impl->to_rgb;
   int burst_remain = burst_count;
   y -= rgb_offset;
   do
@@ -329,29 +331,29 @@ static void gen_kernel( init_t* impl, float y, float i, float q, sms_ntsc_rgb_t*
     do
     {
       /* negate is -1 when composite starts at odd multiple of 2 */
-      float const yy = y * impl->fringing * pixel->negate;
-      float const ic0 = (i + yy) * pixel->kernel [0];
-      float const qc1 = (q + yy) * pixel->kernel [1];
-      float const ic2 = (i - yy) * pixel->kernel [2];
-      float const qc3 = (q - yy) * pixel->kernel [3];
+      f32 const yy = y * impl->fringing * pixel->negate;
+      f32 const ic0 = (i + yy) * pixel->kernel [0];
+      f32 const qc1 = (q + yy) * pixel->kernel [1];
+      f32 const ic2 = (i - yy) * pixel->kernel [2];
+      f32 const qc3 = (q - yy) * pixel->kernel [3];
       
-      float const factor = impl->artifacts * pixel->negate;
-      float const ii = i * factor;
-      float const yc0 = (y + ii) * pixel->kernel [0];
-      float const yc2 = (y - ii) * pixel->kernel [2];
+      f32 const factor = impl->artifacts * pixel->negate;
+      f32 const ii = i * factor;
+      f32 const yc0 = (y + ii) * pixel->kernel [0];
+      f32 const yc2 = (y - ii) * pixel->kernel [2];
       
-      float const qq = q * factor;
-      float const yc1 = (y + qq) * pixel->kernel [1];
-      float const yc3 = (y - qq) * pixel->kernel [3];
+      f32 const qq = q * factor;
+      f32 const yc1 = (y + qq) * pixel->kernel [1];
+      f32 const yc3 = (y - qq) * pixel->kernel [3];
       
-      float const* k = &impl->kernel [pixel->offset];
+      f32 const* k = &impl->kernel [pixel->offset];
       int n;
       ++pixel;
       for ( n = rgb_kernel_size; n; --n )
       {
-        float i = k[0]*ic0 + k[2]*ic2;
-        float q = k[1]*qc1 + k[3]*qc3;
-        float y = k[kernel_size+0]*yc0 + k[kernel_size+1]*yc1 +
+        f32 i = k[0]*ic0 + k[2]*ic2;
+        f32 q = k[1]*qc1 + k[3]*qc3;
+        f32 y = k[kernel_size+0]*yc0 + k[kernel_size+1]*yc1 +
                   k[kernel_size+2]*yc2 + k[kernel_size+3]*yc3 + rgb_offset;
         if ( rescale_out <= 1 )
           k--;

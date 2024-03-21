@@ -29,7 +29,7 @@ typedef struct sms_ntsc_setup_t
   f64 artifacts;  /* artifacts caused by color changes */
   f64 fringing;   /* color artifacts caused by brightness changes */
   f64 bleed;      /* color bleed (color resolution reduction) */
-  float const* decoder_matrix; /* optional RGB decoder matrix, 6 elements */
+  f32 const* decoder_matrix; /* optional RGB decoder matrix, 6 elements */
   
   unsigned char* palette_out;  /* optional RGB palette out, 3 bytes per color */
 } sms_ntsc_setup_t;

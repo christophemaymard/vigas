@@ -1794,7 +1794,7 @@ void scd_init(void)
   gfx_init();
 
   /* Initialize CD hardware master clock count per scanline */
-  scd.cycles_per_line = (u32) (MCYCLES_PER_LINE * ((float)SCD_CLOCK / (float)system_clock));
+  scd.cycles_per_line = (u32) (MCYCLES_PER_LINE * ((f32)SCD_CLOCK / (f32)system_clock));
 
   /* Clear RAM */
   memset(scd.prg_ram, 0x00, sizeof(scd.prg_ram));

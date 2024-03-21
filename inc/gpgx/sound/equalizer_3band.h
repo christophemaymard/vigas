@@ -35,7 +35,7 @@ class Equalizer3band
 {
 private:
   static constexpr f64 kVsa = (1.0 / 4294967295.0); // Very small amount (Denormal Fix).
-  static constexpr float kPi = 3.14159265358979323846264338327f;
+  static constexpr f32 kPi = 3.14159265358979323846264338327f;
 public:
   Equalizer3band();
 
