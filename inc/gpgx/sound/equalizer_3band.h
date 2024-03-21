@@ -50,6 +50,16 @@ public:
   // (especially the bass) so may require clipping before output, 
   // but you knew that anyway.
   double do_3band(int sample);
+
+  // Set the gain control of the low band.
+  void SetLowGainControl(double gain) { m_lg = gain; }
+
+  // Set the gain control of the middle band.
+  void SetMiddleGainControl(double gain) { m_mg = gain; }
+
+  // Set the gain control of the high band.
+  void SetHighGainControl(double gain) { m_hg = gain; }
+
 private:
   double m_lf;      // Filter #1 (Low band): Frequency.
   double m_f1p0;    // Filter #1 (Low band): Pole 0.

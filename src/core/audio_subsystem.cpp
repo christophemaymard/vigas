@@ -57,15 +57,15 @@
 #include "core/cd_hw/cdd.h"
 #include "core/cd_hw/pcm.h"
 #include "core/cd_hw/scd.h"
-#include "core/sound/eq.h"
 
 #include "gpgx/sound/blip_buffer.h"
+#include "gpgx/sound/equalizer_3band.h"
 
 //==============================================================================
 
 //------------------------------------------------------------------------------
 
-static EQSTATE eq[2];
+static gpgx::sound::Equalizer3band eq[2];
 static s16 llp, rrp;
 
 //==============================================================================
@@ -184,11 +184,20 @@ void audio_reset(void)
 
 void audio_set_equalizer(void)
 {
-  init_3band_state(&eq[0], config.low_freq, config.high_freq, snd.sample_rate);
-  init_3band_state(&eq[1], config.low_freq, config.high_freq, snd.sample_rate);
-  eq[0].lg = eq[1].lg = (double)(config.lg) / 100.0;
-  eq[0].mg = eq[1].mg = (double)(config.mg) / 100.0;
-  eq[0].hg = eq[1].hg = (double)(config.hg) / 100.0;
+  eq[0].init_3band_state(config.low_freq, config.high_freq, snd.sample_rate);
+  eq[1].init_3band_state(config.low_freq, config.high_freq, snd.sample_rate);
+
+  double lg = (double)(config.lg) / 100.0;
+  eq[0].SetLowGainControl(lg);
+  eq[1].SetLowGainControl(lg);
+
+  double mg = (double)(config.mg) / 100.0;
+  eq[0].SetMiddleGainControl(mg);
+  eq[1].SetMiddleGainControl(mg);
+
+  double hg = (double)(config.hg) / 100.0;
+  eq[0].SetHighGainControl(hg);
+  eq[1].SetHighGainControl(hg);
 }
 
 //------------------------------------------------------------------------------
@@ -274,8 +283,8 @@ int audio_update(s16* buffer)
     } else if (config.filter & 2) {
       do {
         /* 3 Band EQ */
-        l = do_3band(&eq[0], out[0]);
-        r = do_3band(&eq[1], out[1]);
+        l = eq[0].do_3band(out[0]);
+        r = eq[1].do_3band(out[1]);
 
         /* clipping (16-bit samples) */
         if (l > 32767) l = 32767;

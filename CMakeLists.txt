@@ -137,7 +137,6 @@ add_executable(vigas
     inc/core/ntsc/sms_ntsc.h
     inc/core/ntsc/sms_ntsc_config.h
     inc/core/ntsc/sms_ntsc_impl.h
-    inc/core/sound/eq.h
     inc/core/sound/sound.h
     inc/core/sound/ym2413.h
     inc/core/sound/ym2612.h
@@ -152,6 +151,7 @@ add_executable(vigas
     inc/gpgx/g_psg.h
     inc/gpgx/gpgx.h
     inc/gpgx/sound/blip_buffer.h
+    inc/gpgx/sound/equalizer_3band.h
     inc/gpgx/sound/sn76489.h
     
     src/build/cmd_sdl2/config.cpp
@@ -205,7 +205,6 @@ add_executable(vigas
     src/core/m68k/s68kcpu.cpp
     src/core/ntsc/md_ntsc.cpp
     src/core/ntsc/sms_ntsc.cpp
-    src/core/sound/eq.cpp
     src/core/sound/sound.cpp
     src/core/sound/ym2413.cpp
     src/core/sound/ym2612.cpp
@@ -219,6 +218,7 @@ add_executable(vigas
     src/gpgx/g_psg.cpp
     src/gpgx/gpgx.cpp
     src/gpgx/sound/blip_buffer.cpp
+    src/gpgx/sound/equalizer_3band.cpp
     src/gpgx/sound/sn76489.cpp
 )
 
