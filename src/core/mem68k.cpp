@@ -52,10 +52,11 @@
 #include "core/io_ctrl.h"
 #include "core/input_hw/input.h"
 #include "core/sound/sound.h"
-#include "core/sound/psg.h"
 #include "core/cart_hw/svp/svp.h"
 
 #include "core/cd_hw/scd.h"
+
+#include "gpgx/g_psg.h"
 
 /*--------------------------------------------------------------------------*/
 /* Unused areas (return open bus data, i.e prefetched instruction word)     */
@@ -1490,7 +1491,7 @@ void vdp_write_byte(unsigned int address, unsigned int data)
     {
       if (address & 1)
       {
-        psg_write(m68k.cycles, data);
+        gpgx::g_psg->psg_write(m68k.cycles, data);
         return;
       }
       m68k_unused_8_w(address, data);
@@ -1536,7 +1537,7 @@ void vdp_write_word(unsigned int address, unsigned int data)
     case 0x10:  /* PSG */
     case 0x14:
     {
-      psg_write(m68k.cycles, data & 0xFF);
+      gpgx::g_psg->psg_write(m68k.cycles, data & 0xFF);
       return;
     }
 

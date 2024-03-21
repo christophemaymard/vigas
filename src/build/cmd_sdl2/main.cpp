@@ -62,6 +62,8 @@
 #include "core/ntsc/sms_ntsc.h"
 #include "core/ntsc/md_ntsc.h"
 
+#include "gpgx/gpgx.h"
+
 #define SOUND_FREQUENCY 48000
 #define SOUND_SAMPLES_SIZE  2048
 
@@ -769,6 +771,13 @@ int main (int argc, char **argv)
     char caption[256];
     sprintf(caption, "Genesis Plus GX\\SDL\nusage: %s gamename\n", argv[0]);
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Information", caption, sdl_video.window);
+    return 1;
+  }
+
+  // Initialize Genesis Plus GX port.
+  if (!gpgx::InitGpgx()) {
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "Initialization of Genesis Plus GX port failed.", sdl_video.window);
+
     return 1;
   }
 

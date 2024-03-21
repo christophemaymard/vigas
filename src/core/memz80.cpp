@@ -54,7 +54,8 @@
 #include "core/membnk.h"
 #include "core/io_ctrl.h"
 #include "core/sound/sound.h"
-#include "core/sound/psg.h"
+
+#include "gpgx/g_psg.h"
 
 /*--------------------------------------------------------------------------*/
 /*  Handlers for access to unused addresses and those which make the        */
@@ -281,7 +282,7 @@ void z80_md_port_w(unsigned int port, unsigned char data)
     case 0x40:
     case 0x41:
     {
-      psg_write(Z80.cycles, data);
+      gpgx::g_psg->psg_write(Z80.cycles, data);
       return;
     }
 
@@ -395,7 +396,7 @@ void z80_gg_port_w(unsigned int port, unsigned char data)
     case 0x40:
     case 0x41:
     {
-      psg_write(Z80.cycles, data);
+      gpgx::g_psg->psg_write(Z80.cycles, data);
       return;
     }
 
@@ -500,7 +501,7 @@ void z80_ms_port_w(unsigned int port, unsigned char data)
     case 0x40:
     case 0x41:
     {
-      psg_write(Z80.cycles, data);
+      gpgx::g_psg->psg_write(Z80.cycles, data);
       return;
     }
 
@@ -543,7 +544,7 @@ void z80_ms_port_w(unsigned int port, unsigned char data)
                 1  0 : disable both PSG & FM output
                 1  1 : enable both PSG and FM output
             */
-            psg_config(Z80.cycles, config.psg_preamp, ((data + 1) & 0x02) ? 0x00 : 0xFF);
+            gpgx::g_psg->psg_config(Z80.cycles, config.psg_preamp, ((data + 1) & 0x02) ? 0x00 : 0xFF);
             fm_write(Z80.cycles, 0x02, data);
             io_reg[6] = data;
             return;
@@ -661,7 +662,7 @@ void z80_m3_port_w(unsigned int port, unsigned char data)
     case 0x40:
     case 0x41:
     {
-      psg_write(Z80.cycles, data);
+      gpgx::g_psg->psg_write(Z80.cycles, data);
       return;
     }
 
@@ -688,7 +689,7 @@ void z80_m3_port_w(unsigned int port, unsigned char data)
         if (port & 2)
         {
           /* PSG output is automatically disabled (resp. enabled) by FM sound unit hardware if FM output is enabled (resp. disabled) */
-          psg_config(Z80.cycles, config.psg_preamp, (data & 0x01) ? 0x00 : 0xff);
+          gpgx::g_psg->psg_config(Z80.cycles, config.psg_preamp, (data & 0x01) ? 0x00 : 0xff);
         }
         return;
       }
@@ -756,7 +757,7 @@ void z80_sg_port_w(unsigned int port, unsigned char data)
     case 0x40:
     case 0x41:
     {
-      psg_write(Z80.cycles, data);
+      gpgx::g_psg->psg_write(Z80.cycles, data);
 
       /* Z80 !WAIT input is tied to SN76489AN chip READY pin (held low for 32 clocks after each write access) */
       Z80.cycles += (32 * 15);

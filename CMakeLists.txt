@@ -138,7 +138,6 @@ add_executable(vigas
     inc/core/ntsc/sms_ntsc_config.h
     inc/core/ntsc/sms_ntsc_impl.h
     inc/core/sound/eq.h
-    inc/core/sound/psg.h
     inc/core/sound/sound.h
     inc/core/sound/ym2413.h
     inc/core/sound/ym2612.h
@@ -149,8 +148,11 @@ add_executable(vigas
     inc/core/z80/z80.h
     inc/core/cart_hw/areplay.h
     inc/core/cart_hw/eeprom_93c.h
-
+    
+    inc/gpgx/g_psg.h
+    inc/gpgx/gpgx.h
     inc/gpgx/sound/blip_buffer.h
+    inc/gpgx/sound/sn76489.h
     
     src/build/cmd_sdl2/config.cpp
     src/build/cmd_sdl2/error.cpp
@@ -204,7 +206,6 @@ add_executable(vigas
     src/core/ntsc/md_ntsc.cpp
     src/core/ntsc/sms_ntsc.cpp
     src/core/sound/eq.cpp
-    src/core/sound/psg.cpp
     src/core/sound/sound.cpp
     src/core/sound/ym2413.cpp
     src/core/sound/ym2612.cpp
@@ -214,8 +215,11 @@ add_executable(vigas
     src/core/z80/z80.cpp
     src/core/cart_hw/areplay.cpp
     src/core/cart_hw/eeprom_93c.cpp
-
+    
+    src/gpgx/g_psg.cpp
+    src/gpgx/gpgx.cpp
     src/gpgx/sound/blip_buffer.cpp
+    src/gpgx/sound/sn76489.cpp
 )
 
 target_include_directories(vigas PRIVATE 

@@ -46,11 +46,14 @@
 #include "osd.h"
 #include "core/snd.h"
 #include "core/system_hardware.h"
-#include "core/sound/psg.h"
 #include "core/sound/ym2413.h"
 #include "core/sound/ym2612.h"
 #include "core/sound/ym3438.h"
 #include "core/state.h"
+
+#include "gpgx/g_psg.h"
+
+#include "gpgx/sound/sn76489.h"
 
 /* YM2612 internal clock = input clock / 6 = (master clock / 7) / 6 */
 #define YM2612_CLOCK_RATIO (7*6)
@@ -277,15 +280,15 @@ void sound_init( void )
   }
 
   /* Initialize PSG chip */
-  psg_init((system_hw == SYSTEM_SG) ? PSG_DISCRETE : PSG_INTEGRATED);
+  gpgx::g_psg->psg_init((system_hw == SYSTEM_SG) ? gpgx::sound::PSG_DISCRETE : gpgx::sound::PSG_INTEGRATED);
 }
 
 void sound_reset(void)
 {
   /* reset sound chips */
   fm_reset(0);
-  psg_reset();
-  psg_config(0, config.psg_preamp, 0xff);
+  gpgx::g_psg->psg_reset();
+  gpgx::g_psg->psg_config(0, config.psg_preamp, 0xff);
 
   /* reset FM buffer ouput */
   fm_last[0] = fm_last[1] = 0;
@@ -300,7 +303,7 @@ void sound_reset(void)
 int sound_update(unsigned int cycles)
 {
   /* Run PSG chip until end of frame */
-  psg_end_frame(cycles);
+  gpgx::g_psg->psg_end_frame(cycles);
 
   /* FM chip is enabled ? */
   if (YM_Update)
@@ -411,7 +414,7 @@ int sound_context_save(u8 *state)
     }
   }
 
-  bufferptr += psg_context_save(&state[bufferptr]);
+  bufferptr += gpgx::g_psg->psg_context_save(&state[bufferptr]);
 
   save_param(&fm_cycles_start,sizeof(fm_cycles_start));
 
@@ -445,7 +448,7 @@ int sound_context_load(u8 *state)
     }
   }
 
-  bufferptr += psg_context_load(&state[bufferptr]);
+  bufferptr += gpgx::g_psg->psg_context_load(&state[bufferptr]);
 
   load_param(&fm_cycles_start,sizeof(fm_cycles_start));
   fm_cycles_count = fm_cycles_start;

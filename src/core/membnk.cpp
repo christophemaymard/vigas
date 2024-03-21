@@ -44,8 +44,9 @@
 #include "core/genesis.h"
 #include "core/vdp_ctrl.h"
 #include "core/io_ctrl.h"
-#include "core/sound/psg.h"
 #include "core/cart_hw/md_cart.h"
+
+#include "gpgx/g_psg.h"
 
 t_zbank_memory_map zbank_memory_map[256];
 
@@ -304,7 +305,7 @@ void zbank_write_vdp(unsigned int address, unsigned int data)
     {
       if (address & 1)
       {
-        psg_write(Z80.cycles, data);
+        gpgx::g_psg->psg_write(Z80.cycles, data);
         return;
       }
       zbank_unused_w(address, data);

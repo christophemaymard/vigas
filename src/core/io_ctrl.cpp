@@ -50,7 +50,6 @@
 #include "core/genesis.h"
 #include "core/vdp_ctrl.h"
 #include "core/input_hw/input.h"
-#include "core/sound/psg.h"
 
 #include "core/cart_hw/md_cart.h"
 #include "core/cart_hw/sms_cart.h"
@@ -64,6 +63,8 @@
 #include "core/input_hw/paddle.h"
 #include "core/input_hw/sportspad.h"
 #include "core/input_hw/graphic_board.h"
+
+#include "gpgx/g_psg.h"
 
 u8 io_reg[0x10];
 
@@ -638,7 +639,7 @@ void io_gg_write(unsigned int offset, unsigned int data)
 
     case 6: /* PSG Stereo output control */
       io_reg[6] = data;
-      psg_config(Z80.cycles, config.psg_preamp, data);
+      gpgx::g_psg->psg_config(Z80.cycles, config.psg_preamp, data);
       return;
 
     default: /* Read-only */

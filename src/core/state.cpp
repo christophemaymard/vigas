@@ -53,8 +53,9 @@
 #include "core/membnk.h"
 #include "core/io_ctrl.h"
 #include "core/sound/sound.h"
-#include "core/sound/psg.h"
 #include "core/cart_hw/sms_cart.h"
+
+#include "gpgx/g_psg.h"
 
 int state_load(unsigned char *state)
 {
@@ -134,11 +135,11 @@ int state_load(unsigned char *state)
   bufferptr += sound_context_load(&state[bufferptr]);
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
   {
-    psg_config(0, config.psg_preamp, 0xff);
+    gpgx::g_psg->psg_config(0, config.psg_preamp, 0xff);
   }
   else
   {
-    psg_config(0, config.psg_preamp, io_reg[6]);
+    gpgx::g_psg->psg_config(0, config.psg_preamp, io_reg[6]);
   }
 
   /* 68000 */
