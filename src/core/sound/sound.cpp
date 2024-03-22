@@ -46,12 +46,12 @@
 #include "osd.h"
 #include "core/snd.h"
 #include "core/system_hardware.h"
-#include "core/sound/ym3438.h"
 #include "core/state.h"
 
 #include "gpgx/g_psg.h"
 #include "gpgx/g_ym2413.h"
 #include "gpgx/g_ym2612.h"
+#include "gpgx/g_ym3438.h"
 #include "gpgx/sound/sn76489.h"
 #include "gpgx/sound/ym2612/ym2612.h"
 #include "gpgx/sound/ym2612/ym2612_type.h"
@@ -76,11 +76,6 @@ static void (*YM_Update)(int *buffer, int length);
 void (*fm_reset)(unsigned int cycles);
 void (*fm_write)(unsigned int cycles, unsigned int address, unsigned int data);
 unsigned int (*fm_read)(unsigned int cycles, unsigned int address);
-
-static ym3438_t ym3438;
-static short ym3438_accm[24][2];
-static int ym3438_sample[2];
-static int ym3438_cycles;
 
 /* Run FM chip until required M-cycles */
 static XEE_INLINE void fm_update(int cycles)
@@ -194,24 +189,7 @@ static unsigned int YM2413_Read(unsigned int cycles, unsigned int a)
 
 static void YM3438_Update(int *buffer, int length)
 {
-  int i, j;
-  for (i = 0; i < length; i++)
-  {
-    OPN2_Clock(&ym3438, ym3438_accm[ym3438_cycles]);
-    ym3438_cycles = (ym3438_cycles + 1) % 24;
-    if (ym3438_cycles == 0)
-    {
-      ym3438_sample[0] = 0;
-      ym3438_sample[1] = 0;
-      for (j = 0; j < 24; j++)
-      {
-        ym3438_sample[0] += ym3438_accm[j][0];
-        ym3438_sample[1] += ym3438_accm[j][1];
-      }
-    }
-    *buffer++ = ym3438_sample[0] * 11;
-    *buffer++ = ym3438_sample[1] * 11;
-  }
+  gpgx::g_ym3438->Update(buffer, length);
 }
 
 static void YM3438_Reset(unsigned int cycles)
@@ -220,7 +198,7 @@ static void YM3438_Reset(unsigned int cycles)
   fm_update(cycles);
 
   /* reset FM chip */
-  OPN2_Reset(&ym3438);
+  gpgx::g_ym3438->OPN2_Reset();
 }
 
 static void YM3438_Write(unsigned int cycles, unsigned int a, unsigned int v)
@@ -229,7 +207,7 @@ static void YM3438_Write(unsigned int cycles, unsigned int a, unsigned int v)
   fm_update(cycles);
 
   /* write FM register */
-  OPN2_Write(&ym3438, a, v);
+  gpgx::g_ym3438->OPN2_Write(a, v);
 }
 
 static unsigned int YM3438_Read(unsigned int cycles, unsigned int a)
@@ -238,7 +216,7 @@ static unsigned int YM3438_Read(unsigned int cycles, unsigned int a)
   fm_update(cycles);
 
   /* read FM status */
-  return OPN2_Read(&ym3438, a);
+  return gpgx::g_ym3438->OPN2_Read(a);
 }
 
 void sound_init( void )
@@ -250,9 +228,7 @@ void sound_init( void )
     if (config.ym3438)
     {
       /* Nuked OPN2 */
-      xee::mem::Memset(&ym3438, 0, sizeof(ym3438));
-      xee::mem::Memset(&ym3438_sample, 0, sizeof(ym3438_sample));
-      xee::mem::Memset(&ym3438_accm, 0, sizeof(ym3438_accm));
+      gpgx::g_ym3438->Init();
       YM_Update = YM3438_Update;
       fm_reset = YM3438_Reset;
       fm_write = YM3438_Write;
@@ -408,10 +384,7 @@ int sound_context_save(u8 *state)
     save_param(&config.ym3438, sizeof(config.ym3438));
     if (config.ym3438)
     {
-      save_param(&ym3438, sizeof(ym3438));
-      save_param(&ym3438_accm, sizeof(ym3438_accm));
-      save_param(&ym3438_sample, sizeof(ym3438_sample));
-      save_param(&ym3438_cycles, sizeof(ym3438_cycles));
+      bufferptr += gpgx::g_ym3438->SaveContext(&state[bufferptr]);
     }
     else
     {
@@ -442,10 +415,7 @@ int sound_context_load(u8 *state)
     load_param(&config_ym3438, sizeof(config_ym3438));
     if (config_ym3438)
     {
-      load_param(&ym3438, sizeof(ym3438));
-      load_param(&ym3438_accm, sizeof(ym3438_accm));
-      load_param(&ym3438_sample, sizeof(ym3438_sample));
-      load_param(&ym3438_cycles, sizeof(ym3438_cycles));
+      bufferptr += gpgx::g_ym3438->LoadContext(&state[bufferptr]);
     }
     else
     {
