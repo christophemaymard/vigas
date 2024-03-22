@@ -137,7 +137,6 @@ add_executable(vigas
     inc/core/ntsc/sms_ntsc_config.h
     inc/core/ntsc/sms_ntsc_impl.h
     inc/core/sound/sound.h
-    inc/core/sound/ym2413.h
     inc/core/sound/ym3438.h
     inc/core/cart_hw/svp/ssp16.h
     inc/core/cart_hw/svp/svp.h
@@ -147,11 +146,15 @@ add_executable(vigas
     inc/core/cart_hw/eeprom_93c.h
     
     inc/gpgx/g_psg.h
+    inc/gpgx/g_ym2413.h
     inc/gpgx/g_ym2612.h
     inc/gpgx/gpgx.h
     inc/gpgx/sound/blip_buffer.h
     inc/gpgx/sound/equalizer_3band.h
     inc/gpgx/sound/sn76489.h
+    inc/gpgx/sound/ym2413/opll_ch.h
+    inc/gpgx/sound/ym2413/opll_slot.h
+    inc/gpgx/sound/ym2413/ym2413.h
     inc/gpgx/sound/ym2612/fm_3slot.h
     inc/gpgx/sound/ym2612/fm_ch.h
     inc/gpgx/sound/ym2612/fm_opn.h
@@ -212,7 +215,6 @@ add_executable(vigas
     src/core/ntsc/md_ntsc.cpp
     src/core/ntsc/sms_ntsc.cpp
     src/core/sound/sound.cpp
-    src/core/sound/ym2413.cpp
     src/core/sound/ym3438.cpp
     src/core/cart_hw/svp/ssp16.cpp
     src/core/cart_hw/svp/svp.cpp
@@ -221,11 +223,13 @@ add_executable(vigas
     src/core/cart_hw/eeprom_93c.cpp
     
     src/gpgx/g_psg.cpp
+    src/gpgx/g_ym2413.cpp
     src/gpgx/g_ym2612.cpp
     src/gpgx/gpgx.cpp
     src/gpgx/sound/blip_buffer.cpp
     src/gpgx/sound/equalizer_3band.cpp
     src/gpgx/sound/sn76489.cpp
+    src/gpgx/sound/ym2413/ym2413.cpp
     src/gpgx/sound/ym2612/ym2612.cpp
 )
 

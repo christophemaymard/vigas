@@ -46,11 +46,11 @@
 #include "osd.h"
 #include "core/snd.h"
 #include "core/system_hardware.h"
-#include "core/sound/ym2413.h"
 #include "core/sound/ym3438.h"
 #include "core/state.h"
 
 #include "gpgx/g_psg.h"
+#include "gpgx/g_ym2413.h"
 #include "gpgx/g_ym2612.h"
 #include "gpgx/sound/sn76489.h"
 #include "gpgx/sound/ym2612/ym2612.h"
@@ -160,13 +160,18 @@ static unsigned int YM2612_Read(unsigned int cycles, unsigned int a)
   return 0x00;
 }
 
+static void YM2413_Update(int* buffer, int length)
+{
+  gpgx::g_ym2413->YM2413Update(buffer, length);
+}
+
 static void YM2413_Reset(unsigned int cycles)
 {
   /* synchronize FM chip with CPU */
   fm_update(cycles);
 
   /* reset FM chip */
-  YM2413ResetChip();
+  gpgx::g_ym2413->YM2413ResetChip();
 }
 
 static void YM2413_Write(unsigned int cycles, unsigned int a, unsigned int v)
@@ -179,12 +184,12 @@ static void YM2413_Write(unsigned int cycles, unsigned int a, unsigned int v)
   }
 
   /* write FM register */
-  YM2413Write(a, v);
+  gpgx::g_ym2413->YM2413Write(a, v);
 }
 
 static unsigned int YM2413_Read(unsigned int cycles, unsigned int a)
 {
-    return YM2413Read();
+    return gpgx::g_ym2413->YM2413Read();
 }
 
 static void YM3438_Update(int *buffer, int length)
@@ -274,8 +279,8 @@ void sound_init( void )
   {
     /* YM2413 */
     {
-      YM2413Init();
-      YM_Update = (config.ym2413 & 1) ? YM2413Update : NULL;
+      gpgx::g_ym2413->YM2413Init();
+      YM_Update = (config.ym2413 & 1) ? YM2413_Update : NULL;
       fm_reset = YM2413_Reset;
       fm_write = YM2413_Write;
       fm_read = YM2413_Read;
@@ -416,7 +421,7 @@ int sound_context_save(u8 *state)
   else
   {
     {
-      save_param(YM2413GetContextPtr(),YM2413GetContextSize());
+      bufferptr += gpgx::g_ym2413->SaveContext(&state[bufferptr]);
     }
   }
 
@@ -450,7 +455,7 @@ int sound_context_load(u8 *state)
   else
   {
     {
-      load_param(YM2413GetContextPtr(),YM2413GetContextSize());
+      bufferptr += gpgx::g_ym2413->LoadContext(&state[bufferptr]);
     }
   }
 
