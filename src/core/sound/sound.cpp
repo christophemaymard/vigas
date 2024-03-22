@@ -47,13 +47,14 @@
 #include "core/snd.h"
 #include "core/system_hardware.h"
 #include "core/sound/ym2413.h"
-#include "core/sound/ym2612.h"
 #include "core/sound/ym3438.h"
 #include "core/state.h"
 
 #include "gpgx/g_psg.h"
-
+#include "gpgx/g_ym2612.h"
 #include "gpgx/sound/sn76489.h"
+#include "gpgx/sound/ym2612/ym2612.h"
+#include "gpgx/sound/ym2612/ym2612_type.h"
 
 /* YM2612 internal clock = input clock / 6 = (master clock / 7) / 6 */
 #define YM2612_CLOCK_RATIO (7*6)
@@ -100,13 +101,18 @@ static XEE_INLINE void fm_update(int cycles)
   }
 }
 
+static void YM2612_Update(int* buffer, int length)
+{
+  gpgx::g_ym2612->YM2612Update(buffer, length);
+}
+
 static void YM2612_Reset(unsigned int cycles)
 {
   /* synchronize FM chip with CPU */
   fm_update(cycles);
 
   /* reset FM chip */
-  YM2612ResetChip();
+  gpgx::g_ym2612->YM2612ResetChip();
   fm_cycles_busy = 0;
 }
 
@@ -119,20 +125,20 @@ static void YM2612_Write(unsigned int cycles, unsigned int a, unsigned int v)
     fm_update(cycles);
 
     /* set FM BUSY end cycle (discrete or ASIC-integrated YM2612 chip only) */
-    if (config.ym2612 < YM2612_ENHANCED)
+    if (config.ym2612 < gpgx::sound::ym2612::YM2612_ENHANCED)
     {
       fm_cycles_busy = (((cycles + YM2612_CLOCK_RATIO - 1) / YM2612_CLOCK_RATIO) + 32) * YM2612_CLOCK_RATIO;
     }
   }
 
   /* write FM register */
-  YM2612Write(a, v);
+  gpgx::g_ym2612->YM2612Write(a, v);
 }
 
 static unsigned int YM2612_Read(unsigned int cycles, unsigned int a)
 {
   /* FM status can only be read from (A0,A1)=(0,0) on discrete YM2612 */
-  if ((a == 0) || (config.ym2612 > YM2612_DISCRETE))
+  if ((a == 0) || (config.ym2612 > gpgx::sound::ym2612::YM2612_DISCRETE))
   {
     /* synchronize FM chip with CPU */
     fm_update(cycles);
@@ -141,12 +147,12 @@ static unsigned int YM2612_Read(unsigned int cycles, unsigned int a)
     if (cycles >= fm_cycles_busy)
     {
       /* BUSY flag cleared */
-      return YM2612Read();
+      return gpgx::g_ym2612->YM2612Read();
     }
     else
     {
       /* BUSY flag set */
-      return YM2612Read() | 0x80;
+      return gpgx::g_ym2612->YM2612Read() | 0x80;
     }
   }
 
@@ -253,9 +259,9 @@ void sound_init( void )
     else
     {
       /* MAME OPN2*/
-      YM2612Init();
-      YM2612Config(config.ym2612);
-      YM_Update = YM2612Update;
+      gpgx::g_ym2612->YM2612Init();
+      gpgx::g_ym2612->YM2612Config(config.ym2612);
+      YM_Update = YM2612_Update;
       fm_reset = YM2612_Reset;
       fm_write = YM2612_Write;
       fm_read = YM2612_Read;
@@ -404,7 +410,7 @@ int sound_context_save(u8 *state)
     }
     else
     {
-      bufferptr += YM2612SaveContext(state + sizeof(config.ym3438));
+      bufferptr += gpgx::g_ym2612->YM2612SaveContext(state + sizeof(config.ym3438));
     }
   }
   else
@@ -438,7 +444,7 @@ int sound_context_load(u8 *state)
     }
     else
     {
-      bufferptr += YM2612LoadContext(state + sizeof(config_ym3438));
+      bufferptr += gpgx::g_ym2612->YM2612LoadContext(state + sizeof(config_ym3438));
     }
   }
   else

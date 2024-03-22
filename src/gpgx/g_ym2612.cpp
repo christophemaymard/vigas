@@ -4,8 +4,7 @@
  * Copyright 2024 Christophe Maymard <christophe.maymard@hotmail.com>
  */
 
-#ifndef __GPGX_GPGX_H__
-#define __GPGX_GPGX_H__
+#include "gpgx/g_ym2612.h"
 
 namespace gpgx {
 
@@ -13,13 +12,7 @@ namespace gpgx {
 
 //------------------------------------------------------------------------------
 
-// Initialize the parts of the Genesis Plus GX port.
-bool InitGpgx();
-
-// Destroy all the parts of the Genesis Plus GX port.
-void DestroyGpgx();
+gpgx::sound::ym2612::Ym2612* g_ym2612 = nullptr;
 
 } // namespace gpgx
-
-#endif // #ifndef __GPGX_GPGX_H__
 

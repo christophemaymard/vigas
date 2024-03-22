@@ -1013,5 +1013,7 @@ int main (int argc, char **argv)
   sdl_sync_close();
   SDL_Quit();
 
+  gpgx::DestroyGpgx();
+
   return 0;
 }
