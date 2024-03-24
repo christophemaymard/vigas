@@ -7,7 +7,7 @@
 #ifndef __GPGX_G_PSG_H__
 #define __GPGX_G_PSG_H__
 
-#include "gpgx/sound/sn76489.h"
+#include "gpgx/ic/sn76489/sn76489.h"
 
 namespace gpgx {
 
@@ -15,7 +15,7 @@ namespace gpgx {
 
 //------------------------------------------------------------------------------
 
-extern gpgx::sound::Sn76489* g_psg;
+extern gpgx::ic::sn76489::Sn76489* g_psg;
 
 } // namespace gpgx
 

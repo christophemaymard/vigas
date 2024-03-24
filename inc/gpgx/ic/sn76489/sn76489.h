@@ -39,12 +39,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __GPGX_SOUND_SN76489_H__
-#define __GPGX_SOUND_SN76489_H__
+#ifndef __GPGX_IC_SN76489_SN76489_H__
+#define __GPGX_IC_SN76489_SN76489_H__
 
 #include "xee/fnd/data_type.h"
 
-namespace gpgx::sound {
+namespace gpgx::ic::sn76489 {
 
 //==============================================================================
 
@@ -106,7 +106,7 @@ private:
   int m_chanAmp[4][2];
 };
 
-} // namespace gpgx::sound
+} // namespace gpgx::ic::sn76489
 
-#endif // #ifndef __GPGX_SOUND_SN76489_H__
+#endif // #ifndef __GPGX_IC_SN76489_SN76489_H__
 

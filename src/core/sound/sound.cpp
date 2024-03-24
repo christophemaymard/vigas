@@ -52,8 +52,8 @@
 #include "gpgx/g_ym2413.h"
 #include "gpgx/g_ym2612.h"
 #include "gpgx/g_ym3438.h"
+#include "gpgx/ic/sn76489/sn76489.h"
 #include "gpgx/ic/ym2612/ym2612_type.h"
-#include "gpgx/sound/sn76489.h"
 
 /* YM2612 internal clock = input clock / 6 = (master clock / 7) / 6 */
 #define YM2612_CLOCK_RATIO (7*6)
@@ -266,7 +266,7 @@ void sound_init( void )
   }
 
   /* Initialize PSG chip */
-  gpgx::g_psg->psg_init((system_hw == SYSTEM_SG) ? gpgx::sound::PSG_DISCRETE : gpgx::sound::PSG_INTEGRATED);
+  gpgx::g_psg->psg_init((system_hw == SYSTEM_SG) ? gpgx::ic::sn76489::PSG_DISCRETE : gpgx::ic::sn76489::PSG_INTEGRATED);
 }
 
 void sound_reset(void)

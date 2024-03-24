@@ -39,7 +39,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "gpgx/sound/sn76489.h"
+#include "gpgx/ic/sn76489/sn76489.h"
 
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
@@ -48,7 +48,7 @@
 #include "core/snd.h"
 #include "core/state.h"
 
-namespace gpgx::sound {
+namespace gpgx::ic::sn76489 {
 
 //==============================================================================
 // Sn76489
@@ -527,5 +527,5 @@ void Sn76489::psg_update(unsigned int clocks)
   }
 }
 
-} // namespace gpgx::sound
+} // namespace gpgx::ic::sn76489
 

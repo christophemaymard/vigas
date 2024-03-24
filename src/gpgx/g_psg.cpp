@@ -6,7 +6,7 @@
 
 #include "gpgx/g_psg.h"
 
-#include "gpgx/sound/sn76489.h"
+#include "gpgx/ic/sn76489/sn76489.h"
 
 namespace gpgx {
 
@@ -14,7 +14,7 @@ namespace gpgx {
 
 //------------------------------------------------------------------------------
 
-gpgx::sound::Sn76489* g_psg = nullptr;
+gpgx::ic::sn76489::Sn76489* g_psg = nullptr;
 
 } // namespace gpgx
 
