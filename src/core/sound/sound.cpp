@@ -52,7 +52,7 @@
 #include "gpgx/g_ym2413.h"
 #include "gpgx/g_ym2612.h"
 #include "gpgx/g_ym3438.h"
-#include "gpgx/ic/sn76489/sn76489.h"
+#include "gpgx/ic/sn76489/sn76489_type.h"
 #include "gpgx/ic/ym2612/ym2612_type.h"
 
 /* YM2612 internal clock = input clock / 6 = (master clock / 7) / 6 */

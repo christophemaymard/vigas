@@ -48,6 +48,8 @@
 #include "core/snd.h"
 #include "core/state.h"
 
+#include "gpgx/ic/sn76489/sn76489_type.h"
+
 namespace gpgx::ic::sn76489 {
 
 //==============================================================================

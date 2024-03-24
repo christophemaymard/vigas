@@ -39,12 +39,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __GPGX_IC_SN76489_SN76489_H__
-#define __GPGX_IC_SN76489_SN76489_H__
-
-#include "xee/fnd/data_type.h"
-
-#include "gpgx/ic/sn76489/sn76489_type.h"
+#ifndef __GPGX_IC_SN76489_SN76489_TYPE_H__
+#define __GPGX_IC_SN76489_SN76489_TYPE_H__
 
 namespace gpgx::ic::sn76489 {
 
@@ -52,55 +48,13 @@ namespace gpgx::ic::sn76489 {
 
 //------------------------------------------------------------------------------
 
-class Sn76489
+enum PSG_TYPE
 {
-private:
-
-  // internal clock = input clock : 16 = (master clock : 15) : 16
-  //#define PSG_MCYCLES_RATIO (15*16)
-  static constexpr s32 kMCyclesRatio = 15 * 16;
-
-  // Maximal channel output (roughly adjusted to match VA4 MD1 PSG/FM balance 
-  // with 1.5x amplification of PSG output).
-  static constexpr s32 kMaxVolume = 2800;
-
-  static const u8 noiseShiftWidth[2];
-  static const u8 noiseBitMask[2];
-  static const u8 noiseFeedback[10];
-  static const u16 chanVolume[16];
-public:
-  Sn76489();
-
-  void psg_init(PSG_TYPE type);
-  void psg_reset();
-
-  int psg_context_save(u8* state);
-  int psg_context_load(u8* state);
-
-  void psg_write(unsigned int clocks, unsigned int data);
-  void psg_config(unsigned int clocks, unsigned int preamp, unsigned int panning);
-  void psg_end_frame(unsigned int clocks);
-
-private:
-  void psg_update(unsigned int clocks);
-
-private:
-  int m_clocks;
-  int m_latch;
-  int m_zeroFreqInc;
-  int m_noiseShiftValue;
-  int m_noiseShiftWidth;
-  int m_noiseBitMask;
-  int m_regs[8];
-  int m_freqInc[4];
-  int m_freqCounter[4];
-  int m_polarity[4];
-  int m_chanDelta[4][2];
-  int m_chanOut[4][2];
-  int m_chanAmp[4][2];
+  PSG_DISCRETE,
+  PSG_INTEGRATED
 };
 
 } // namespace gpgx::ic::sn76489
 
-#endif // #ifndef __GPGX_IC_SN76489_SN76489_H__
+#endif // #ifndef __GPGX_IC_SN76489_SN76489_TYPE_H__
 
