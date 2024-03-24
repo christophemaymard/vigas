@@ -12,7 +12,7 @@ namespace gpgx {
 
 //------------------------------------------------------------------------------
 
-gpgx::sound::ym2413::Ym2413* g_ym2413 = nullptr;
+gpgx::ic::ym2413::Ym2413* g_ym2413 = nullptr;
 
 } // namespace gpgx
 

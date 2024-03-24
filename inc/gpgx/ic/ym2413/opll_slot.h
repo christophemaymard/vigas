@@ -7,12 +7,12 @@
  * Version 1.0
  */
 
-#ifndef __GPGX_SOUND_YM2413_OPLL_SLOT_H__
-#define __GPGX_SOUND_YM2413_OPLL_SLOT_H__
+#ifndef __GPGX_IC_YM2413_OPLL_SLOT_H__
+#define __GPGX_IC_YM2413_OPLL_SLOT_H__
 
 #include "xee/fnd/data_type.h"
 
-namespace gpgx::sound::ym2413 {
+namespace gpgx::ic::ym2413 {
 
 //==============================================================================
 
@@ -66,7 +66,7 @@ struct  OPLL_SLOT
   unsigned int wavetable;
 };
 
-} // namespace gpgx::sound::ym2413
+} // namespace gpgx::ic::ym2413
 
-#endif // #ifndef __GPGX_SOUND_YM2413_OPLL_SLOT_H__
+#endif // #ifndef __GPGX_IC_YM2413_OPLL_SLOT_H__
 

@@ -7,14 +7,14 @@
  * Version 1.0
  */
 
-#ifndef __GPGX_SOUND_YM2413_OPLL_CH_H__
-#define __GPGX_SOUND_YM2413_OPLL_CH_H__
+#ifndef __GPGX_IC_YM2413_OPLL_CH_H__
+#define __GPGX_IC_YM2413_OPLL_CH_H__
 
 #include "xee/fnd/data_type.h"
 
-#include "gpgx/sound/ym2413/opll_slot.h"
+#include "gpgx/ic/ym2413/opll_slot.h"
 
-namespace gpgx::sound::ym2413 {
+namespace gpgx::ic::ym2413 {
 
 //==============================================================================
 
@@ -33,7 +33,7 @@ struct OPLL_CH
   u8 sus;         // Sus on/off (release speed in percussive mode).
 };
 
-} // namespace gpgx::sound::ym2413
+} // namespace gpgx::ic::ym2413
 
-#endif // #ifndef __GPGX_SOUND_YM2413_OPLL_CH_H__
+#endif // #ifndef __GPGX_IC_YM2413_OPLL_CH_H__
 

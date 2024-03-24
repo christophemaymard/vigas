@@ -31,7 +31,7 @@
  * - 2022/08/07: fixed operator ouput when EG is off
  */
 
-#include "gpgx/sound/ym2413/ym2413.h"
+#include "gpgx/ic/ym2413/ym2413.h"
 
 #include <cmath>
 
@@ -41,10 +41,10 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
-#include "gpgx/sound/ym2413/opll_slot.h"
-#include "gpgx/sound/ym2413/opll_ch.h"
+#include "gpgx/ic/ym2413/opll_slot.h"
+#include "gpgx/ic/ym2413/opll_ch.h"
 
-namespace gpgx::sound::ym2413 {
+namespace gpgx::ic::ym2413 {
 
 //==============================================================================
 // Ym2413
@@ -1777,5 +1777,5 @@ int Ym2413::SaveContext(unsigned char* state)
   return bufferptr;
 }
 
-} // namespace gpgx::sound::ym2413
+} // namespace gpgx::ic::ym2413
 

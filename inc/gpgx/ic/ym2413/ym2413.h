@@ -7,15 +7,15 @@
  * Version 1.0
  */
 
-#ifndef __GPGX_SOUND_YM2413_YM2413_C_H__
-#define __GPGX_SOUND_YM2413_YM2413_C_H__
+#ifndef __GPGX_IC_YM2413_YM2413_H__
+#define __GPGX_IC_YM2413_YM2413_H__
 
 #include "xee/fnd/data_type.h"
 
-#include "gpgx/sound/ym2413/opll_slot.h"
-#include "gpgx/sound/ym2413/opll_ch.h"
+#include "gpgx/ic/ym2413/opll_slot.h"
+#include "gpgx/ic/ym2413/opll_ch.h"
 
-namespace gpgx::sound::ym2413 {
+namespace gpgx::ic::ym2413 {
 
 //==============================================================================
 
@@ -137,7 +137,7 @@ private:
   int m_rate;   // sampling rate (Hz).
 };
 
-} // namespace gpgx::sound::ym2413
+} // namespace gpgx::ic::ym2413
 
-#endif // #ifndef __GPGX_SOUND_YM2413_YM2413_C_H__
+#endif // #ifndef __GPGX_IC_YM2413_YM2413_H__
 

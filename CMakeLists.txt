@@ -149,12 +149,12 @@ add_executable(vigas
     inc/gpgx/g_ym2612.h
     inc/gpgx/g_ym3438.h
     inc/gpgx/gpgx.h
+    inc/gpgx/ic/ym2413/opll_ch.h
+    inc/gpgx/ic/ym2413/opll_slot.h
+    inc/gpgx/ic/ym2413/ym2413.h
     inc/gpgx/sound/blip_buffer.h
     inc/gpgx/sound/equalizer_3band.h
     inc/gpgx/sound/sn76489.h
-    inc/gpgx/sound/ym2413/opll_ch.h
-    inc/gpgx/sound/ym2413/opll_slot.h
-    inc/gpgx/sound/ym2413/ym2413.h
     inc/gpgx/sound/ym2612/fm_3slot.h
     inc/gpgx/sound/ym2612/fm_ch.h
     inc/gpgx/sound/ym2612/fm_opn.h
@@ -229,10 +229,10 @@ add_executable(vigas
     src/gpgx/g_ym2612.cpp
     src/gpgx/g_ym3438.cpp
     src/gpgx/gpgx.cpp
+    src/gpgx/ic/ym2413/ym2413.cpp
     src/gpgx/sound/blip_buffer.cpp
     src/gpgx/sound/equalizer_3band.cpp
     src/gpgx/sound/sn76489.cpp
-    src/gpgx/sound/ym2413/ym2413.cpp
     src/gpgx/sound/ym2612/ym2612.cpp
     src/gpgx/sound/ym3438/ym3438.cpp
 )

@@ -7,7 +7,7 @@
 #ifndef __GPGX_G_YM2413_H__
 #define __GPGX_G_YM2413_H__
 
-#include "gpgx/sound/ym2413/ym2413.h"
+#include "gpgx/ic/ym2413/ym2413.h"
 
 namespace gpgx {
 
@@ -15,7 +15,7 @@ namespace gpgx {
 
 //------------------------------------------------------------------------------
 
-extern gpgx::sound::ym2413::Ym2413* g_ym2413;
+extern gpgx::ic::ym2413::Ym2413* g_ym2413;
 
 } // namespace gpgx
 
