@@ -68,7 +68,7 @@
 #include "core/cart_hw/eeprom_spi.h"
 #include "core/cart_hw/megasd.h"
 
-#include "gpgx/sound/blip_buffer.h"
+#include "gpgx/audio/blip_buffer.h"
 
 /* Cart database entry */
 typedef struct
@@ -825,8 +825,8 @@ void md_cart_init(void)
   if ((cart.special & HW_MEGASD) && !snd.blips[1] && !snd.blips[2])
   {
     /* allocate blip buffers for PCM and CD-DA audio streams */
-    snd.blips[1] = gpgx::sound::BlipBuffer::blip_new(snd.sample_rate / 10);
-    snd.blips[2] = gpgx::sound::BlipBuffer::blip_new(snd.sample_rate / 10);
+    snd.blips[1] = gpgx::audio::BlipBuffer::blip_new(snd.sample_rate / 10);
+    snd.blips[2] = gpgx::audio::BlipBuffer::blip_new(snd.sample_rate / 10);
 
     /* initialize PCM and CD-DA audio */
     audio_set_rate(snd.sample_rate, snd.frame_rate);

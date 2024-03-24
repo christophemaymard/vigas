@@ -26,7 +26,7 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "gpgx/sound/blip_buffer.h"
+#include "gpgx/audio/blip_buffer.h"
 
 #ifdef BLIP_ASSERT
 #include <cassert>
@@ -38,7 +38,7 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
-namespace gpgx::sound {
+namespace gpgx::audio {
 
 //==============================================================================
 // BlipBuffer
@@ -540,5 +540,5 @@ int BlipBuffer::blip_samples_avail()
   return (m_offset >> kTimeBits);
 }
 
-} // namespace gpgx::sound
+} // namespace gpgx::audio
 

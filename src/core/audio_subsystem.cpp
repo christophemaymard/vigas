@@ -57,8 +57,8 @@
 #include "core/cd_hw/pcm.h"
 #include "core/cd_hw/scd.h"
 
+#include "gpgx/audio/blip_buffer.h"
 #include "gpgx/audio/effect/equalizer_3band.h"
-#include "gpgx/sound/blip_buffer.h"
 
 //==============================================================================
 
@@ -80,7 +80,7 @@ int audio_init(int samplerate, f64 framerate)
   xee::mem::Memset(&snd, 0, sizeof(snd));
 
   /* Initialize Blip Buffers */
-  snd.blips[0] = gpgx::sound::BlipBuffer::blip_new(samplerate / 10);
+  snd.blips[0] = gpgx::audio::BlipBuffer::blip_new(samplerate / 10);
   if (!snd.blips[0]) {
     return -1;
   }
@@ -88,8 +88,8 @@ int audio_init(int samplerate, f64 framerate)
   /* Mega CD sound hardware */
   if (system_hw == SYSTEM_MCD) {
     /* allocate blip buffers */
-    snd.blips[1] = gpgx::sound::BlipBuffer::blip_new(samplerate / 10);
-    snd.blips[2] = gpgx::sound::BlipBuffer::blip_new(samplerate / 10);
+    snd.blips[1] = gpgx::audio::BlipBuffer::blip_new(samplerate / 10);
+    snd.blips[2] = gpgx::audio::BlipBuffer::blip_new(samplerate / 10);
     if (!snd.blips[1] || !snd.blips[2]) {
       audio_shutdown();
       return -1;

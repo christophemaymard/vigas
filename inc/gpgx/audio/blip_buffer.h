@@ -28,12 +28,12 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __GPGX_SOUND_BLIP_BUFFER_H__
-#define __GPGX_SOUND_BLIP_BUFFER_H__
+#ifndef __GPGX_AUDIO_BLIP_BUFFER_H__
+#define __GPGX_AUDIO_BLIP_BUFFER_H__
 
 #include "xee/fnd/data_type.h"
 
-namespace gpgx::sound {
+namespace gpgx::audio {
 
 //==============================================================================
 
@@ -135,7 +135,7 @@ private:
   s32* m_buffer[2];
 };
 
-} // namespace gpgx::sound
+} // namespace gpgx::audio
 
-#endif // #ifndef __GPGX_SOUND_BLIP_BUFFER_H__
+#endif // #ifndef __GPGX_AUDIO_BLIP_BUFFER_H__
 
