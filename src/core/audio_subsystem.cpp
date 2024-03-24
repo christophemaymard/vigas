@@ -57,14 +57,14 @@
 #include "core/cd_hw/pcm.h"
 #include "core/cd_hw/scd.h"
 
+#include "gpgx/audio/effect/equalizer_3band.h"
 #include "gpgx/sound/blip_buffer.h"
-#include "gpgx/sound/equalizer_3band.h"
 
 //==============================================================================
 
 //------------------------------------------------------------------------------
 
-static gpgx::sound::Equalizer3band eq[2];
+static gpgx::audio::effect::Equalizer3band eq[2];
 static s16 llp, rrp;
 
 //==============================================================================

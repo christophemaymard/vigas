@@ -20,13 +20,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "gpgx/sound/equalizer_3band.h"
+#include "gpgx/audio/effect/equalizer_3band.h"
 
 #include <cmath>
 
 #include "xee/fnd/data_type.h"
 
-namespace gpgx::sound {
+namespace gpgx::audio::effect {
 
 //==============================================================================
 // Equalizer3band
@@ -136,5 +136,5 @@ f64 Equalizer3band::do_3band(int sample)
   return (l + m + h);
 }
 
-} // namespace gpgx::sound
+} // namespace gpgx::audio::effect
 

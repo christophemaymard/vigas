@@ -20,12 +20,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __GPGX_SOUND_EQUALIZER_3BAND_H__
-#define __GPGX_SOUND_EQUALIZER_3BAND_H__
+#ifndef __GPGX_AUDIO_EFFECT_EQUALIZER_3BAND_H__
+#define __GPGX_AUDIO_EFFECT_EQUALIZER_3BAND_H__
 
 #include "xee/fnd/data_type.h"
 
-namespace gpgx::sound {
+namespace gpgx::audio::effect {
 
 //==============================================================================
 
@@ -84,6 +84,6 @@ private:
   f64 m_hg;      // Gain Control: high gain.
 };
 
-} // namespace gpgx::sound
+} // namespace gpgx::audio::effect
 
-#endif // #ifndef __GPGX_SOUND_EQUALIZER_3BAND_H__
+#endif // #ifndef __GPGX_AUDIO_EFFECT_EQUALIZER_3BAND_H__
