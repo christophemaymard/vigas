@@ -27,16 +27,16 @@
  * version: 1.0.12
  */
 
-#include "gpgx/sound/ym3438/ym3438.h"
+#include "gpgx/ic/ym3438/ym3438.h"
 
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
 #include "core/state.h"
 
-#include "gpgx/sound/ym3438/ym3438_mode.h"
+#include "gpgx/ic/ym3438/ym3438_mode.h"
 
-namespace gpgx::sound::ym3438 {
+namespace gpgx::ic::ym3438 {
 
 //==============================================================================
 // Ym3438
@@ -1407,5 +1407,5 @@ int Ym3438::SaveContext(unsigned char* state)
   return bufferptr;
 }
 
-} // namespace gpgx::sound::ym3438
+} // namespace gpgx::ic::ym3438
 

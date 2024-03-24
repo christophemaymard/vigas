@@ -159,12 +159,12 @@ add_executable(vigas
     inc/gpgx/ic/ym2612/fm_st.h
     inc/gpgx/ic/ym2612/ym2612.h
     inc/gpgx/ic/ym2612/ym2612_type.h
+    inc/gpgx/ic/ym3438/opn2_context.h
+    inc/gpgx/ic/ym3438/ym3438.h
+    inc/gpgx/ic/ym3438/ym3438_mode.h
     inc/gpgx/sound/blip_buffer.h
     inc/gpgx/sound/equalizer_3band.h
     inc/gpgx/sound/sn76489.h
-    inc/gpgx/sound/ym3438/opn2_context.h
-    inc/gpgx/sound/ym3438/ym3438.h
-    inc/gpgx/sound/ym3438/ym3438_mode.h
     
     src/build/cmd_sdl2/config.cpp
     src/build/cmd_sdl2/error.cpp
@@ -231,10 +231,10 @@ add_executable(vigas
     src/gpgx/gpgx.cpp
     src/gpgx/ic/ym2413/ym2413.cpp
     src/gpgx/ic/ym2612/ym2612.cpp
+    src/gpgx/ic/ym3438/ym3438.cpp
     src/gpgx/sound/blip_buffer.cpp
     src/gpgx/sound/equalizer_3band.cpp
     src/gpgx/sound/sn76489.cpp
-    src/gpgx/sound/ym3438/ym3438.cpp
 )
 
 target_include_directories(vigas PRIVATE 

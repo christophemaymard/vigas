@@ -27,14 +27,14 @@
  * version: 1.0.12
  */
 
-#ifndef __GPGX_SOUND_YM3438_YM3438_C_H__
-#define __GPGX_SOUND_YM3438_YM3438_C_H__
+#ifndef __GPGX_IC_YM3438_YM3438_H__
+#define __GPGX_IC_YM3438_YM3438_H__
 
 #include "xee/fnd/data_type.h"
 
-#include "gpgx/sound/ym3438/opn2_context.h"
+#include "gpgx/ic/ym3438/opn2_context.h"
 
-namespace gpgx::sound::ym3438 {
+namespace gpgx::ic::ym3438 {
 
 //==============================================================================
 
@@ -104,7 +104,7 @@ private:
   int m_cycles;
 };
 
-} // namespace gpgx::sound::ym3438
+} // namespace gpgx::ic::ym3438
 
-#endif // #ifndef __GPGX_SOUND_YM3438_YM3438_C_H__
+#endif // #ifndef __GPGX_IC_YM3438_YM3438_H__
 

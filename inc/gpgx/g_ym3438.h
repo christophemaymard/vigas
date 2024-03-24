@@ -7,7 +7,7 @@
 #ifndef __GPGX_G_YM3438_H__
 #define __GPGX_G_YM3438_H__
 
-#include "gpgx/sound/ym3438/ym3438.h"
+#include "gpgx/ic/ym3438/ym3438.h"
 
 namespace gpgx {
 
@@ -15,7 +15,7 @@ namespace gpgx {
 
 //------------------------------------------------------------------------------
 
-extern gpgx::sound::ym3438::Ym3438* g_ym3438;
+extern gpgx::ic::ym3438::Ym3438* g_ym3438;
 
 } // namespace gpgx
 

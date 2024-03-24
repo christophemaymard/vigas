@@ -14,8 +14,8 @@
 #include "gpgx/g_ym3438.h"
 #include "gpgx/ic/ym2413/ym2413.h"
 #include "gpgx/ic/ym2612/ym2612.h"
+#include "gpgx/ic/ym3438/ym3438.h"
 #include "gpgx/sound/sn76489.h"
-#include "gpgx/sound/ym3438/ym3438.h"
 
 namespace gpgx {
 
@@ -29,7 +29,7 @@ bool InitGpgx()
   g_psg = new (std::nothrow) gpgx::sound::Sn76489();
   g_ym2612 = new (std::nothrow) gpgx::ic::ym2612::Ym2612();
   g_ym2413 = new (std::nothrow) gpgx::ic::ym2413::Ym2413();
-  g_ym3438 = new (std::nothrow) gpgx::sound::ym3438::Ym3438();
+  g_ym3438 = new (std::nothrow) gpgx::ic::ym3438::Ym3438();
 
   if (!g_psg || !g_ym2612 || !g_ym2413 || !g_ym3438) {
     DestroyGpgx();

@@ -27,10 +27,10 @@
  * version: 1.0.12
  */
 
-#ifndef __GPGX_SOUND_YM3438_YM3438_MODE_H__
-#define __GPGX_SOUND_YM3438_YM3438_MODE_H__
+#ifndef __GPGX_IC_YM3438_YM3438_MODE_H__
+#define __GPGX_IC_YM3438_YM3438_MODE_H__
 
-namespace gpgx::sound::ym3438 {
+namespace gpgx::ic::ym3438 {
 
 //==============================================================================
 
@@ -42,7 +42,7 @@ enum Ym3438Mode
   ym3438_mode_readmode = 0x02,  // Enables status read on any port (TeraDrive, MD1 VA7, MD2, etc).
 };
 
-} // 
+} // namespace gpgx::ic::ym3438
 
-#endif // #ifndef __GPGX_SOUND_YM3438_YM3438_MODE_H__
+#endif // #ifndef __GPGX_IC_YM3438_YM3438_MODE_H__
 

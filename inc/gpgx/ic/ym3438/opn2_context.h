@@ -27,12 +27,12 @@
  * version: 1.0.12
  */
 
-#ifndef __GPGX_SOUND_YM3438_OPN2_CONTEXT_H__
-#define __GPGX_SOUND_YM3438_OPN2_CONTEXT_H__
+#ifndef __GPGX_IC_YM3438_OPN2_CONTEXT_H__
+#define __GPGX_IC_YM3438_OPN2_CONTEXT_H__
 
 #include "xee/fnd/data_type.h"
 
-namespace gpgx::sound::ym3438 {
+namespace gpgx::ic::ym3438 {
 
 //==============================================================================
 
@@ -199,7 +199,7 @@ struct OPN2Context
   u32 status_time;
 };
 
-} // 
+} // namespace gpgx::ic::ym3438
 
-#endif // #ifndef __GPGX_SOUND_YM3438_OPN2_CONTEXT_H__
+#endif // #ifndef __GPGX_IC_YM3438_OPN2_CONTEXT_H__
 
