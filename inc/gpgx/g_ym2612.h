@@ -7,7 +7,7 @@
 #ifndef __GPGX_G_YM2612_H__
 #define __GPGX_G_YM2612_H__
 
-#include "gpgx/sound/ym2612/ym2612.h"
+#include "gpgx/ic/ym2612/ym2612.h"
 
 namespace gpgx {
 
@@ -15,7 +15,7 @@ namespace gpgx {
 
 //------------------------------------------------------------------------------
 
-extern gpgx::sound::ym2612::Ym2612* g_ym2612;
+extern gpgx::ic::ym2612::Ym2612* g_ym2612;
 
 } // namespace gpgx
 

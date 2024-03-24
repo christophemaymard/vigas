@@ -11,12 +11,12 @@
  * Additional code & fixes by Eke-Eke for Genesis Plus GX
  */
 
-#ifndef __GPGX_SOUND_YM2612_FM_ST_H__
-#define __GPGX_SOUND_YM2612_FM_ST_H__
+#ifndef __GPGX_IC_YM2612_FM_ST_H__
+#define __GPGX_IC_YM2612_FM_ST_H__
 
 #include "xee/fnd/data_type.h"
 
-namespace gpgx::sound {
+namespace gpgx::ic::ym2612 {
 
 //==============================================================================
 
@@ -37,7 +37,7 @@ struct FM_ST
   s32 dt_tab[8][32];  // DeTune table.
 };
 
-}
+} // namespace gpgx::ic::ym2612
 
-#endif // #ifndef __GPGX_SOUND_YM2612_FM_ST_H__
+#endif // #ifndef __GPGX_IC_YM2612_FM_ST_H__
 

@@ -11,15 +11,15 @@
  * Additional code & fixes by Eke-Eke for Genesis Plus GX
  */
 
-#ifndef __GPGX_SOUND_YM2612_FM_OPN_H__
-#define __GPGX_SOUND_YM2612_FM_OPN_H__
+#ifndef __GPGX_IC_YM2612_FM_OPN_H__
+#define __GPGX_IC_YM2612_FM_OPN_H__
 
 #include "xee/fnd/data_type.h"
 
-#include "gpgx/sound/ym2612/fm_st.h"
-#include "gpgx/sound/ym2612/fm_3slot.h"
+#include "gpgx/ic/ym2612/fm_st.h"
+#include "gpgx/ic/ym2612/fm_3slot.h"
 
-namespace gpgx::sound {
+namespace gpgx::ic::ym2612 {
 
 //==============================================================================
 
@@ -46,7 +46,7 @@ struct FM_OPN
   u32  LFO_PM;             /* current LFO PM step */
 };
 
-}
+} // namespace gpgx::ic::ym2612
 
-#endif // #ifndef __GPGX_SOUND_YM2612_FM_OPN_H__
+#endif // #ifndef __GPGX_IC_YM2612_FM_OPN_H__
 

@@ -52,9 +52,8 @@
 #include "gpgx/g_ym2413.h"
 #include "gpgx/g_ym2612.h"
 #include "gpgx/g_ym3438.h"
+#include "gpgx/ic/ym2612/ym2612_type.h"
 #include "gpgx/sound/sn76489.h"
-#include "gpgx/sound/ym2612/ym2612.h"
-#include "gpgx/sound/ym2612/ym2612_type.h"
 
 /* YM2612 internal clock = input clock / 6 = (master clock / 7) / 6 */
 #define YM2612_CLOCK_RATIO (7*6)
@@ -120,7 +119,7 @@ static void YM2612_Write(unsigned int cycles, unsigned int a, unsigned int v)
     fm_update(cycles);
 
     /* set FM BUSY end cycle (discrete or ASIC-integrated YM2612 chip only) */
-    if (config.ym2612 < gpgx::sound::ym2612::YM2612_ENHANCED)
+    if (config.ym2612 < gpgx::ic::ym2612::YM2612_ENHANCED)
     {
       fm_cycles_busy = (((cycles + YM2612_CLOCK_RATIO - 1) / YM2612_CLOCK_RATIO) + 32) * YM2612_CLOCK_RATIO;
     }
@@ -133,7 +132,7 @@ static void YM2612_Write(unsigned int cycles, unsigned int a, unsigned int v)
 static unsigned int YM2612_Read(unsigned int cycles, unsigned int a)
 {
   /* FM status can only be read from (A0,A1)=(0,0) on discrete YM2612 */
-  if ((a == 0) || (config.ym2612 > gpgx::sound::ym2612::YM2612_DISCRETE))
+  if ((a == 0) || (config.ym2612 > gpgx::ic::ym2612::YM2612_DISCRETE))
   {
     /* synchronize FM chip with CPU */
     fm_update(cycles);

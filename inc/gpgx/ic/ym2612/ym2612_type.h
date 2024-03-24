@@ -11,28 +11,23 @@
  * Additional code & fixes by Eke-Eke for Genesis Plus GX
  */
 
-#ifndef __GPGX_SOUND_YM2612_FM_3SLOT_H__
-#define __GPGX_SOUND_YM2612_FM_3SLOT_H__
+#ifndef __GPGX_IC_YM2612_YM2612_TYPE_H__
+#define __GPGX_IC_YM2612_YM2612_TYPE_H__
 
-#include "xee/fnd/data_type.h"
-
-namespace gpgx::sound {
+namespace gpgx::ic::ym2612 {
 
 //==============================================================================
 
 //------------------------------------------------------------------------------
 
-// OPN 3slot struct.
-struct FM_3SLOT
+enum YM2612_TYPE
 {
-  u32  fc[3];          // fnum3,blk3: calculated.
-  u8   fn_h;           // freq3 latch.
-  u8   kcode[3];       // key code.
-  u32  block_fnum[3];  // current fnum value for this slot (can be different betweeen slots of one channel in 3slot mode).
-  u8   key_csm;        // CSM mode Key-ON flag.
+  YM2612_DISCRETE = 0,
+  YM2612_INTEGRATED,
+  YM2612_ENHANCED
 };
 
-}
+} // namespace gpgx::ic::ym2612
 
-#endif // #ifndef __GPGX_SOUND_YM2612_FM_3SLOT_H__
+#endif // #ifndef __GPGX_IC_YM2612_YM2612_TYPE_H__
 

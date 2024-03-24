@@ -11,16 +11,16 @@
  * Additional code & fixes by Eke-Eke for Genesis Plus GX
  */
 
-#ifndef __GPGX_SOUND_YM2612_YM2612_H__
-#define __GPGX_SOUND_YM2612_YM2612_H__
+#ifndef __GPGX_IC_YM2612_YM2612_H__
+#define __GPGX_IC_YM2612_YM2612_H__
 
 #include "xee/fnd/data_type.h"
 
-#include "gpgx/sound/ym2612/fm_ch.h"
-#include "gpgx/sound/ym2612/fm_opn.h"
-#include "gpgx/sound/ym2612/fm_slot.h"
+#include "gpgx/ic/ym2612/fm_ch.h"
+#include "gpgx/ic/ym2612/fm_opn.h"
+#include "gpgx/ic/ym2612/fm_slot.h"
 
-namespace gpgx::sound::ym2612 {
+namespace gpgx::ic::ym2612 {
 
 //==============================================================================
 
@@ -145,7 +145,7 @@ private:
   FM_OPN m_OPN;   // OPN state.
 };
 
-} // namespace gpgx::sound::ym2612
+} // namespace gpgx::ic::ym2612
 
-#endif // #ifndef __GPGX_SOUND_YM2612_YM2612_H__
+#endif // #ifndef __GPGX_IC_YM2612_YM2612_H__
 

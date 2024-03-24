@@ -140,7 +140,7 @@
  * YM2610B : PSG:3ch FM:6ch ADPCM(18.5KHz):6ch DeltaT ADPCM:1ch
  */
 
-#include "gpgx/sound/ym2612/ym2612.h"
+#include "gpgx/ic/ym2612/ym2612.h"
 
 #include <cmath>
 
@@ -150,12 +150,12 @@
 #include "core/macros.h"
 #include "core/state.h"
 
-#include "gpgx/sound/ym2612/fm_ch.h"
-#include "gpgx/sound/ym2612/fm_opn.h"
-#include "gpgx/sound/ym2612/fm_slot.h"
-#include "gpgx/sound/ym2612/ym2612_type.h"
+#include "gpgx/ic/ym2612/fm_ch.h"
+#include "gpgx/ic/ym2612/fm_opn.h"
+#include "gpgx/ic/ym2612/fm_slot.h"
+#include "gpgx/ic/ym2612/ym2612_type.h"
 
-namespace gpgx::sound::ym2612 {
+namespace gpgx::ic::ym2612 {
 
 //==============================================================================
 // Ym2612
@@ -2112,5 +2112,5 @@ int Ym2612::YM2612SaveContext(unsigned char* state)
   return bufferptr;
 }
 
-} // namespace gpgx::sound::ym2612
+} // namespace gpgx::ic::ym2612
 

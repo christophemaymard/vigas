@@ -11,12 +11,12 @@
  * Additional code & fixes by Eke-Eke for Genesis Plus GX
  */
 
-#ifndef __GPGX_SOUND_YM2612_FM_SLOT_H__
-#define __GPGX_SOUND_YM2612_FM_SLOT_H__
+#ifndef __GPGX_IC_YM2612_FM_SLOT_H__
+#define __GPGX_IC_YM2612_FM_SLOT_H__
 
 #include "xee/fnd/data_type.h"
 
-namespace gpgx::sound {
+namespace gpgx::ic::ym2612 {
 
 //==============================================================================
 
@@ -65,7 +65,7 @@ struct FM_SLOT
   u32  AMmask;     /* AM enable flag */
 };
 
-}
+} // namespace gpgx::ic::ym2612
 
-#endif // #ifndef __GPGX_SOUND_YM2612_FM_SLOT_H__
+#endif // #ifndef __GPGX_IC_YM2612_FM_SLOT_H__
 
