@@ -4,7 +4,7 @@
  * Copyright 2024 Christophe Maymard <christophe.maymard@hotmail.com>
  */
 
-#include "gpgx/g_ym3438.h"
+#include "gpgx/g_fm_synthesizer.h"
 
 namespace gpgx {
 
@@ -12,7 +12,8 @@ namespace gpgx {
 
 //------------------------------------------------------------------------------
 
-gpgx::ic::ym3438::Ym3438* g_ym3438 = nullptr;
+// The current FM synthesizer (that can be YM3438, YM2612, YM2413 or "Null").
+gpgx::audio::effect::IFmSynthesizer* g_fm_synthesizer = nullptr;
 
 } // namespace gpgx
 

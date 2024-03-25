@@ -1,13 +1,13 @@
 /**
  * This file is part of the Video Game Systems (VIGAS) project.
- * 
+ *
  * Copyright 2024 Christophe Maymard <christophe.maymard@hotmail.com>
  */
 
-#ifndef __GPGX_G_YM2612_H__
-#define __GPGX_G_YM2612_H__
+#ifndef __GPGX_G_FM_SYNTHESIZER_H__
+#define __GPGX_G_FM_SYNTHESIZER_H__
 
-#include "gpgx/ic/ym2612/ym2612.h"
+#include "gpgx/audio/effect/fm_synthesizer.h"
 
 namespace gpgx {
 
@@ -15,9 +15,10 @@ namespace gpgx {
 
 //------------------------------------------------------------------------------
 
-extern gpgx::ic::ym2612::Ym2612* g_ym2612;
+// The current FM synthesizer (that can be YM3438, YM2612, YM2413 or "Null").
+extern gpgx::audio::effect::IFmSynthesizer* g_fm_synthesizer;
 
 } // namespace gpgx
 
-#endif // #ifndef __GPGX_G_YM2612_H__
+#endif // #ifndef __GPGX_G_FM_SYNTHESIZER_H__
 

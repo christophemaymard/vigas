@@ -12,6 +12,8 @@
 
 #include "xee/fnd/data_type.h"
 
+#include "gpgx/audio/effect/fm_synthesizer_base.h"
+
 #include "gpgx/ic/ym2413/opll_slot.h"
 #include "gpgx/ic/ym2413/opll_ch.h"
 
@@ -21,7 +23,7 @@ namespace gpgx::ic::ym2413 {
 
 //------------------------------------------------------------------------------
 
-class Ym2413
+class Ym2413 : public gpgx::audio::effect::FmSynthesizerBase
 {
 private:
   static constexpr s32 kSinBits = 10;
@@ -60,8 +62,13 @@ public:
 
   unsigned int YM2413Read();
 
-  int LoadContext(unsigned char* state);
-  int SaveContext(unsigned char* state);
+  // Implementation of gpgx::audio::effect::IFmSynthesizer.
+
+  // Synchronize FM chip with CPU and reset FM chip.
+  void SyncAndReset(unsigned int cycles);
+
+  void Write(unsigned int cycles, unsigned int address, unsigned int data);
+  unsigned int Read(unsigned int cycles, unsigned int address);
 
 private:
   void advance_lfo();
@@ -84,6 +91,13 @@ private:
   void update_instrument_zero(u8 r);
   void OPLLWriteReg(int r, int v);
   void ClearContext();
+
+  // Implementation of gpgx::audio::effect::FmSynthesizerBase.
+
+  void UpdateSampleBuffer(int* buffer, int length);
+
+  int SaveChipContext(unsigned char* state);
+  int LoadChipContext(unsigned char* state);
 
 private:
   // 

@@ -2054,7 +2054,70 @@ void Ym2612::YM2612Config(int type)
 
 //------------------------------------------------------------------------------
 
-int Ym2612::YM2612LoadContext(unsigned char* state)
+// Synchronize FM chip with CPU and reset FM chip.
+void Ym2612::SyncAndReset(unsigned int cycles)
+{
+  // synchronize FM chip with CPU.
+  Update(cycles);
+
+  // reset FM chip.
+  YM2612ResetChip();
+
+  m_fm_cycles_busy = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void Ym2612::Write(unsigned int cycles, unsigned int address, unsigned int data)
+{
+  // detect DATA port write.
+  if (address & 1) {
+    // synchronize FM chip with CPU.
+    Update(cycles);
+
+    // set FM BUSY end cycle (discrete or ASIC-integrated YM2612 chip only).
+    if (m_chip_type < gpgx::ic::ym2612::YM2612_ENHANCED) {
+      m_fm_cycles_busy = (((cycles + kYm2612ClockRatio - 1) / kYm2612ClockRatio) + 32) * kYm2612ClockRatio;
+    }
+  }
+
+  // write FM register.
+  YM2612Write(address, data);
+}
+
+//------------------------------------------------------------------------------
+
+unsigned int Ym2612::Read(unsigned int cycles, unsigned int address)
+{
+  // FM status can only be read from (A0,A1)=(0,0) on discrete YM2612.
+  if ((address == 0) || (m_chip_type > gpgx::ic::ym2612::YM2612_DISCRETE)) {
+    // synchronize FM chip with CPU.
+    Update(cycles);
+
+    // read FM status.
+    if (cycles >= m_fm_cycles_busy) {
+      // BUSY flag cleared.
+      return YM2612Read();
+    }
+
+    // BUSY flag set.
+    return YM2612Read() | 0x80;
+  }
+
+  // invalid FM status address.
+  return 0x00;
+}
+
+//------------------------------------------------------------------------------
+
+void Ym2612::UpdateSampleBuffer(int* buffer, int length)
+{
+  YM2612Update(buffer, length);
+}
+
+//------------------------------------------------------------------------------
+
+int Ym2612::LoadChipContext(unsigned char* state)
 {
   int c, s;
   u8 index;
@@ -2088,7 +2151,7 @@ int Ym2612::YM2612LoadContext(unsigned char* state)
 
 //------------------------------------------------------------------------------
 
-int Ym2612::YM2612SaveContext(unsigned char* state)
+int Ym2612::SaveChipContext(unsigned char* state)
 {
   int c, s;
   u8 index;

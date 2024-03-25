@@ -37,16 +37,66 @@
  *
  ****************************************************************************************/
 
-#ifndef _SOUND_H_
-#define _SOUND_H_
+#include "gpgx/audio/effect/null_fm_synthesizer.h"
 
-#include "xee/fnd/data_type.h"
+namespace gpgx::audio::effect {
 
-/* Function prototypes */
-extern void sound_init(void);
-extern void sound_reset(void);
-extern int sound_context_save(u8 *state);
-extern int sound_context_load(u8 *state);
-extern int sound_update(unsigned int cycles);
+//==============================================================================
+// NullFmSynthesizer
 
-#endif /* _SOUND_H_ */
+//------------------------------------------------------------------------------
+
+void NullFmSynthesizer::Reset(int*)
+{
+  // Nothing to do.
+}
+
+//------------------------------------------------------------------------------
+
+// Synchronize FM chip with CPU and reset FM chip.
+void NullFmSynthesizer::SyncAndReset(unsigned int)
+{
+  // Nothing to do.
+}
+
+//------------------------------------------------------------------------------
+
+void NullFmSynthesizer::Write(unsigned int, unsigned int, unsigned int)
+{
+  // Nothing to do.
+}
+
+//------------------------------------------------------------------------------
+
+unsigned int NullFmSynthesizer::Read(unsigned int, unsigned int)
+{
+  return 0xF8;
+}
+
+//------------------------------------------------------------------------------
+
+void NullFmSynthesizer::EndFrame(unsigned int)
+{
+  // Nothing to do.
+}
+
+//------------------------------------------------------------------------------
+
+int NullFmSynthesizer::SaveContext(unsigned char*)
+{
+  // Nothing to do.
+
+  return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int NullFmSynthesizer::LoadContext(unsigned char*)
+{
+  // Nothing to do.
+
+  return 0;
+}
+
+} // namespace gpgx::audio::effect
+

@@ -1356,7 +1356,41 @@ void Ym3438::Init()
 
 //------------------------------------------------------------------------------
 
-void Ym3438::Update(int* buffer, int length)
+// Synchronize FM chip with CPU and reset FM chip.
+void Ym3438::SyncAndReset(unsigned int cycles)
+{
+  // synchronize FM chip with CPU.
+  Update(cycles);
+
+  // reset FM chip.
+  OPN2_Reset();
+}
+
+//------------------------------------------------------------------------------
+
+void Ym3438::Write(unsigned int cycles, unsigned int address, unsigned int data)
+{
+  // synchronize FM chip with CPU.
+  Update(cycles);
+
+  // write FM register.
+  OPN2_Write(address, data);
+}
+
+//------------------------------------------------------------------------------
+
+unsigned int Ym3438::Read(unsigned int cycles, unsigned int address)
+{
+  // synchronize FM chip with CPU.
+  Update(cycles);
+
+  // read FM status.
+  return OPN2_Read(address);
+}
+
+//------------------------------------------------------------------------------
+
+void Ym3438::UpdateSampleBuffer(int* buffer, int length)
 {
   int j;
 
@@ -1381,7 +1415,7 @@ void Ym3438::Update(int* buffer, int length)
 
 //------------------------------------------------------------------------------
 
-int Ym3438::LoadContext(unsigned char* state)
+int Ym3438::LoadChipContext(unsigned char* state)
 {
   int bufferptr = 0;
 
@@ -1395,7 +1429,7 @@ int Ym3438::LoadContext(unsigned char* state)
 
 //------------------------------------------------------------------------------
 
-int Ym3438::SaveContext(unsigned char* state)
+int Ym3438::SaveChipContext(unsigned char* state)
 {
   int bufferptr = 0;
 

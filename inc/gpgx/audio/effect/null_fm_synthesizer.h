@@ -37,16 +37,37 @@
  *
  ****************************************************************************************/
 
-#ifndef _SOUND_H_
-#define _SOUND_H_
+#ifndef __GPGX_AUDIO_EFFECT_NULL_FM_SYNTHESIZER_H__
+#define __GPGX_AUDIO_EFFECT_NULL_FM_SYNTHESIZER_H__
 
-#include "xee/fnd/data_type.h"
+#include "gpgx/audio/effect/fm_synthesizer.h"
 
-/* Function prototypes */
-extern void sound_init(void);
-extern void sound_reset(void);
-extern int sound_context_save(u8 *state);
-extern int sound_context_load(u8 *state);
-extern int sound_update(unsigned int cycles);
+namespace gpgx::audio::effect {
 
-#endif /* _SOUND_H_ */
+//==============================================================================
+
+//------------------------------------------------------------------------------
+
+class NullFmSynthesizer : public IFmSynthesizer
+{
+public:
+  // Implementation of IFmSynthesizer.
+
+  void Reset(int* buffer);
+
+  // Synchronize FM chip with CPU and reset FM chip.
+  void SyncAndReset(unsigned int cycles);
+
+  void Write(unsigned int cycles, unsigned int address, unsigned int data);
+  unsigned int Read(unsigned int cycles, unsigned int address);
+
+  void EndFrame(unsigned int cycles);
+
+  int SaveContext(unsigned char* state);
+  int LoadContext(unsigned char* state);
+};
+
+} // namespace gpgx::audio::effect
+
+#endif // #ifndef __GPGX_AUDIO_EFFECT_NULL_FM_SYNTHESIZER_H__
+

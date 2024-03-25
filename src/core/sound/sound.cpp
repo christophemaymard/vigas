@@ -39,7 +39,6 @@
 
 #include "core/sound/sound.h"
 
-#include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
@@ -49,219 +48,89 @@
 #include "core/state.h"
 
 #include "gpgx/g_psg.h"
-#include "gpgx/g_ym2413.h"
-#include "gpgx/g_ym2612.h"
-#include "gpgx/g_ym3438.h"
+#include "gpgx/g_fm_synthesizer.h"
+#include "gpgx/audio/effect/null_fm_synthesizer.h"
 #include "gpgx/ic/sn76489/sn76489_type.h"
+#include "gpgx/ic/ym2413/ym2413.h"
+#include "gpgx/ic/ym2612/ym2612.h"
 #include "gpgx/ic/ym2612/ym2612_type.h"
-
-/* YM2612 internal clock = input clock / 6 = (master clock / 7) / 6 */
-#define YM2612_CLOCK_RATIO (7*6)
+#include "gpgx/ic/ym3438/ym3438.h"
 
 /* FM output buffer (large enough to hold a whole frame at original chips rate) */
 static int fm_buffer[1080 * 2 * 24];
 
-static int fm_last[2];
-static int *fm_ptr;
-
-/* Cycle-accurate FM samples */
-static int fm_cycles_ratio;
-static int fm_cycles_start;
-static int fm_cycles_count;
-static int fm_cycles_busy;
-
-/* YM chip function pointers */
-static void (*YM_Update)(int *buffer, int length);
-void (*fm_reset)(unsigned int cycles);
-void (*fm_write)(unsigned int cycles, unsigned int address, unsigned int data);
-unsigned int (*fm_read)(unsigned int cycles, unsigned int address);
-
-/* Run FM chip until required M-cycles */
-static XEE_INLINE void fm_update(int cycles)
+// Creates and initializes a YM2413 FM synthesizer. 
+static gpgx::ic::ym2413::Ym2413* sound_create_ym2413()
 {
-  if (cycles > fm_cycles_count)
-  {
-    /* number of samples to run */
-    int samples = (cycles - fm_cycles_count + fm_cycles_ratio - 1) / fm_cycles_ratio;
+  gpgx::ic::ym2413::Ym2413* ym2413 = new gpgx::ic::ym2413::Ym2413();
 
-    /* run FM chip to sample buffer */
-    YM_Update(fm_ptr, samples);
+  ym2413->YM2413Init();
 
-    /* update FM buffer pointer */
-    fm_ptr += (samples * 2);
+  // chip is running at ZCLK / 72 = MCLK / 15 / 72.
+  ym2413->SetClockRatio(72 * 15);
 
-    /* update FM cycle counter */
-    fm_cycles_count += (samples * fm_cycles_ratio);
-  }
+  // Reset the FM synthesizer.
+  ym2413->Reset(fm_buffer);
+
+  return ym2413;
 }
 
-static void YM2612_Update(int* buffer, int length)
+// Creates and initializes a YM2612 (MAME OPN2) FM synthesizer. 
+static gpgx::ic::ym2612::Ym2612* sound_create_ym2612()
 {
-  gpgx::g_ym2612->YM2612Update(buffer, length);
+  gpgx::ic::ym2612::Ym2612* ym2612 = new gpgx::ic::ym2612::Ym2612();
+
+  ym2612->YM2612Init();
+  ym2612->YM2612Config(config.ym2612);
+
+  // chip is running at sample clock.
+  ym2612->SetClockRatio(gpgx::ic::ym2612::Ym2612::kYm2612ClockRatio * 24);
+
+  // Reset the FM synthesizer.
+  ym2612->Reset(fm_buffer);
+
+  return ym2612;
 }
 
-static void YM2612_Reset(unsigned int cycles)
+// Creates and initializes a YM3438 (Nuked OPN2) FM synthesizer. 
+static gpgx::ic::ym3438::Ym3438* sound_create_ym3438()
 {
-  /* synchronize FM chip with CPU */
-  fm_update(cycles);
+  gpgx::ic::ym3438::Ym3438* ym3438 = new gpgx::ic::ym3438::Ym3438();
 
-  /* reset FM chip */
-  gpgx::g_ym2612->YM2612ResetChip();
-  fm_cycles_busy = 0;
-}
+  ym3438->Init();
 
-static void YM2612_Write(unsigned int cycles, unsigned int a, unsigned int v)
-{
-  /* detect DATA port write */
-  if (a & 1)
-  {
-    /* synchronize FM chip with CPU */
-    fm_update(cycles);
+  // chip is running at internal clock.
+  ym3438->SetClockRatio(gpgx::ic::ym2612::Ym2612::kYm2612ClockRatio);
 
-    /* set FM BUSY end cycle (discrete or ASIC-integrated YM2612 chip only) */
-    if (config.ym2612 < gpgx::ic::ym2612::YM2612_ENHANCED)
-    {
-      fm_cycles_busy = (((cycles + YM2612_CLOCK_RATIO - 1) / YM2612_CLOCK_RATIO) + 32) * YM2612_CLOCK_RATIO;
-    }
-  }
+  // Reset the FM synthesizer.
+  ym3438->Reset(fm_buffer);
 
-  /* write FM register */
-  gpgx::g_ym2612->YM2612Write(a, v);
-}
-
-static unsigned int YM2612_Read(unsigned int cycles, unsigned int a)
-{
-  /* FM status can only be read from (A0,A1)=(0,0) on discrete YM2612 */
-  if ((a == 0) || (config.ym2612 > gpgx::ic::ym2612::YM2612_DISCRETE))
-  {
-    /* synchronize FM chip with CPU */
-    fm_update(cycles);
-
-    /* read FM status */
-    if (cycles >= fm_cycles_busy)
-    {
-      /* BUSY flag cleared */
-      return gpgx::g_ym2612->YM2612Read();
-    }
-    else
-    {
-      /* BUSY flag set */
-      return gpgx::g_ym2612->YM2612Read() | 0x80;
-    }
-  }
-
-  /* invalid FM status address */
-  return 0x00;
-}
-
-static void YM2413_Update(int* buffer, int length)
-{
-  gpgx::g_ym2413->YM2413Update(buffer, length);
-}
-
-static void YM2413_Reset(unsigned int cycles)
-{
-  /* synchronize FM chip with CPU */
-  fm_update(cycles);
-
-  /* reset FM chip */
-  gpgx::g_ym2413->YM2413ResetChip();
-}
-
-static void YM2413_Write(unsigned int cycles, unsigned int a, unsigned int v)
-{
-  /* detect DATA port write */
-  if (a & 1)
-  {
-    /* synchronize FM chip with CPU */
-    fm_update(cycles);
-  }
-
-  /* write FM register */
-  gpgx::g_ym2413->YM2413Write(a, v);
-}
-
-static unsigned int YM2413_Read(unsigned int cycles, unsigned int a)
-{
-    return gpgx::g_ym2413->YM2413Read();
-}
-
-static void YM3438_Update(int *buffer, int length)
-{
-  gpgx::g_ym3438->Update(buffer, length);
-}
-
-static void YM3438_Reset(unsigned int cycles)
-{
-  /* synchronize FM chip with CPU */
-  fm_update(cycles);
-
-  /* reset FM chip */
-  gpgx::g_ym3438->OPN2_Reset();
-}
-
-static void YM3438_Write(unsigned int cycles, unsigned int a, unsigned int v)
-{
-  /* synchronize FM chip with CPU */
-  fm_update(cycles);
-
-  /* write FM register */
-  gpgx::g_ym3438->OPN2_Write(a, v);
-}
-
-static unsigned int YM3438_Read(unsigned int cycles, unsigned int a)
-{
-  /* synchronize FM chip with CPU */
-  fm_update(cycles);
-
-  /* read FM status */
-  return gpgx::g_ym3438->OPN2_Read(a);
+  return ym3438;
 }
 
 void sound_init( void )
 {
-  /* Initialize FM chip */
-  if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
-  {
-    /* YM2612 */
-    if (config.ym3438)
-    {
-      /* Nuked OPN2 */
-      gpgx::g_ym3438->Init();
-      YM_Update = YM3438_Update;
-      fm_reset = YM3438_Reset;
-      fm_write = YM3438_Write;
-      fm_read = YM3438_Read;
-
-      /* chip is running at internal clock */
-      fm_cycles_ratio = YM2612_CLOCK_RATIO;
-    }
-    else
-    {
-      /* MAME OPN2*/
-      gpgx::g_ym2612->YM2612Init();
-      gpgx::g_ym2612->YM2612Config(config.ym2612);
-      YM_Update = YM2612_Update;
-      fm_reset = YM2612_Reset;
-      fm_write = YM2612_Write;
-      fm_read = YM2612_Read;
-
-      /* chip is running at sample clock */
-      fm_cycles_ratio = YM2612_CLOCK_RATIO * 24;
-    }
+  // Delete current FM synthesizer if present.
+  if (gpgx::g_fm_synthesizer) {
+    delete gpgx::g_fm_synthesizer;
+    gpgx::g_fm_synthesizer = nullptr;
   }
-  else
-  {
-    /* YM2413 */
-    {
-      gpgx::g_ym2413->YM2413Init();
-      YM_Update = (config.ym2413 & 1) ? YM2413_Update : NULL;
-      fm_reset = YM2413_Reset;
-      fm_write = YM2413_Write;
-      fm_read = YM2413_Read;
 
-      /* chip is running at ZCLK / 72 = MCLK / 15 / 72 */
-      fm_cycles_ratio = 72 * 15;
+  // Initialize FM synthesizer.
+  if ((system_hw & SYSTEM_PBC) == SYSTEM_MD) {
+    // YM3438.
+    if (config.ym3438) {
+      gpgx::g_fm_synthesizer = sound_create_ym3438();
+    } else {
+      gpgx::g_fm_synthesizer = sound_create_ym2612();
+    }
+  } else {
+    // YM2413.
+    if (config.ym2413) {
+      gpgx::g_fm_synthesizer = sound_create_ym2413();
+    } else {
+      // Define "Null" as the FM synthesizer.
+      gpgx::g_fm_synthesizer = new gpgx::audio::effect::NullFmSynthesizer();
     }
   }
 
@@ -272,18 +141,9 @@ void sound_init( void )
 void sound_reset(void)
 {
   /* reset sound chips */
-  fm_reset(0);
+  gpgx::g_fm_synthesizer->Reset(fm_buffer);
   gpgx::g_psg->psg_reset();
   gpgx::g_psg->psg_config(0, config.psg_preamp, 0xff);
-
-  /* reset FM buffer ouput */
-  fm_last[0] = fm_last[1] = 0;
-
-  /* reset FM buffer pointer */
-  fm_ptr = fm_buffer;
-  
-  /* reset FM cycle counters */
-  fm_cycles_start = fm_cycles_count = 0;
 }
 
 int sound_update(unsigned int cycles)
@@ -291,81 +151,8 @@ int sound_update(unsigned int cycles)
   /* Run PSG chip until end of frame */
   gpgx::g_psg->psg_end_frame(cycles);
 
-  /* FM chip is enabled ? */
-  if (YM_Update)
-  {
-    int prev_l, prev_r, preamp, time, l, r, *ptr;
-
-    /* Run FM chip until end of frame */
-    fm_update(cycles);
-
-    /* FM output pre-amplification */
-    preamp = config.fm_preamp;
-
-    /* FM frame initial timestamp */
-    time = fm_cycles_start;
-
-    /* Restore last FM outputs from previous frame */
-    prev_l = fm_last[0];
-    prev_r = fm_last[1];
-
-    /* FM buffer start pointer */
-    ptr = fm_buffer;
-
-    /* flush FM samples */
-    if (config.hq_fm)
-    {
-      /* high-quality Band-Limited synthesis */
-      do
-      {
-        /* left & right channels */
-        l = ((*ptr++ * preamp) / 100);
-        r = ((*ptr++ * preamp) / 100);
-        snd.blips[0]->blip_add_delta(time, l - prev_l, r - prev_r);
-        prev_l = l;
-        prev_r = r;
-
-        /* increment time counter */
-        time += fm_cycles_ratio;
-      }
-      while (time < cycles);
-    }
-    else
-    {
-      /* faster Linear Interpolation */
-      do
-      {
-        /* left & right channels */
-        l = ((*ptr++ * preamp) / 100);
-        r = ((*ptr++ * preamp) / 100);
-        snd.blips[0]->blip_add_delta_fast(time, l - prev_l, r - prev_r);
-        prev_l = l;
-        prev_r = r;
-
-        /* increment time counter */
-        time += fm_cycles_ratio;
-      }
-      while (time < cycles);
-    }
-
-    /* reset FM buffer pointer */
-    fm_ptr = fm_buffer;
-
-    /* save last FM output for next frame */
-    fm_last[0] = prev_l;
-    fm_last[1] = prev_r;
-
-    /* adjust FM cycle counters for next frame */
-    fm_cycles_count = fm_cycles_start = time - cycles;
-    if (fm_cycles_busy > cycles)
-    {
-      fm_cycles_busy -= cycles;
-    }
-    else
-    {
-      fm_cycles_busy = 0;
-    }
-  }
+  // Run FM synthesizer chip until end of frame.
+  gpgx::g_fm_synthesizer->EndFrame(cycles);
 
   /* end of blip buffer time frame */
   snd.blips[0]->blip_end_frame(cycles);
@@ -378,28 +165,17 @@ int sound_context_save(u8 *state)
 {
   int bufferptr = 0;
   
-  if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
-  {
+  if ((system_hw & SYSTEM_PBC) == SYSTEM_MD) {
     save_param(&config.ym3438, sizeof(config.ym3438));
-    if (config.ym3438)
-    {
-      bufferptr += gpgx::g_ym3438->SaveContext(&state[bufferptr]);
-    }
-    else
-    {
-      bufferptr += gpgx::g_ym2612->YM2612SaveContext(state + sizeof(config.ym3438));
-    }
+  } else {
+    save_param(&config.ym2413, sizeof(config.ym2413));
   }
-  else
-  {
-    {
-      bufferptr += gpgx::g_ym2413->SaveContext(&state[bufferptr]);
-    }
-  }
+
+  // Save the context of the FM synthesizer.
+  // If it is "Null", nothing will be saved.
+  bufferptr += gpgx::g_fm_synthesizer->SaveContext(&state[bufferptr]);
 
   bufferptr += gpgx::g_psg->psg_context_save(&state[bufferptr]);
-
-  save_param(&fm_cycles_start,sizeof(fm_cycles_start));
 
   return bufferptr;
 }
@@ -408,30 +184,40 @@ int sound_context_load(u8 *state)
 {
   int bufferptr = 0;
 
-  if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
-  {
+  // Delete current FM synthesizer if present (that should be the case).
+  if (gpgx::g_fm_synthesizer) {
+    delete gpgx::g_fm_synthesizer;
+    gpgx::g_fm_synthesizer = nullptr;
+  }
+
+  // Create, initialize and define the current FM synthesizer.
+  if ((system_hw & SYSTEM_PBC) == SYSTEM_MD) {
     u8 config_ym3438;
     load_param(&config_ym3438, sizeof(config_ym3438));
-    if (config_ym3438)
-    {
-      bufferptr += gpgx::g_ym3438->LoadContext(&state[bufferptr]);
+
+    if (config_ym3438) {
+      gpgx::g_fm_synthesizer = sound_create_ym3438();
+    } else {
+      gpgx::g_fm_synthesizer = sound_create_ym2612();
     }
-    else
-    {
-      bufferptr += gpgx::g_ym2612->YM2612LoadContext(state + sizeof(config_ym3438));
+  } else {
+    u8 config_ym2413;
+    load_param(&config_ym2413, sizeof(config_ym2413));
+
+    if (config_ym2413) {
+      gpgx::g_fm_synthesizer = sound_create_ym2413();
+    } else {
+      gpgx::g_fm_synthesizer = new gpgx::audio::effect::NullFmSynthesizer();
     }
   }
-  else
-  {
-    {
-      bufferptr += gpgx::g_ym2413->LoadContext(&state[bufferptr]);
-    }
-  }
+
+  // Load the context of the FM synthesizer.
+  // If it is "Null", nothing will be loaded.
+  bufferptr += gpgx::g_fm_synthesizer->LoadContext(&state[bufferptr]);
 
   bufferptr += gpgx::g_psg->psg_context_load(&state[bufferptr]);
 
-  load_param(&fm_cycles_start,sizeof(fm_cycles_start));
-  fm_cycles_count = fm_cycles_start;
+  // gpgx::g_psg->psg_config() is called in state_load().
 
   return bufferptr;
 }

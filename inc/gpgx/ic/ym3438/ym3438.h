@@ -32,6 +32,8 @@
 
 #include "xee/fnd/data_type.h"
 
+#include "gpgx/audio/effect/fm_synthesizer_base.h"
+
 #include "gpgx/ic/ym3438/opn2_context.h"
 
 namespace gpgx::ic::ym3438 {
@@ -40,7 +42,7 @@ namespace gpgx::ic::ym3438 {
 
 //------------------------------------------------------------------------------
 
-class Ym3438
+class Ym3438 : public gpgx::audio::effect::FmSynthesizerBase
 {
 private:
   static const u16 kLogSinTable[256];
@@ -71,10 +73,14 @@ public:
   u8 OPN2_Read(u32 port);
 
   void Init();
-  void Update(int* buffer, int length);
 
-  int LoadContext(unsigned char* state);
-  int SaveContext(unsigned char* state);
+  // Implementation of gpgx::audio::effect::IFmSynthesizer.
+
+  // Synchronize FM chip with CPU and reset FM chip.
+  void SyncAndReset(unsigned int cycles);
+
+  void Write(unsigned int cycles, unsigned int address, unsigned int data);
+  unsigned int Read(unsigned int cycles, unsigned int address);
 
 private:
   void OPN2_DoIO();
@@ -93,6 +99,13 @@ private:
   void OPN2_DoTimerA();
   void OPN2_DoTimerB();
   void OPN2_KeyOn();
+
+  // Implementation of gpgx::audio::effect::FmSynthesizerBase.
+
+  void UpdateSampleBuffer(int* buffer, int length);
+
+  int SaveChipContext(unsigned char* state);
+  int LoadChipContext(unsigned char* state);
 
 private:
   u32 m_chip_type;

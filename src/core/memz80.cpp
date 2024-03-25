@@ -44,6 +44,9 @@
 #include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
+#include "gpgx/g_fm_synthesizer.h"
+#include "gpgx/g_psg.h"
+
 #include "osd.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
@@ -54,8 +57,6 @@
 #include "core/membnk.h"
 #include "core/io_ctrl.h"
 #include "core/sound/sound.h"
-
-#include "gpgx/g_psg.h"
 
 /*--------------------------------------------------------------------------*/
 /*  Handlers for access to unused addresses and those which make the        */
@@ -139,7 +140,7 @@ unsigned char z80_memory_r(unsigned int address)
 
     case 2: /* $4000-$5FFF: YM2612 */
     {
-      return fm_read(Z80.cycles, address & 3);
+      return gpgx::g_fm_synthesizer->Read(Z80.cycles, address & 3);
     }
 
     case 3: /* $7F00-$7FFF: VDP */
@@ -185,7 +186,7 @@ void z80_memory_w(unsigned int address, unsigned char data)
 
     case 2: /* $4000-$5FFF: YM2612 */
     {
-      fm_write(Z80.cycles, address & 3, data);
+      gpgx::g_fm_synthesizer->Write(Z80.cycles, address & 3, data);
       return;
     }
 
@@ -305,7 +306,7 @@ void z80_md_port_w(unsigned int port, unsigned char data)
       /* write FM chip if enabled */
       if ((port >= 0xF0) && (config.ym2413 & 1))
       {
-        fm_write(Z80.cycles, port, data);
+        gpgx::g_fm_synthesizer->Write(Z80.cycles, port, data);
         return;
       }
 
@@ -351,7 +352,7 @@ unsigned char z80_md_port_r(unsigned int port)
       /* read FM chip if enabled */
       if ((port >= 0xF0) && (config.ym2413 & 1))
       {
-        return fm_read(Z80.cycles, port);
+        return gpgx::g_fm_synthesizer->Read(Z80.cycles, port);
       }
 
       return z80_unused_port_r(port);
@@ -530,7 +531,7 @@ void z80_ms_port_w(unsigned int port, unsigned char data)
           /* internal YM2413 chip */
           if ((port == 0xF0) || (port == 0xF1))
           {
-            fm_write(Z80.cycles, port, data);
+            gpgx::g_fm_synthesizer->Write(Z80.cycles, port, data);
             return;
           }
 
@@ -545,7 +546,7 @@ void z80_ms_port_w(unsigned int port, unsigned char data)
                 1  1 : enable both PSG and FM output
             */
             gpgx::g_psg->psg_config(Z80.cycles, config.psg_preamp, ((data + 1) & 0x02) ? 0x00 : 0xFF);
-            fm_write(Z80.cycles, 0x02, data);
+            gpgx::g_fm_synthesizer->Write(Z80.cycles, 0x02, data);
             io_reg[6] = data;
             return;
           }
@@ -553,7 +554,7 @@ void z80_ms_port_w(unsigned int port, unsigned char data)
         else if (!(port & 4))
         {
           /* external FM board */
-          fm_write(Z80.cycles, port, data);
+          gpgx::g_fm_synthesizer->Write(Z80.cycles, port, data);
           return;
         }
       }
@@ -629,7 +630,7 @@ unsigned char z80_ms_port_r(unsigned int port)
         /* read FM board if enabled */
         if (!(port & 4) && (config.ym2413 & 1))
         {
-          data = fm_read(Z80.cycles, port);
+          data = gpgx::g_fm_synthesizer->Read(Z80.cycles, port);
         }
 
         /* read I/O ports if enabled */
@@ -683,7 +684,7 @@ void z80_m3_port_w(unsigned int port, unsigned char data)
       /* write to FM sound unit (FM-70) if enabled */
       if (!(port & 4) && (config.ym2413 & 1))
       {
-        fm_write(Z80.cycles, port, data);
+        gpgx::g_fm_synthesizer->Write(Z80.cycles, port, data);
 
         /* FM output control "register" */
         if (port & 2)
@@ -736,7 +737,7 @@ unsigned char z80_m3_port_r(unsigned int port)
       if (!(port & 4) && (config.ym2413 & 1))
       {
         /* I/O ports are automatically disabled by FM sound unit hardware */
-        return fm_read(Z80.cycles, port);
+        return gpgx::g_fm_synthesizer->Read(Z80.cycles, port);
       }
 
       /* read I/O ports   */

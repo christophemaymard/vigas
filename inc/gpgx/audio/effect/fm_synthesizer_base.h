@@ -37,16 +37,59 @@
  *
  ****************************************************************************************/
 
-#ifndef _SOUND_H_
-#define _SOUND_H_
+#ifndef __GPGX_AUDIO_EFFECT_FM_SYNTHESIZER_BASE_H__
+#define __GPGX_AUDIO_EFFECT_FM_SYNTHESIZER_BASE_H__
 
-#include "xee/fnd/data_type.h"
+#include "gpgx/audio/effect/fm_synthesizer.h"
 
-/* Function prototypes */
-extern void sound_init(void);
-extern void sound_reset(void);
-extern int sound_context_save(u8 *state);
-extern int sound_context_load(u8 *state);
-extern int sound_update(unsigned int cycles);
+namespace gpgx::audio::effect {
 
-#endif /* _SOUND_H_ */
+//==============================================================================
+
+//------------------------------------------------------------------------------
+
+class FmSynthesizerBase : public IFmSynthesizer
+{
+public:
+  FmSynthesizerBase();
+
+  void SetClockRatio(int clock_ratio);
+
+  // Implementation of IFmSynthesizer.
+
+  void Reset(int* buffer);
+
+  // Run FM chip until end of frame.
+  void EndFrame(unsigned int cycles);
+
+  int SaveContext(unsigned char* state);
+  int LoadContext(unsigned char* state);
+
+protected:
+  // Run FM chip until required M-cycles.
+  void Update(int cycles);
+
+  virtual void UpdateSampleBuffer(int* buffer, int length) = 0;
+
+  virtual int SaveChipContext(unsigned char* state) = 0;
+  virtual int LoadChipContext(unsigned char* state) = 0;
+
+protected:
+  int m_fm_cycles_busy;
+
+private:
+
+  int m_fm_cycles_ratio; // The clock ratio (must be different of 0).
+  int m_fm_cycles_start;
+  int m_fm_cycles_count;
+
+  int m_fm_last[2]; // Last FM output ([0]: left channel, [1]: right channel).
+
+  int* m_fm_buffer;
+  int* m_fm_ptr; // Buffer current pointer.
+};
+
+} // namespace gpgx::audio::effect
+
+#endif // #ifndef __GPGX_AUDIO_EFFECT_FM_SYNTHESIZER_BASE_H__
+

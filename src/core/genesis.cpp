@@ -46,6 +46,8 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
+#include "gpgx/g_fm_synthesizer.h"
+
 #include "osd.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
@@ -57,7 +59,6 @@
 #include "core/memz80.h"
 #include "core/membnk.h"
 #include "core/io_ctrl.h"
-#include "core/sound/sound.h"
 
 #include "core/cart_hw/md_cart.h"
 #include "core/cart_hw/sms_cart.h"
@@ -283,7 +284,7 @@ void gen_reset(int hard_reset)
     m68k.cycles = (u32)((MCYCLES_PER_LINE * lines_per_frame) * ((f64)rand() / (f64)RAND_MAX));
 
     /* reset YM2612 (on hard reset, this is done by sound_reset) */
-    fm_reset(0);
+    gpgx::g_fm_synthesizer->SyncAndReset(0);
   }
 
   /* 68k M-cycles should be a multiple of 7 */
@@ -533,7 +534,7 @@ void gen_zreset_w(unsigned int data, unsigned int cycles)
 
       /* reset Z80 & YM2612 */
       z80_reset();
-      fm_reset(cycles);
+      gpgx::g_fm_synthesizer->SyncAndReset(cycles);
     }
 
     /* check if 68k access to Z80 bus is granted */
@@ -547,7 +548,7 @@ void gen_zreset_w(unsigned int data, unsigned int cycles)
 
       /* reset Z80 & YM2612 */
       z80_reset();
-      fm_reset(cycles);
+      gpgx::g_fm_synthesizer->SyncAndReset(cycles);
     }
 
     /* update Z80 bus status */
@@ -573,7 +574,7 @@ void gen_zreset_w(unsigned int data, unsigned int cycles)
     }
 
     /* stop YM2612 */
-    fm_reset(cycles);
+    gpgx::g_fm_synthesizer->SyncAndReset(cycles);
 
     /* update Z80 bus status */
     zstate &= 2;

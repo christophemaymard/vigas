@@ -495,7 +495,7 @@ unsigned char Ym2413::kTable[19][8] = {
 
 //------------------------------------------------------------------------------
 
-Ym2413::Ym2413()
+Ym2413::Ym2413() : FmSynthesizerBase()
 {
   xee::mem::Memset(&m_tl_tab, 0, sizeof(m_tl_tab));
   xee::mem::Memset(&m_sin_tab, 0, sizeof(m_sin_tab));
@@ -1703,7 +1703,47 @@ void Ym2413::ClearContext()
 
 //------------------------------------------------------------------------------
 
-int Ym2413::LoadContext(unsigned char* state)
+// Synchronize FM chip with CPU and reset FM chip.
+void Ym2413::SyncAndReset(unsigned int cycles)
+{
+  // synchronize FM chip with CPU.
+  Update(cycles);
+
+  // reset FM chip.
+  YM2413ResetChip();
+}
+
+//------------------------------------------------------------------------------
+
+void Ym2413::Write(unsigned int cycles, unsigned int address, unsigned int data)
+{
+  // detect DATA port write.
+  if (address & 1) {
+    // synchronize FM chip with CPU.
+    Update(cycles);
+  }
+
+  // write FM register.
+  YM2413Write(address, data);
+}
+
+//------------------------------------------------------------------------------
+
+unsigned int Ym2413::Read(unsigned int cycles, unsigned int address)
+{
+  return YM2413Read();
+}
+
+//------------------------------------------------------------------------------
+
+void Ym2413::UpdateSampleBuffer(int* buffer, int length)
+{
+  YM2413Update(buffer, length);
+}
+
+//------------------------------------------------------------------------------
+
+int Ym2413::LoadChipContext(unsigned char* state)
 {
   int bufferptr = 0;
 
@@ -1741,7 +1781,7 @@ int Ym2413::LoadContext(unsigned char* state)
 
 //------------------------------------------------------------------------------
 
-int Ym2413::SaveContext(unsigned char* state)
+int Ym2413::SaveChipContext(unsigned char* state)
 {
   int bufferptr = 0;
 

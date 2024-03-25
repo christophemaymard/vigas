@@ -16,6 +16,8 @@
 
 #include "xee/fnd/data_type.h"
 
+#include "gpgx/audio/effect/fm_synthesizer_base.h"
+
 #include "gpgx/ic/ym2612/fm_ch.h"
 #include "gpgx/ic/ym2612/fm_opn.h"
 #include "gpgx/ic/ym2612/fm_slot.h"
@@ -26,8 +28,12 @@ namespace gpgx::ic::ym2612 {
 
 //------------------------------------------------------------------------------
 
-class Ym2612
+class Ym2612 : public gpgx::audio::effect::FmSynthesizerBase
 {
+public:
+  // YM2612 internal clock = input clock / 6 = (master clock / 7) / 6.
+  static constexpr s32 kYm2612ClockRatio = 7 * 6;
+
 private:
   // Operator unit.
 
@@ -80,8 +86,13 @@ public:
   void YM2612Write(unsigned int a, unsigned int v);
   unsigned int YM2612Read();
 
-  int YM2612LoadContext(unsigned char* state);
-  int YM2612SaveContext(unsigned char* state);
+  // Implementation of gpgx::audio::effect::IFmSynthesizer.
+
+  // Synchronize FM chip with CPU and reset FM chip.
+  void SyncAndReset(unsigned int cycles);
+
+  void Write(unsigned int cycles, unsigned int address, unsigned int data);
+  unsigned int Read(unsigned int cycles, unsigned int address);
 
 private:
   void FM_KEYON(FM_CH* CH, int s);
@@ -113,6 +124,14 @@ private:
   void OPNWriteReg(int r, int v);
   void reset_channels(FM_CH* CH, int num);
   void init_tables();
+
+  // Implementation of gpgx::audio::effect::FmSynthesizerBase.
+
+  void UpdateSampleBuffer(int* buffer, int length);
+
+  int SaveChipContext(unsigned char* state);
+  int LoadChipContext(unsigned char* state);
+
 private:
   signed int m_tl_tab[kTlTabLen];
 

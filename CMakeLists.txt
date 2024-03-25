@@ -145,12 +145,13 @@ add_executable(vigas
     inc/core/cart_hw/eeprom_93c.h
     
     inc/gpgx/g_psg.h
-    inc/gpgx/g_ym2413.h
-    inc/gpgx/g_ym2612.h
-    inc/gpgx/g_ym3438.h
+    inc/gpgx/g_fm_synthesizer.h
     inc/gpgx/gpgx.h
     inc/gpgx/audio/blip_buffer.h
     inc/gpgx/audio/effect/equalizer_3band.h
+    inc/gpgx/audio/effect/fm_synthesizer.h
+    inc/gpgx/audio/effect/fm_synthesizer_base.h
+    inc/gpgx/audio/effect/null_fm_synthesizer.h
     inc/gpgx/ic/sn76489/sn76489.h
     inc/gpgx/ic/ym2413/opll_ch.h
     inc/gpgx/ic/ym2413/opll_slot.h
@@ -225,12 +226,12 @@ add_executable(vigas
     src/core/cart_hw/eeprom_93c.cpp
     
     src/gpgx/g_psg.cpp
-    src/gpgx/g_ym2413.cpp
-    src/gpgx/g_ym2612.cpp
-    src/gpgx/g_ym3438.cpp
+    src/gpgx/g_fm_synthesizer.cpp
     src/gpgx/gpgx.cpp
     src/gpgx/audio/blip_buffer.cpp
     src/gpgx/audio/effect/equalizer_3band.cpp
+    src/gpgx/audio/effect/fm_synthesizer_base.cpp
+    src/gpgx/audio/effect/null_fm_synthesizer.cpp
     src/gpgx/ic/sn76489/sn76489.cpp
     src/gpgx/ic/ym2413/ym2413.cpp
     src/gpgx/ic/ym2612/ym2612.cpp

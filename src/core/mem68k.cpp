@@ -41,6 +41,8 @@
 
 #include "xee/fnd/data_type.h"
 
+#include "gpgx/g_fm_synthesizer.h"
+
 #include "osd.h"
 #include "core/macros.h"
 #include "core/m68k/m68k.h"
@@ -51,7 +53,6 @@
 #include "core/membnk.h"
 #include "core/io_ctrl.h"
 #include "core/input_hw/input.h"
-#include "core/sound/sound.h"
 #include "core/cart_hw/svp/svp.h"
 
 #include "core/cd_hw/scd.h"
@@ -166,7 +167,7 @@ unsigned int z80_read_byte(unsigned int address)
   {
     case 2:   /* YM2612 */
     {
-      return fm_read(m68k.cycles, address & 3);
+      return gpgx::g_fm_synthesizer->Read(m68k.cycles, address & 3);
     }
 
     case 3:   /* Misc  */
@@ -201,7 +202,7 @@ void z80_write_byte(unsigned int address, unsigned int data)
   {
     case 2: /* YM2612 */
     {
-      fm_write(m68k.cycles, address & 3, data);
+      gpgx::g_fm_synthesizer->Write(m68k.cycles, address & 3, data);
       return;
     }
 
