@@ -50,7 +50,5 @@ int audio_init(int samplerate, f64 framerate);
 void audio_set_rate(int samplerate, f64 framerate);
 void audio_reset(void);
 void audio_shutdown(void);
-int audio_update(s16* buffer);
-void audio_set_equalizer(void);
 
 #endif // #ifndef __CORE_AUDIO_SUBSYSTEM_H__

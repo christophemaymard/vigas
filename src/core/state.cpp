@@ -51,9 +51,9 @@
 #include "core/mem68k.h"
 #include "core/membnk.h"
 #include "core/io_ctrl.h"
-#include "core/sound/sound.h"
 #include "core/cart_hw/sms_cart.h"
 
+#include "gpgx/g_audio_renderer.h"
 #include "gpgx/g_psg.h"
 
 int state_load(unsigned char *state)
@@ -131,15 +131,7 @@ int state_load(unsigned char *state)
   bufferptr += vdp_context_load(&state[bufferptr]);
 
   /* SOUND */
-  bufferptr += sound_context_load(&state[bufferptr]);
-  if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
-  {
-    gpgx::g_psg->psg_config(0, config.psg_preamp, 0xff);
-  }
-  else
-  {
-    gpgx::g_psg->psg_config(0, config.psg_preamp, io_reg[6]);
-  }
+  bufferptr += gpgx::g_audio_renderer->LoadContext(&state[bufferptr]);
 
   /* 68000 */
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
@@ -238,7 +230,7 @@ int state_save(unsigned char *state)
   bufferptr += vdp_context_save(&state[bufferptr]);
 
   /* SOUND */
-  bufferptr += sound_context_save(&state[bufferptr]);
+  bufferptr += gpgx::g_audio_renderer->SaveContext(&state[bufferptr]);
 
   /* 68000 */ 
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)

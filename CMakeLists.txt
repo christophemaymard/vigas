@@ -136,7 +136,6 @@ add_executable(vigas
     inc/core/ntsc/sms_ntsc.h
     inc/core/ntsc/sms_ntsc_config.h
     inc/core/ntsc/sms_ntsc_impl.h
-    inc/core/sound/sound.h
     inc/core/cart_hw/svp/ssp16.h
     inc/core/cart_hw/svp/svp.h
     inc/core/z80/osd_cpu.h
@@ -144,9 +143,10 @@ add_executable(vigas
     inc/core/cart_hw/areplay.h
     inc/core/cart_hw/eeprom_93c.h
     
+    inc/gpgx/g_audio_renderer.h
     inc/gpgx/g_psg.h
     inc/gpgx/g_fm_synthesizer.h
-    inc/gpgx/gpgx.h
+    inc/gpgx/audio/audio_renderer.h
     inc/gpgx/audio/blip_buffer.h
     inc/gpgx/audio/effect/equalizer_3band.h
     inc/gpgx/audio/effect/fm_synthesizer.h
@@ -218,16 +218,16 @@ add_executable(vigas
     src/core/m68k/s68kcpu.cpp
     src/core/ntsc/md_ntsc.cpp
     src/core/ntsc/sms_ntsc.cpp
-    src/core/sound/sound.cpp
     src/core/cart_hw/svp/ssp16.cpp
     src/core/cart_hw/svp/svp.cpp
     src/core/z80/z80.cpp
     src/core/cart_hw/areplay.cpp
     src/core/cart_hw/eeprom_93c.cpp
     
+    src/gpgx/g_audio_renderer.cpp
     src/gpgx/g_psg.cpp
     src/gpgx/g_fm_synthesizer.cpp
-    src/gpgx/gpgx.cpp
+    src/gpgx/audio/audio_renderer.cpp
     src/gpgx/audio/blip_buffer.cpp
     src/gpgx/audio/effect/equalizer_3band.cpp
     src/gpgx/audio/effect/fm_synthesizer_base.cpp

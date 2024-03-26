@@ -56,7 +56,6 @@
 #include "core/vdp_ctrl.h"
 #include "core/membnk.h"
 #include "core/io_ctrl.h"
-#include "core/sound/sound.h"
 
 /*--------------------------------------------------------------------------*/
 /*  Handlers for access to unused addresses and those which make the        */

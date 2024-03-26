@@ -41,6 +41,8 @@
 
 #include "core/audio_subsystem.h"
 
+#include <new> // For std::nothrow.
+
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
@@ -51,21 +53,14 @@
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/vdp_ctrl.h"
-#include "core/sound/sound.h"
 
-#include "core/cd_hw/cdd.h"
-#include "core/cd_hw/pcm.h"
-#include "core/cd_hw/scd.h"
+#include "core/cd_hw/cdd.h" // For cdd_init()
+#include "core/cd_hw/pcm.h" // For pcm_init()
+#include "core/cd_hw/scd.h" // For SCD_CLOCK
 
+#include "gpgx/g_audio_renderer.h"
+#include "gpgx/audio/audio_renderer.h"
 #include "gpgx/audio/blip_buffer.h"
-#include "gpgx/audio/effect/equalizer_3band.h"
-
-//==============================================================================
-
-//------------------------------------------------------------------------------
-
-static gpgx::audio::effect::Equalizer3band eq[2];
-static s16 llp, rrp;
 
 //==============================================================================
 
@@ -101,6 +96,17 @@ int audio_init(int samplerate, f64 framerate)
 
   /* Set audio enable flag */
   snd.enabled = 1;
+
+  // Create and initialize the audio renderer.
+  gpgx::g_audio_renderer = new (std::nothrow) gpgx::audio::AudioRenderer();
+
+  if (!gpgx::g_audio_renderer) {
+    audio_shutdown();
+
+    return -1;
+  }
+
+  gpgx::g_audio_renderer->Init();
 
   /* Reset audio */
   audio_reset();
@@ -172,31 +178,10 @@ void audio_reset(void)
   }
 
   /* Low-Pass filter */
-  llp = 0;
-  rrp = 0;
+  gpgx::g_audio_renderer->ResetLowPassFilter();
 
   /* 3 band EQ */
-  audio_set_equalizer();
-}
-
-//------------------------------------------------------------------------------
-
-void audio_set_equalizer(void)
-{
-  eq[0].init_3band_state(config.low_freq, config.high_freq, snd.sample_rate);
-  eq[1].init_3band_state(config.low_freq, config.high_freq, snd.sample_rate);
-
-  f64 lg = (f64)(config.lg) / 100.0;
-  eq[0].SetLowGainControl(lg);
-  eq[1].SetLowGainControl(lg);
-
-  f64 mg = (f64)(config.mg) / 100.0;
-  eq[0].SetMiddleGainControl(mg);
-  eq[1].SetMiddleGainControl(mg);
-
-  f64 hg = (f64)(config.hg) / 100.0;
-  eq[0].SetHighGainControl(hg);
-  eq[1].SetHighGainControl(hg);
+  gpgx::g_audio_renderer->ApplyEqualizationSettings();
 }
 
 //------------------------------------------------------------------------------
@@ -204,6 +189,13 @@ void audio_set_equalizer(void)
 void audio_shutdown(void)
 {
   int i;
+
+  // Delete the audio renderer.
+  if (gpgx::g_audio_renderer) {
+    gpgx::g_audio_renderer->Destroy();
+    delete gpgx::g_audio_renderer;
+    gpgx::g_audio_renderer = nullptr;
+  }
 
   /* Delete blip buffers */
   for (i = 0; i < 3; i++) {
@@ -215,103 +207,3 @@ void audio_shutdown(void)
   }
 }
 
-//------------------------------------------------------------------------------
-
-int audio_update(s16* buffer)
-{
-  /* run sound chips until end of frame */
-  int size = sound_update(mcycles_vdp);
-
-  /* Mega CD sound hardware enabled ? */
-  if (snd.blips[1] && snd.blips[2]) {
-    /* sync PCM chip with other sound chips */
-    pcm_update(size);
-
-    /* read CD-DA samples */
-    cdd_update_audio(size);
-
-#ifdef ALIGN_SND
-    /* return an aligned number of samples if required */
-    size &= ALIGN_SND;
-#endif
-
-    /* resample & mix FM/PSG, PCM & CD-DA streams to output buffer */
-    snd.blips[0]->blip_mix_samples(snd.blips[1], snd.blips[2], buffer, size);
-  } else {
-#ifdef ALIGN_SND
-    /* return an aligned number of samples if required */
-    size &= ALIGN_SND;
-#endif
-
-    /* resample FM/PSG mixed stream to output buffer */
-    snd.blips[0]->blip_read_samples(buffer, size);
-  }
-
-  /* Audio filtering */
-  if (config.filter) {
-    int samples = size;
-    s16* out = buffer;
-    s32 l, r;
-
-    if (config.filter & 1) {
-      /* single-pole low-pass filter (6 dB/octave) */
-      u32 factora = config.lp_range;
-      u32 factorb = 0x10000 - factora;
-
-      /* restore previous sample */
-      l = llp;
-      r = rrp;
-
-      do {
-        /* apply low-pass filter */
-        l = l * factora + out[0] * factorb;
-        r = r * factora + out[1] * factorb;
-
-        /* 16.16 fixed point */
-        l >>= 16;
-        r >>= 16;
-
-        /* update sound buffer */
-        *out++ = l;
-        *out++ = r;
-      } while (--samples);
-
-      /* save last samples for next frame */
-      llp = l;
-      rrp = r;
-    } else if (config.filter & 2) {
-      do {
-        /* 3 Band EQ */
-        l = eq[0].do_3band(out[0]);
-        r = eq[1].do_3band(out[1]);
-
-        /* clipping (16-bit samples) */
-        if (l > 32767) l = 32767;
-        else if (l < -32768) l = -32768;
-        if (r > 32767) r = 32767;
-        else if (r < -32768) r = -32768;
-
-        /* update sound buffer */
-        *out++ = l;
-        *out++ = r;
-      } while (--samples);
-    }
-  }
-
-  /* Mono output mixing */
-  if (config.mono) {
-    s16 out;
-    int samples = size;
-    do {
-      out = (buffer[0] + buffer[1]) / 2;
-      *buffer++ = out;
-      *buffer++ = out;
-    } while (--samples);
-  }
-
-#ifdef LOGSOUND
-  error("%d samples returned\n\n", size);
-#endif
-
-  return size;
-}
