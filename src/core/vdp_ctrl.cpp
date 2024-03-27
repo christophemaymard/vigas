@@ -57,10 +57,9 @@
 #include "core/genesis.h" // For work_ram and zstate.
 #include "core/vdp_render.h"
 #include "core/io_ctrl.h"
+#include "core/cart_hw/special_hw_sms.h"
 #include "core/cart_hw/svp/svp.h"
 #include "core/state.h"
-
-#include "core/cart_hw/sms_cart.h" // For HW_3D_GLASSES.
 #include "core/hvc.h"
 
 /* Mark a pattern as modified */

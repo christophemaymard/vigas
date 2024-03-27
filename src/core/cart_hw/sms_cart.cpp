@@ -55,6 +55,7 @@
 #include "core/ext.h" // For cart.
 #include "core/genesis.h" // For work_ram.
 #include "core/input_hw/input.h"
+#include "core/cart_hw/special_hw_sms.h"
 #include "core/cart_hw/sram.h"
 #include "core/state.h"
 

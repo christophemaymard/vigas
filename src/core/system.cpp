@@ -58,10 +58,10 @@
 #include "core/vdp_render.h"
 #include "core/io_ctrl.h"
 #include "core/input_hw/input.h"
+#include "core/cart_hw/special_hw_sms.h"
 #include "core/cart_hw/svp/svp.h"
 
 #include "core/cart_hw/svp/ssp16.h"
-#include "core/cart_hw/sms_cart.h" // For HW_3D_GLASSES.
 
 #include "gpgx/g_audio_renderer.h"
 

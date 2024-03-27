@@ -1,6 +1,6 @@
 /****************************************************************************
  *  Genesis Plus
- *  SG-1000, Master System & Game Gear cartridge hardware support
+ *  Special hardware.
  *
  *  Copyright (C) 2007-2023  Eke-Eke (Genesis Plus GX)
  *
@@ -36,20 +36,16 @@
  *
  ****************************************************************************************/
 
-#ifndef _SMS_CART_H_
-#define _SMS_CART_H_
+#ifndef __CORE_CART_HW_SPECIAL_HW_SMS_H__
+#define __CORE_CART_HW_SPECIAL_HW_SMS_H__
 
-#include "xee/fnd/data_type.h"
+//==============================================================================
 
-/* Function prototypes */
-extern void sms_cart_init(void);
-extern void sms_cart_reset(void);
-extern void sms_cart_switch(u8 mode);
-extern int sms_cart_ram_size(void);
-extern int sms_cart_region_detect(void);
-extern int sms_cart_context_save(u8 *state);
-extern int sms_cart_context_load(u8 *state);
+//------------------------------------------------------------------------------
+// Special hardware.
 
-#endif
+#define HW_3D_GLASSES     0x01
+#define HW_TEREBI_OEKAKI  0x02
 
+#endif // #ifndef __CORE_CART_HW_SPECIAL_HW_SMS_H__
 

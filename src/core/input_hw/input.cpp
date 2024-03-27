@@ -45,7 +45,7 @@
 #include "core/system_hardware.h"
 #include "core/ext.h" // For cart.
 #include "core/cart_hw/special_hw_md.h"
-#include "core/cart_hw/sms_cart.h" // For HW_TEREBI_OEKAKI.
+#include "core/cart_hw/special_hw_sms.h"
 
 #include "core/input_hw/gamepad.h"
 #include "core/input_hw/lightgun.h"
