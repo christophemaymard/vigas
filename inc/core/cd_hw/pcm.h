@@ -40,32 +40,6 @@
 
 #include "xee/fnd/data_type.h"
 
-#include "core/types.h"
-
-/* PCM channel */
-typedef struct
-{
-  u32 addr;  /* current Wave RAM address (16.11 fixed point) */
-  u32 st;    /* Wave RAM start address (16.11 fixed point) */
-  reg16_t ls;   /* Wave RAM loop address ($0000-$ffff) */
-  reg16_t fd;   /* Wave RAM address increment (5.11 fixed point) */
-  u8 env;    /* enveloppe multiplier */
-  u8 pan;    /* stereo panning */
-} chan_t;
-
-/* PCM sound chip */
-typedef struct
-{
-  chan_t chan[8];     /* PCM channels 1-8 */
-  s16 out[2];       /* previous PCM stereo output */
-  u8 *bank;        /* external RAM bank pointer */
-  u8 enabled;      /* PCM chip ON/OFF status */
-  u8 status;       /* channels ON/OFF status */
-  u8 index;        /* current channel index */
-  u8 ram[0x10000]; /* 64k external RAM */
-  u32 cycles;
-} pcm_t;
-
 /* Function prototypes */
 extern void pcm_init(f64 clock, int rate);
 extern void pcm_reset(void);

@@ -50,7 +50,9 @@
 #include "core/state.h"
 
 #include "core/cd_hw/scd.h"
+#include "core/cd_hw/cdd.h"
 #include "core/cd_hw/gfx.h"
+#include "core/cd_hw/pcm.h"
 
 /* IFSTAT register bitmasks */
 #define BIT_DTEI  0x40

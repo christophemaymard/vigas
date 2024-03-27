@@ -54,7 +54,9 @@
 #include "core/cart_hw/md_cart.h"
 #include "core/cd_hw/cd_cart.h"
 #include "core/cd_hw/cdc.h"
+#include "core/cd_hw/cdd.h"
 #include "core/cd_hw/gfx.h"
+#include "core/cd_hw/pcm.h"
 
 #ifdef LOG_SCD
 #include "core/vdp_ctrl.h"

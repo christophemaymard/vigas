@@ -38,11 +38,7 @@
 #ifndef _HW_CDD_
 #define _HW_CDD_
 
-#include <stdio.h>
-
 #include "xee/fnd/data_type.h"
-
-#include "core/macros.h"
 
 #define cdd scd.cdd_hw
 
@@ -62,43 +58,6 @@
 #define CD_END        0x0C
 #define CD_TRAY       0x0E  /* unused */
 #define CD_TEST       0x0F  /* unusec */
-
-/* CD track */
-typedef struct
-{
-  cdStream *fd;
-  int offset;
-  int start;
-  int end;
-  int type;
-  int loopEnabled;
-  int loopOffset;
-} track_t; 
-
-/* CD TOC */
-typedef struct
-{
-  int end;
-  int last;
-  track_t tracks[100];
-  cdStream *sub;
-} toc_t; 
-
-/* CDD hardware */
-typedef struct
-{
-  u32 cycles;
-  u32 latency;
-  int loaded;
-  int index;
-  int lba;
-  int scanOffset;
-  u16 fader[2];
-  u8 status;
-  u16 sectorSize;
-  toc_t toc;
-  s16 audio[2];
-} cdd_t; 
 
 /* Function prototypes */
 extern void cdd_init(int samplerate);

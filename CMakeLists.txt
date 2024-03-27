@@ -84,10 +84,15 @@ add_executable(vigas
     inc/core/cd_hw/cdc.h
     inc/core/cd_hw/cdc_t.h
     inc/core/cd_hw/cdd.h
+    inc/core/cd_hw/cdd_t.h
+    inc/core/cd_hw/chan_t.h
     inc/core/cd_hw/gfx.h
     inc/core/cd_hw/gfx_t.h
     inc/core/cd_hw/pcm.h
+    inc/core/cd_hw/pcm_t.h
     inc/core/cd_hw/scd.h
+    inc/core/cd_hw/toc_t.h
+    inc/core/cd_hw/track_t.h
     inc/build/cmd_sdl2/config.h
     inc/build/cmd_sdl2/error.h
     inc/build/cmd_sdl2/fileio.h

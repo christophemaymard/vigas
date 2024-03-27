@@ -1,8 +1,8 @@
 /***************************************************************************************
  *  Genesis Plus
- *  Mega-CD / Sega CD hardware
+ *  PCM sound chip (315-5476A) (RF5C164 compatible)
  *
- *  Copyright (C) 2012-2024  Eke-Eke (Genesis Plus GX)
+ *  Copyright (C) 2012-2023  Eke-Eke (Genesis Plus GX)
  *
  *  Redistribution and use of this code or any derivative works are permitted
  *  provided that the following conditions are met:
@@ -36,44 +36,29 @@
  *
  ****************************************************************************************/
 
-#ifndef __CORE_CD_HW_CD_HW_T_H__
-#define __CORE_CD_HW_CD_HW_T_H__
+#ifndef __CORE_CD_HW_PCM_T_H__
+#define __CORE_CD_HW_PCM_T_H__
 
 #include "xee/fnd/data_type.h"
 
-#include "core/types.h"
-#include "core/cd_hw/cd_cart_t.h"
-#include "core/cd_hw/cdc_t.h"
-#include "core/cd_hw/cdd_t.h"
-#include "core/cd_hw/gfx_t.h"
-#include "core/cd_hw/pcm_t.h"
+#include "core/cd_hw/chan_t.h"
 
 //==============================================================================
 
 //------------------------------------------------------------------------------
 
-// CD hardware.
-struct cd_hw_t
+// PCM sound chip.
+struct pcm_t
 {
-  cd_cart_t cartridge;      // ROM/RAM Cartridge.
-  u8 bootrom[0x20000];      // 128K internal BOOT ROM.
-  u8 prg_ram[0x80000];      // 512K PRG-RAM.
-  u8 word_ram[2][0x20000];  // 2 x 128K Word RAM (1M mode).
-  u8 word_ram_2M[0x40000];  // 256K Word RAM (2M mode).
-  u8 bram[0x2000];          // 8K Backup RAM.
-  reg16_t regs[0x100];      // 256 x 16-bit ASIC registers.
-  u32 cycles;               // CD Master clock counter.
-  u32 cycles_per_line;      // CD Master clock count per scanline.
-  s32 stopwatch;            // Stopwatch counter.
-  s32 timer;                // Timer counter.
-  u8 pending;               // Pending interrupts.
-  u8 dmna;                  // Pending DMNA write status.
-  u8 type;                  // CD hardware model.
-  gfx_t gfx_hw;             // Graphics processor.
-  cdc_t cdc_hw;             // CD data controller.
-  cdd_t cdd_hw;             // CD drive processor.
-  pcm_t pcm_hw;             // PCM chip.
+  chan_t chan[8];   // PCM channels 1-8.
+  s16 out[2];       // previous PCM stereo output.
+  u8* bank;         // external RAM bank pointer.
+  u8 enabled;       // PCM chip ON/OFF status.
+  u8 status;        // channels ON/OFF status.
+  u8 index;         // current channel index.
+  u8 ram[0x10000];  // 64k external RAM.
+  u32 cycles;
 };
 
-#endif // #ifndef __CORE_CD_HW_CD_HW_T_H__
+#endif // #ifndef __CORE_CD_HW_PCM_T_H__
 
