@@ -48,6 +48,7 @@
 #include "core/loadrom.h"
 #include "core/audio_subsystem.h"
 #include "core/bitmap.h"
+#include "core/rominfo.h"
 #include "core/snd.h"
 #include "core/system.h"
 #include "core/system_bios.h"

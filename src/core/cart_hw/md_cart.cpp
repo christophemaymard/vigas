@@ -49,9 +49,9 @@
 #include "xee/mem/memory.h"
 
 #include "osd.h"
-#include "core/loadrom.h"
 #include "core/m68k/m68k.h"
 #include "core/audio_subsystem.h"
+#include "core/rominfo.h"
 #include "core/snd.h"
 #include "core/system_hardware.h"
 #include "core/genesis.h"

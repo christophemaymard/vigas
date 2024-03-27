@@ -44,11 +44,11 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
-#include "core/loadrom.h"
 #include "core/m68k/m68k.h"
 #include "core/genesis.h"
 #include "core/mem68k.h"
 #include "core/membnk.h"
+#include "core/rominfo.h"
 #include "core/cart_hw/sram.h"
 
 #include "core/input_hw/gamepad.h"

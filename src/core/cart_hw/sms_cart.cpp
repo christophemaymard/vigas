@@ -45,8 +45,9 @@
 #include "xee/mem/memory.h"
 
 #include "osd.h"
-#include "core/loadrom.h"
+#include "core/loadrom.h" // For load_bios().
 #include "core/z80/z80.h"
+#include "core/rominfo.h"
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
 #include "core/genesis.h"

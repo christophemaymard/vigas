@@ -44,8 +44,8 @@
 
 #include "osd.h"
 #include "core/macros.h"
-#include "core/loadrom.h"
 #include "core/genesis.h"
+#include "core/rominfo.h"
 
 T_SRAM sram;
 

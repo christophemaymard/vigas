@@ -1,6 +1,6 @@
 /***************************************************************************************
  *  Genesis Plus
- *  ROM Loading Support
+ *  ROM Information
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2023 Eke-Eke (Genesis Plus GX)
@@ -37,25 +37,34 @@
  *
  ****************************************************************************************/
 
-#ifndef _LOADROM_H_
-#define _LOADROM_H_
+#ifndef __CORE_ROMINFO_H__
+#define __CORE_ROMINFO_H__
 
 #include "xee/fnd/data_type.h"
 
-#ifndef MAXROMSIZE
-#define MAXROMSIZE 10485760
-#endif
+//==============================================================================
 
-/* Global variables */
-extern u8 romtype;
+//------------------------------------------------------------------------------
 
-/* Function prototypes */
-extern int load_bios(int system);
-extern int load_rom(char *filename);
-extern void get_region(char *romheader);
-extern char *get_company(void);
-extern char *get_peripheral(int index);
-extern void getrominfo(char *romheader);
+struct ROMINFO
+{
+  char consoletype[18];         // Genesis or Mega Drive.
+  char copyright[18];           // Copyright message.
+  char domestic[50];            // Domestic name of ROM.
+  char international[50];       // International name of ROM.
+  char ROMType[4];              // Boot ROM (BR), Educational (AL) or Game (GM) program.
+  char product[14];             // Product serial number.
+  unsigned short checksum;      // ROM Checksum (header).
+  unsigned short realchecksum;  // ROM Checksum (calculated).
+  unsigned int romstart;        // ROM start address.
+  unsigned int romend;          // ROM end address.
+  char country[18];             // Country flag.
+  u16 peripherals;              // Supported peripherals.
+};
 
-#endif /* _LOADROM_H_ */
+//------------------------------------------------------------------------------
+
+extern ROMINFO rominfo;
+
+#endif // #ifndef __CORE_ROMINFO_H__
 

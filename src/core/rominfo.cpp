@@ -1,6 +1,6 @@
 /***************************************************************************************
  *  Genesis Plus
- *  ROM Loading Support
+ *  ROM Information
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2023 Eke-Eke (Genesis Plus GX)
@@ -37,25 +37,11 @@
  *
  ****************************************************************************************/
 
-#ifndef _LOADROM_H_
-#define _LOADROM_H_
+#include "core/rominfo.h"
 
-#include "xee/fnd/data_type.h"
+//==============================================================================
 
-#ifndef MAXROMSIZE
-#define MAXROMSIZE 10485760
-#endif
+//------------------------------------------------------------------------------
 
-/* Global variables */
-extern u8 romtype;
-
-/* Function prototypes */
-extern int load_bios(int system);
-extern int load_rom(char *filename);
-extern void get_region(char *romheader);
-extern char *get_company(void);
-extern char *get_peripheral(int index);
-extern void getrominfo(char *romheader);
-
-#endif /* _LOADROM_H_ */
+ROMINFO rominfo;
 
