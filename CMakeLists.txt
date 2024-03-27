@@ -79,6 +79,7 @@ add_executable(vigas
     inc/core/cart_hw/md_cart.h
     inc/core/cart_hw/megasd.h
     inc/core/cart_hw/sms_cart.h
+    inc/core/cart_hw/special_hw_md.h
     inc/core/cart_hw/sram.h
     inc/core/cd_hw/cd_cart.h
     inc/core/cd_hw/cd_cart_t.h

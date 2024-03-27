@@ -50,7 +50,7 @@
 #include "core/snd.h"
 #include "core/ext.h" // For cdc and cdd.
 #include "core/cart_hw/hw_addon.h"
-#include "core/cart_hw/md_cart.h" // For HW_MEGASD.
+#include "core/cart_hw/special_hw_md.h"
 #include "core/cd_hw/cdc.h" // For cdc_decoder_update().
 #include "core/state.h"
 
