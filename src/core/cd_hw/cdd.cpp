@@ -49,7 +49,8 @@
 #include "core/m68k/m68k.h"
 #include "core/snd.h"
 #include "core/ext.h" // For cdc and cdd.
-#include "core/cart_hw/md_cart.h" // For HW_ADDON_MEGASD, HW_ADDON_MEGACD and HW_MEGASD.
+#include "core/cart_hw/hw_addon.h"
+#include "core/cart_hw/md_cart.h" // For HW_MEGASD.
 #include "core/cd_hw/cdc.h" // For cdc_decoder_update().
 #include "core/state.h"
 

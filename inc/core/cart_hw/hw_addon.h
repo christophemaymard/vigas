@@ -1,6 +1,6 @@
 /****************************************************************************
  *  Genesis Plus
- *  Mega Drive cartridge hardware support
+ *  CD hardware add-on (MD mode).
  *
  *  Copyright (C) 2007-2023  Eke-Eke (Genesis Plus GX)
  *
@@ -41,20 +41,18 @@
  *
  ****************************************************************************************/
 
-#ifndef _MD_CART_H_
-#define _MD_CART_H_
+#ifndef __CORE_CART_HW_HW_ADDON_H__
+#define __CORE_CART_HW_HW_ADDON_H__
 
-#include "xee/fnd/data_type.h"
+//==============================================================================
 
-/* Special hardware (0x01 & 0x02 reserved for Master System 3-D glasses & Terebi Oekaki) */
-#define HW_J_CART   0x04
-#define HW_LOCK_ON  0x08
-#define HW_MEGASD   0x10
+//------------------------------------------------------------------------------
+// CD hardware add-on (MD mode).
 
-/* Function prototypes */
-extern void md_cart_init(void);
-extern void md_cart_reset(int hard_reset);
-extern int md_cart_context_save(u8 *state);
-extern int md_cart_context_load(u8 *state);
+#define HW_ADDON_AUTO    0x00
+#define HW_ADDON_MEGACD  0x01
+#define HW_ADDON_MEGASD  0x02
+#define HW_ADDON_NONE    0x03
 
-#endif
+#endif // #ifndef __CORE_CART_HW_HW_ADDON_H__
+

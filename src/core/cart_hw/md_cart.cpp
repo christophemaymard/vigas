@@ -62,6 +62,7 @@
 #include "core/membnk.h"
 #include "core/input_hw/input.h"
 #include "core/cart_hw/cart_hw_t.h"
+#include "core/cart_hw/hw_addon.h"
 #include "core/cart_hw/lock_on_type.h"
 #include "core/cart_hw/sram.h"
 #include "core/cart_hw/ggenie.h"

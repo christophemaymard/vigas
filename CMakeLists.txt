@@ -74,6 +74,7 @@ add_executable(vigas
     inc/core/cart_hw/eeprom_i2c.h
     inc/core/cart_hw/eeprom_spi.h
     inc/core/cart_hw/ggenie.h
+    inc/core/cart_hw/hw_addon.h
     inc/core/cart_hw/lock_on_type.h
     inc/core/cart_hw/md_cart.h
     inc/core/cart_hw/megasd.h

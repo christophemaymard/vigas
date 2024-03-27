@@ -58,7 +58,7 @@
 #include "core/cart_hw/ggenie.h"
 #include "core/cart_hw/areplay.h"
 
-#include "core/cart_hw/md_cart.h" // For HW_ADDON_NONE and HW_ADDON_MEGACD.
+#include "core/cart_hw/hw_addon.h"
 #include "core/cart_hw/sms_cart.h" // For sms_cart_region_detect().
 #include "core/cd_hw/scd.h" // For CD_TYPE_WONDERMEGA, CD_TYPE_WONDERMEGA_M2, CD_TYPE_CDX and CD_TYPE_DEFAULT.
 #include "core/cd_hw/cdd.h" // For cdd_load() and cdd_unload().
