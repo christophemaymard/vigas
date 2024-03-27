@@ -47,12 +47,12 @@
 #include "osd.h"
 #include "core/loadrom.h" // For load_bios().
 #include "core/z80/z80.h"
+#include "core/io_reg.h"
 #include "core/region_code.h"
 #include "core/rominfo.h"
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
 #include "core/genesis.h"
-#include "core/io_ctrl.h" // For io_reg.
 #include "core/input_hw/input.h"
 #include "core/cart_hw/sram.h"
 #include "core/state.h"

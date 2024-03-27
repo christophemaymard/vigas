@@ -41,11 +41,11 @@
 #include "xee/mem/memory.h"
 
 #include "osd.h"
+#include "core/io_reg.h"
 #include "core/snd.h"
 #include "core/state.h"
 #include "core/system_cycle.h" // 
 #include "core/system_hardware.h"
-#include "core/io_ctrl.h" // For io_reg.
 #include "core/cd_hw/cdd.h"
 #include "core/cd_hw/pcm.h"
 

@@ -45,6 +45,7 @@
 
 #include "osd.h"
 #include "core/z80/z80.h"
+#include "core/io_reg.h"
 #include "core/region_code.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
@@ -66,8 +67,6 @@
 #include "core/input_hw/graphic_board.h"
 
 #include "gpgx/g_psg.h"
-
-u8 io_reg[0x10];
 
 
 static struct port_t

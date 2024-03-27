@@ -94,6 +94,7 @@ add_executable(vigas
     inc/core/genesis.h
     inc/core/hvc.h
     inc/core/io_ctrl.h
+    inc/core/io_reg.h
     inc/core/loadrom.h
     inc/core/macros.h
     inc/core/mem68k.h
@@ -192,6 +193,7 @@ add_executable(vigas
     src/core/bitmap.cpp
     src/core/genesis.cpp
     src/core/io_ctrl.cpp
+    src/core/io_reg.cpp
     src/core/loadrom.cpp
     src/core/mem68k.cpp
     src/core/membnk.cpp

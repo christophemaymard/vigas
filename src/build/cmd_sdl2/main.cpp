@@ -48,6 +48,7 @@
 #include "core/loadrom.h"
 #include "core/audio_subsystem.h"
 #include "core/bitmap.h"
+#include "core/io_reg.h"
 #include "core/region_code.h"
 #include "core/rominfo.h"
 #include "core/snd.h"
@@ -56,7 +57,6 @@
 #include "core/system_hardware.h"
 #include "core/genesis.h"
 #include "core/vdp_ctrl.h"
-#include "core/io_ctrl.h" // For io_reg.
 #include "core/input_hw/input.h"
 #include "core/cart_hw/sram.h"
 #include "core/state.h"

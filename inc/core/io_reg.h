@@ -1,8 +1,6 @@
 /***************************************************************************************
  *  Genesis Plus
- *  I/O controller
- *
- *  Support for Master System (315-5216, 315-5237 & 315-5297), Game Gear & Mega Drive I/O chips
+ *  I/O Registers
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2019  Eke-Eke (Genesis Plus GX)
@@ -39,17 +37,21 @@
  *
  ****************************************************************************************/
 
-#ifndef _IO_CTRL_H_
-#define _IO_CTRL_H_
+#ifndef __CORE_IO_REG_H__
+#define __CORE_IO_REG_H__
 
-extern void io_init(void);
-extern void io_reset(void);
-extern void io_68k_write(unsigned int offset, unsigned int data);
-extern unsigned int io_68k_read(unsigned int offset);
-extern void io_z80_write(unsigned int offset, unsigned int data, unsigned int cycles);
-extern unsigned int io_z80_read(unsigned int offset);
-extern void io_gg_write(unsigned int offset, unsigned int data);
-extern unsigned int io_gg_read(unsigned int offset);
+#include "xee/fnd/data_type.h"
 
-#endif /* _IO_CTRL_H_ */
+//==============================================================================
+
+//------------------------------------------------------------------------------
+
+#define IO_RESET_HI 0x10
+#define IO_CONT1_HI 0x20
+
+//------------------------------------------------------------------------------
+
+extern u8 io_reg[0x10];
+
+#endif // #ifndef __CORE_IO_REG_H__
 
