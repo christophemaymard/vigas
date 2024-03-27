@@ -49,17 +49,17 @@
 #include "core/region_code.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
+#include "core/ext.h" // For cart, scd, cdc, gfx and SCYCLES_PER_LINE.
 #include "core/genesis.h"
-#include "core/cart_hw/md_cart.h"
 #include "core/vdp_ctrl.h"
 #include "core/membnk.h"
 #include "core/io_ctrl.h" // For io_68k_write() and io_68k_read().
 #include "core/input_hw/input.h"
 #include "core/cart_hw/svp/svp.h"
 
-#include "core/cd_hw/scd.h"
+#include "core/cd_hw/scd.h" // For prg_ram_dma_w() and TIMERS_SCYCLES_RATIO.
 #include "core/cd_hw/cdc.h"
-#include "core/cd_hw/gfx.h"
+#include "core/cd_hw/gfx.h" // For word_ram_2M_dma_w().
 
 #include "gpgx/g_psg.h"
 

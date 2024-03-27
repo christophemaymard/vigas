@@ -50,9 +50,9 @@
 #include "core/system_clock.h"
 #include "core/system_cycle.h"
 #include "core/system_timing.h"
-#include "core/genesis.h"
-#include "core/cart_hw/md_cart.h"
-#include "core/cd_hw/cd_cart.h"
+#include "core/ext.h" // For cdc, cdd, scd and SCYCLES_PER_LINE.
+#include "core/cart_hw/md_cart.h" // For md_cart_context_save() and md_cart_context_load().
+#include "core/cd_hw/cd_cart.h" // For cd_cart_init().
 #include "core/cd_hw/cdc.h"
 #include "core/cd_hw/cdd.h"
 #include "core/cd_hw/gfx.h"

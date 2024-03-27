@@ -43,9 +43,9 @@
 #include "core/rominfo.h"
 #include "core/romtype.h"
 #include "core/system_hardware.h"
-#include "core/genesis.h"
-#include "core/cart_hw/md_cart.h"
-#include "core/cart_hw/sms_cart.h"
+#include "core/ext.h" // For cart.
+#include "core/cart_hw/md_cart.h" // For HW_J_CART.
+#include "core/cart_hw/sms_cart.h" // For HW_TEREBI_OEKAKI.
 
 #include "core/input_hw/gamepad.h"
 #include "core/input_hw/lightgun.h"

@@ -55,17 +55,15 @@
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
+#include "core/ext.h" // For scd, cart.
 #include "core/vdp_ctrl.h"
 #include "core/mem68k.h"
 #include "core/memz80.h"
 #include "core/membnk.h"
 
-#include "core/cart_hw/md_cart.h"
-#include "core/cart_hw/sms_cart.h"
-#include "core/cd_hw/scd.h"
-
-// External Hardware (Cartridge, CD unit, ...).
-external_t ext;
+#include "core/cart_hw/md_cart.h" // Fo md_cart_init() and md_cart_reset().
+#include "core/cart_hw/sms_cart.h" // For sms_cart_init() and sms_cart_reset().
+#include "core/cd_hw/scd.h" // For scd_init() and scd_reset().
 
 u8 boot_rom[0x800];    /* Genesis BOOT ROM   */
 u8 work_ram[0x10000];  /* 68K RAM  */

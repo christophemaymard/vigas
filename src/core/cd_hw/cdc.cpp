@@ -46,13 +46,13 @@
 #endif
 
 #include "core/m68k/m68k.h"
-#include "core/genesis.h"
+#include "core/ext.h" // For scd and cdc.
 #include "core/state.h"
 
-#include "core/cd_hw/scd.h"
-#include "core/cd_hw/cdd.h"
-#include "core/cd_hw/gfx.h"
-#include "core/cd_hw/pcm.h"
+#include "core/cd_hw/scd.h" // For prg_ram_dma_w(), CD_TYPE_WONDERMEGA_M2 and CD_TYPE_CDX.
+#include "core/cd_hw/cdd.h" // For cdd_read_data().
+#include "core/cd_hw/gfx.h" // For word_ram_0_dma_w(), word_ram_1_dma_w() and word_ram_2M_dma_w().
+#include "core/cd_hw/pcm.h" // For pcm_ram_dma_w().
 
 /* IFSTAT register bitmasks */
 #define BIT_DTEI  0x40

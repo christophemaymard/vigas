@@ -51,8 +51,8 @@
 #include "core/system_cycle.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
-#include "core/genesis.h"
-#include "core/cart_hw/md_cart.h"
+#include "core/ext.h" // For cart and scd.
+#include "core/genesis.h" // For gen_init(), gen_reset(), zstate and work_ram.
 #include "core/cd_hw/scd.h"
 #include "core/vdp_ctrl.h"
 #include "core/vdp_render.h"
@@ -61,7 +61,7 @@
 #include "core/cart_hw/svp/svp.h"
 
 #include "core/cart_hw/svp/ssp16.h"
-#include "core/cart_hw/sms_cart.h"
+#include "core/cart_hw/sms_cart.h" // For HW_3D_GLASSES.
 
 #include "gpgx/g_audio_renderer.h"
 

@@ -44,14 +44,12 @@
 #include "core/m68k/m68k.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
-#include "core/genesis.h"
-#include "core/cart_hw/md_cart.h"
+#include "core/ext.h" // For scd, cart, cdd and SCYCLES_PER_LINE.
 #include "core/mem68k.h"
 #include "core/membnk.h"
 #include "core/cart_hw/sram.h"
 #include "core/state.h"
 
-#include "core/cd_hw/scd.h"
 #include "core/cd_hw/cdd.h"
 #include "core/cd_hw/pcm.h"
 

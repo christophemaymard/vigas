@@ -52,17 +52,16 @@
 #include "core/system_bios.h"
 #include "core/system_clock.h"
 #include "core/system_hardware.h"
-#include "core/genesis.h"
+#include "core/ext.h" // For cart, scd, cdc and cdd.
 #include "core/vdp_ctrl.h"
 #include "core/input_hw/input.h"
 #include "core/cart_hw/ggenie.h"
 #include "core/cart_hw/areplay.h"
 
-#include "core/cart_hw/md_cart.h"
-#include "core/cart_hw/sms_cart.h"
-#include "core/cd_hw/scd.h"
-#include "core/cd_hw/cdc.h"
-#include "core/cd_hw/cdd.h"
+#include "core/cart_hw/md_cart.h" // For HW_ADDON_NONE and HW_ADDON_MEGACD.
+#include "core/cart_hw/sms_cart.h" // For sms_cart_region_detect().
+#include "core/cd_hw/scd.h" // For CD_TYPE_WONDERMEGA, CD_TYPE_WONDERMEGA_M2, CD_TYPE_CDX and CD_TYPE_DEFAULT.
+#include "core/cd_hw/cdd.h" // For cdd_load() and cdd_unload().
 
 
 /*** ROM Information ***/

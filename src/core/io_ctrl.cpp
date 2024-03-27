@@ -49,12 +49,11 @@
 #include "core/region_code.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
-#include "core/genesis.h"
+#include "core/ext.h" // For cart.
 #include "core/vdp_ctrl.h"
 #include "core/input_hw/input.h"
 
-#include "core/cart_hw/md_cart.h"
-#include "core/cart_hw/sms_cart.h"
+#include "core/cart_hw/sms_cart.h" // For sms_cart_switch().
 
 #include "core/input_hw/gamepad.h"
 #include "core/input_hw/lightgun.h"

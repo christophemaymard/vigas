@@ -43,8 +43,8 @@
 
 #include "osd.h"
 #include "core/m68k/m68k.h"
-#include "core/genesis.h"
-#include "core/cart_hw/md_cart.h"
+#include "core/ext.h" // For cart.
+#include "core/cart_hw/md_cart.h" // For TYPE_AR.
 #include "core/mem68k.h"
 
 #define TYPE_PRO1 0x12

@@ -54,12 +54,14 @@
 #include "core/rominfo.h"
 #include "core/snd.h"
 #include "core/system_hardware.h"
-#include "core/genesis.h"
+#include "core/ext.h" // For cart and cdd.
+#include "core/genesis.h" // For boot_rom.
 #include "core/cd_hw/scd.h"
 #include "core/cd_hw/cdd.h"
 #include "core/mem68k.h"
 #include "core/membnk.h"
 #include "core/input_hw/input.h"
+#include "core/cart_hw/cart_hw_t.h"
 #include "core/cart_hw/sram.h"
 #include "core/cart_hw/ggenie.h"
 #include "core/cart_hw/areplay.h"

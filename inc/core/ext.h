@@ -1,13 +1,8 @@
-/****************************************************************************
+/***************************************************************************************
  *  Genesis Plus
- *  Mega Drive cartridge hardware support
  *
- *  Copyright (C) 2007-2023  Eke-Eke (Genesis Plus GX)
- *
- *  Most cartridge protections were initially documented by Haze
- *  (http://haze.mameworld.info/)
- *
- *  Realtec mapper was documented by TascoDeluxe
+ *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
+ *  Copyright (C) 2007-2024  Eke-Eke (Genesis Plus GX)
  *
  *  Redistribution and use of this code or any derivative works are permitted
  *  provided that the following conditions are met:
@@ -41,31 +36,35 @@
  *
  ****************************************************************************************/
 
-#ifndef _MD_CART_H_
-#define _MD_CART_H_
+#ifndef __CORE_EXT_H__
+#define __CORE_EXT_H__
 
-#include "xee/fnd/data_type.h"
+#include "core/external_t.h"
 
-/* Lock-On cartridge type */
-#define TYPE_GG 0x01  /* Game Genie */
-#define TYPE_AR 0x02  /* (Pro) Action Replay */
-#define TYPE_SK 0x03  /* Sonic & Knuckles */
+//==============================================================================
 
-/* CD hardware add-on (MD mode) */
-#define HW_ADDON_AUTO    0x00
-#define HW_ADDON_MEGACD  0x01
-#define HW_ADDON_MEGASD  0x02
-#define HW_ADDON_NONE    0x03
+//------------------------------------------------------------------------------
 
-/* Special hardware (0x01 & 0x02 reserved for Master System 3-D glasses & Terebi Oekaki) */
-#define HW_J_CART   0x04
-#define HW_LOCK_ON  0x08
-#define HW_MEGASD   0x10
+#define cart ext.md_cart
 
-/* Function prototypes */
-extern void md_cart_init(void);
-extern void md_cart_reset(int hard_reset);
-extern int md_cart_context_save(u8 *state);
-extern int md_cart_context_load(u8 *state);
+//------------------------------------------------------------------------------
 
-#endif
+#define scd ext.cd_hw
+
+#define cdc scd.cdc_hw
+
+#define cdd scd.cdd_hw
+
+#define gfx scd.gfx_hw
+
+// ~3184 SCD clocks/line on NTSC system (53.693175 MHz Master Clock).
+// ~3214 SCD clocks/line on PAL system (53.203424 MHz Master Clock).
+#define SCYCLES_PER_LINE scd.cycles_per_line
+
+//------------------------------------------------------------------------------
+
+// External Hardware (Cartridge, CD unit, ...).
+extern external_t ext;
+
+#endif // #ifndef __CORE_EXT_H__
+

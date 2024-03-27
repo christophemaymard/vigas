@@ -53,15 +53,14 @@
 #include "core/system_cycle.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
-#include "core/genesis.h"
-#include "core/cart_hw/md_cart.h"
-#include "core/cd_hw/scd.h"
+#include "core/ext.h" // For cart and scd.
+#include "core/genesis.h" // For work_ram and zstate.
 #include "core/vdp_render.h"
 #include "core/io_ctrl.h"
 #include "core/cart_hw/svp/svp.h"
 #include "core/state.h"
 
-#include "core/cart_hw/sms_cart.h"
+#include "core/cart_hw/sms_cart.h" // For HW_3D_GLASSES.
 #include "core/hvc.h"
 
 /* Mark a pattern as modified */

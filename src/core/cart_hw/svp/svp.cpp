@@ -16,8 +16,7 @@
 #include "xee/mem/memory.h"
 
 #include "core/m68k/m68k.h"
-#include "core/genesis.h"
-#include "core/cart_hw/md_cart.h"
+#include "core/ext.h" // For cart.
 #include "core/membnk.h"
 
 #include "core/cart_hw/svp/ssp16.h"

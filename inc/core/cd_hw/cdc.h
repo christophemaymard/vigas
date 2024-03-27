@@ -40,8 +40,6 @@
 
 #include "xee/fnd/data_type.h"
 
-#define cdc scd.cdc_hw
-
 #define CDC_MAIN_CPU_ACCESS 0x42
 #define CDC_SUB_CPU_ACCESS  0x43
 

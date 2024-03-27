@@ -40,7 +40,7 @@
 
 #include "osd.h"
 #include "core/snd.h"
-#include "core/genesis.h"
+#include "core/ext.h" // For cdc and pcm.
 #include "xee/mem/memory.h"
 
 #ifdef LOG_PCM
@@ -49,9 +49,6 @@
 #endif
 
 #include "core/state.h"
-
-#include "core/cd_hw/scd.h"
-#include "core/cd_hw/cdc.h"
 
 #define PCM_SCYCLES_RATIO (384 * 4)
 

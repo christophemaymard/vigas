@@ -55,8 +55,8 @@
 #include "core/system.h"
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
-#include "core/genesis.h"
-#include "core/cd_hw/scd.h"
+#include "core/ext.h" // For scd.
+#include "core/genesis.h" // For boot_rom, pico_current and gen_reset().
 #include "core/vdp_ctrl.h"
 #include "core/input_hw/input.h"
 #include "core/cart_hw/sram.h"

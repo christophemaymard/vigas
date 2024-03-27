@@ -40,8 +40,6 @@
 
 #include "xee/fnd/data_type.h"
 
-#define cdd scd.cdd_hw
-
 /* CDD status */
 #define CD_STOP       0x00
 #define CD_PLAY       0x01

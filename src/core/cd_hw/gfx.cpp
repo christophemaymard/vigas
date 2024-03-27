@@ -47,11 +47,8 @@
 #endif
 
 #include "core/m68k/m68k.h"
-#include "core/genesis.h"
+#include "core/ext.h" // For cdc, scd and gfx.
 #include "core/state.h"
-
-#include "core/cd_hw/scd.h"
-#include "core/cd_hw/cdc.h"
 
 /***************************************************************/
 /*          WORD-RAM DMA interfaces (1M & 2M modes)            */

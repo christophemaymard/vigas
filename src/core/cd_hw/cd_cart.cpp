@@ -41,13 +41,11 @@
 #include "xee/mem/memory.h"
 
 #include "core/m68k/m68k.h"
-#include "core/genesis.h"
-#include "core/cart_hw/md_cart.h"
+#include "core/ext.h" // For scd.
+#include "core/cart_hw/md_cart.h" // For md_cart_init().
 #include "core/mem68k.h"
 #include "core/membnk.h"
 #include "core/cart_hw/sram.h"
-
-#include "core/cd_hw/scd.h"
 
 /*--------------------------------------------------------------------------*/
 /* backup RAM cartridge (max. 512KB)                                        */

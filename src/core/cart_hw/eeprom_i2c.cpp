@@ -45,8 +45,8 @@
 #include "xee/mem/memory.h"
 
 #include "core/m68k/m68k.h"
-#include "core/genesis.h"
-#include "core/cart_hw/md_cart.h"
+#include "core/ext.h" // // For cart.
+#include "core/cart_hw/md_cart.h" // For HW_J_CART.
 #include "core/mem68k.h"
 #include "core/membnk.h"
 #include "core/rominfo.h"

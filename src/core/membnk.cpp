@@ -41,10 +41,10 @@
 
 #include "osd.h"
 #include "core/z80/z80.h"
+#include "core/ext.h" // For cart.
 #include "core/genesis.h"
 #include "core/vdp_ctrl.h"
 #include "core/io_ctrl.h"
-#include "core/cart_hw/md_cart.h"
 
 #include "gpgx/g_psg.h"
 

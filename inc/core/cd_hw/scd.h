@@ -40,8 +40,6 @@
 
 #include "xee/fnd/data_type.h"
 
-#define scd ext.cd_hw
-
 /* CD hardware models */
 #define CD_TYPE_DEFAULT       0x00
 #define CD_TYPE_WONDERMEGA    0x01
@@ -50,10 +48,6 @@
 
 /* CD hardware Master Clock (50 MHz) */
 #define SCD_CLOCK 50000000
-
-/* ~3184 SCD clocks/line on NTSC system (53.693175 MHz Master Clock) */
-/* ~3214 SCD clocks/line on PAL system (53.203424 MHz Master Clock) */
-#define SCYCLES_PER_LINE scd.cycles_per_line
 
 /* Timer & Stopwatch clocks divider */
 #define TIMERS_SCYCLES_RATIO (384 * 4)

@@ -44,20 +44,7 @@
 
 #include "xee/fnd/data_type.h"
 
-#include "core/cart_hw/md_cart_t.h"
-#include "core/cd_hw/cd_hw_t.h"
-
-/* External Hardware */
-typedef union
-{
-  md_cart_t md_cart;
-  cd_hw_t cd_hw;
-} external_t;
-
 /* Global variables */
-
-extern external_t ext;
-
 extern u8 boot_rom[0x800];
 extern u8 work_ram[0x10000];
 extern u8 zram[0x2000];
