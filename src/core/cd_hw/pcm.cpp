@@ -51,6 +51,7 @@
 #include "core/state.h"
 
 #include "core/cd_hw/scd.h"
+#include "core/cd_hw/cdc.h"
 
 #define PCM_SCYCLES_RATIO (384 * 4)
 

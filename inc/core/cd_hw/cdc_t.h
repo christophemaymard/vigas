@@ -1,8 +1,8 @@
 /***************************************************************************************
  *  Genesis Plus
- *  CD compatible ROM/RAM cartridge support
+ *  CD data controller (LC8951x compatible)
  *
- *  Copyright (C) 2012-2021 Eke-Eke (Genesis Plus GX)
+ *  Copyright (C) 2012-2024  Eke-Eke (Genesis Plus GX)
  *
  *  Redistribution and use of this code or any derivative works are permitted
  *  provided that the following conditions are met:
@@ -35,10 +35,37 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  ****************************************************************************************/
- 
-#ifndef __CORE_CD_HW_CD_CART_H__
-#define __CORE_CD_HW_CD_CART_H__
 
-extern void cd_cart_init(void);
+#ifndef __CORE_CD_HW_CDC_T_H__
+#define __CORE_CD_HW_CDC_T_H__
 
-#endif // #ifndef __CORE_CD_HW_CD_CART_H__
+#include "xee/fnd/data_type.h"
+
+#include "core/types.h"
+
+//==============================================================================
+
+//------------------------------------------------------------------------------
+
+// CDC hardware.
+struct cdc_t
+{
+  u8 ifstat;
+  u8 ifctrl;
+  reg16_t dbc;
+  reg16_t dac;
+  reg16_t pt;
+  reg16_t wa;
+  u8 ctrl[2];
+  u8 head[2][4];
+  u8 stat[4];
+  int cycles[2];
+  void (*dma_w)(unsigned int length);  // active DMA callback.
+  void (*halted_dma_w)(unsigned int length);  // halted DMA callback.
+  u8 ram[0x4000 + 2352]; // 16K external RAM (with one block overhead to handle buffer overrun).
+  u8 ar_mask;
+  u8 irq; // invert of CDC /INT output.
+};
+
+#endif // #ifndef __CORE_CD_HW_CDC_T_H__
+

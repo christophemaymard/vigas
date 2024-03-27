@@ -79,9 +79,13 @@ add_executable(vigas
     inc/core/cart_hw/sms_cart.h
     inc/core/cart_hw/sram.h
     inc/core/cd_hw/cd_cart.h
+    inc/core/cd_hw/cd_cart_t.h
+    inc/core/cd_hw/cd_hw_t.h
     inc/core/cd_hw/cdc.h
+    inc/core/cd_hw/cdc_t.h
     inc/core/cd_hw/cdd.h
     inc/core/cd_hw/gfx.h
+    inc/core/cd_hw/gfx_t.h
     inc/core/cd_hw/pcm.h
     inc/core/cd_hw/scd.h
     inc/build/cmd_sdl2/config.h

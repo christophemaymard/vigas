@@ -42,24 +42,6 @@
 
 #define gfx scd.gfx_hw
 
-typedef struct
-{
-  u32 cycles;                    /* current cycles count for graphics operation */
-  u32 cyclesPerLine;             /* current graphics operation timings */
-  u32 dotMask;                   /* stamp map size mask */
-  u16 *tracePtr;                 /* trace vector pointer */
-  u16 *mapPtr;                   /* stamp map table base address */
-  u8 stampShift;                 /* stamp pixel shift value (related to stamp size) */
-  u8 mapShift;                   /* stamp map table shift value (related to stamp map size) */
-  u16 bufferOffset;              /* image buffer column offset */
-  u32 bufferStart;               /* image buffer start index */
-  u16 lut_offset[0x8000];        /* Cell Image -> WORD-RAM offset lookup table (1M Mode) */
-  u8 lut_prio[4][0x100][0x100];  /* WORD-RAM data writes priority lookup table */
-  u8 lut_pixel[0x200];           /* Graphics operation dot offset lookup table */
-  u8 lut_cell[0x100];            /* Graphics operation stamp offset lookup table */
-} gfx_t;
-
-
 /***************************************************************/
 /*          WORD-RAM DMA interfaces (1M & 2M modes)            */
 /***************************************************************/

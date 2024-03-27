@@ -1,8 +1,8 @@
 /***************************************************************************************
  *  Genesis Plus
- *  CD compatible ROM/RAM cartridge support
+ *  CD graphics processor
  *
- *  Copyright (C) 2012-2021 Eke-Eke (Genesis Plus GX)
+ *  Copyright (C) 2012-2024  Eke-Eke (Genesis Plus GX)
  *
  *  Redistribution and use of this code or any derivative works are permitted
  *  provided that the following conditions are met:
@@ -35,10 +35,32 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  ****************************************************************************************/
- 
-#ifndef __CORE_CD_HW_CD_CART_H__
-#define __CORE_CD_HW_CD_CART_H__
 
-extern void cd_cart_init(void);
+#ifndef __CORE_CD_HW_GFX_T_H__
+#define __CORE_CD_HW_GFX_T_H__
 
-#endif // #ifndef __CORE_CD_HW_CD_CART_H__
+#include "xee/fnd/data_type.h"
+
+//==============================================================================
+
+//------------------------------------------------------------------------------
+
+struct gfx_t
+{
+  u32 cycles;                    // current cycles count for graphics operation.
+  u32 cyclesPerLine;             // current graphics operation timings.
+  u32 dotMask;                   // stamp map size mask.
+  u16* tracePtr;                 // trace vector pointer.
+  u16* mapPtr;                   // stamp map table base address.
+  u8 stampShift;                 // stamp pixel shift value (related to stamp size).
+  u8 mapShift;                   // stamp map table shift value (related to stamp map size).
+  u16 bufferOffset;              // image buffer column offset.
+  u32 bufferStart;               // image buffer start index.
+  u16 lut_offset[0x8000];        // Cell Image -> WORD-RAM offset lookup table (1M Mode).
+  u8 lut_prio[4][0x100][0x100];  // WORD-RAM data writes priority lookup table.
+  u8 lut_pixel[0x200];           // Graphics operation dot offset lookup table.
+  u8 lut_cell[0x100];            // Graphics operation stamp offset lookup table.
+};
+
+#endif // #ifndef __CORE_CD_HW_GFX_T_H__
+

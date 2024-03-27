@@ -60,6 +60,8 @@
 
 #include "core/cart_hw/md_cart.h"
 #include "core/cart_hw/sms_cart.h"
+#include "core/cd_hw/scd.h"
+#include "core/cd_hw/cdc.h"
 
 
 /*** ROM Information ***/

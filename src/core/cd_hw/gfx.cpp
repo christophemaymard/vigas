@@ -51,6 +51,7 @@
 #include "core/state.h"
 
 #include "core/cd_hw/scd.h"
+#include "core/cd_hw/cdc.h"
 
 /***************************************************************/
 /*          WORD-RAM DMA interfaces (1M & 2M modes)            */

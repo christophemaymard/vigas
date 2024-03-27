@@ -56,6 +56,7 @@
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
 #include "core/genesis.h"
+#include "core/cd_hw/scd.h"
 #include "core/vdp_ctrl.h"
 #include "core/input_hw/input.h"
 #include "core/cart_hw/sram.h"

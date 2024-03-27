@@ -55,6 +55,7 @@
 #include "core/snd.h"
 #include "core/system_hardware.h"
 #include "core/genesis.h"
+#include "core/cd_hw/scd.h"
 #include "core/mem68k.h"
 #include "core/membnk.h"
 #include "core/input_hw/input.h"

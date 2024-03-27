@@ -45,7 +45,7 @@
 #include "xee/fnd/data_type.h"
 
 #include "core/cart_hw/md_cart_t.h"
-#include "core/cd_hw/scd.h"
+#include "core/cd_hw/cd_hw_t.h"
 
 /* External Hardware */
 typedef union

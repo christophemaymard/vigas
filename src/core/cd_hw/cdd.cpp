@@ -48,6 +48,7 @@
 #include "core/snd.h"
 #include "core/genesis.h"
 #include "core/cart_hw/md_cart.h"
+#include "core/cd_hw/cdc.h"
 #include "core/state.h"
 
 #include "core/cart_hw/megasd.h"

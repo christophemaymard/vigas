@@ -54,6 +54,7 @@
 #include "core/mem68k.h"
 #include "core/membnk.h"
 #include "core/cart_hw/sms_cart.h"
+#include "core/cd_hw/scd.h"
 
 #include "gpgx/g_audio_renderer.h"
 #include "gpgx/g_psg.h"

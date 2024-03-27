@@ -35,10 +35,26 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  ****************************************************************************************/
- 
-#ifndef __CORE_CD_HW_CD_CART_H__
-#define __CORE_CD_HW_CD_CART_H__
 
-extern void cd_cart_init(void);
+#ifndef __CORE_CD_HW_CD_CART_T_H__
+#define __CORE_CD_HW_CD_CART_T_H__
 
-#endif // #ifndef __CORE_CD_HW_CD_CART_H__
+#include "xee/fnd/data_type.h"
+
+//==============================================================================
+
+//------------------------------------------------------------------------------
+
+// CD compatible ROM/RAM cartridge.
+struct cd_cart_t
+{
+  u8 reserved[0x80];  // reserved for ROM cartridge infos (see md_cart.h).
+  u8 area[0x810000];  // cartridge ROM/RAM area (max. 8MB ROM + Pro Action Replay 64KB ROM).
+  u8 boot;            // cartridge boot mode (0x00: boot from CD with ROM/RAM cartridge enabled, 0x40: boot from ROM cartridge with CD enabled).
+  u8 id;              // RAM cartridge ID (related to RAM size, 0 if disabled).
+  u8 prot;            // RAM cartridge write protection.
+  u32 mask;           // RAM cartridge size mask.
+};
+
+#endif // #ifndef __CORE_CD_HW_CD_CART_T_H__
+

@@ -55,6 +55,7 @@
 #include "core/system_timing.h"
 #include "core/genesis.h"
 #include "core/cart_hw/md_cart.h"
+#include "core/cd_hw/scd.h"
 #include "core/vdp_render.h"
 #include "core/io_ctrl.h"
 #include "core/cart_hw/svp/svp.h"

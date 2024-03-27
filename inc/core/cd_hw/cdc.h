@@ -40,32 +40,10 @@
 
 #include "xee/fnd/data_type.h"
 
-#include "core/types.h"
-
 #define cdc scd.cdc_hw
 
 #define CDC_MAIN_CPU_ACCESS 0x42
 #define CDC_SUB_CPU_ACCESS  0x43
-
-/* CDC hardware */
-typedef struct
-{
-  u8 ifstat;
-  u8 ifctrl;
-  reg16_t dbc;
-  reg16_t dac;
-  reg16_t pt;
-  reg16_t wa;
-  u8 ctrl[2];
-  u8 head[2][4];
-  u8 stat[4];
-  int cycles[2];
-  void (*dma_w)(unsigned int length);  /* active DMA callback */
-  void (*halted_dma_w)(unsigned int length);  /* halted DMA callback */
-  u8 ram[0x4000 + 2352]; /* 16K external RAM (with one block overhead to handle buffer overrun) */
-  u8 ar_mask;
-  u8 irq; /* invert of CDC /INT output */
-} cdc_t; 
 
 /* Function prototypes */
 extern void cdc_init(void);

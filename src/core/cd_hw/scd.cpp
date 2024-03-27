@@ -52,6 +52,9 @@
 #include "core/system_timing.h"
 #include "core/genesis.h"
 #include "core/cart_hw/md_cart.h"
+#include "core/cd_hw/cd_cart.h"
+#include "core/cd_hw/cdc.h"
+#include "core/cd_hw/gfx.h"
 
 #ifdef LOG_SCD
 #include "core/vdp_ctrl.h"

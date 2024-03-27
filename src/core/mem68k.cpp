@@ -58,6 +58,8 @@
 #include "core/cart_hw/svp/svp.h"
 
 #include "core/cd_hw/scd.h"
+#include "core/cd_hw/cdc.h"
+#include "core/cd_hw/gfx.h"
 
 #include "gpgx/g_psg.h"
 
