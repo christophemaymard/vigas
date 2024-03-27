@@ -47,6 +47,7 @@
 
 #include "osd.h"
 #include "core/rominfo.h"
+#include "core/romtype.h"
 #include "core/system_bios.h"
 #include "core/system_clock.h"
 #include "core/system_hardware.h"
@@ -110,8 +111,6 @@ typedef struct
   char pName[14];
 } PERIPHERALINFO;
 
-
-u8 romtype;
 
 static u8 rom_region;
 

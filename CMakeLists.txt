@@ -100,6 +100,7 @@ add_executable(vigas
     inc/core/membnk.h
     inc/core/memz80.h
     inc/core/rominfo.h
+    inc/core/romtype.h
     inc/core/snd.h
     inc/core/state.h
     inc/core/system.h
@@ -195,6 +196,7 @@ add_executable(vigas
     src/core/membnk.cpp
     src/core/memz80.cpp
     src/core/rominfo.cpp
+    src/core/romtype.cpp
     src/core/snd.cpp
     src/core/state.cpp
     src/core/system.cpp
