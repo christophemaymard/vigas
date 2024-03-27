@@ -64,32 +64,6 @@
 #define HW_LOCK_ON  0x08
 #define HW_MEGASD   0x10
 
-/* Cartridge extra hardware */
-typedef struct
-{
-  u8 regs[4];                                            /* internal registers (R/W) */
-  u32 mask[4];                                           /* registers address mask */
-  u32 addr[4];                                           /* registers address */
-  u16 realtec;                                           /* realtec mapper */
-  u16 bankshift;                                         /* cartridge with bankshift mecanism reseted on software reset */
-  unsigned int (*time_r)(unsigned int address);             /* !TIME signal ($a130xx) read handler  */
-  void (*time_w)(unsigned int address, unsigned int data);  /* !TIME signal ($a130xx) write handler */
-  unsigned int (*regs_r)(unsigned int address);             /* cart hardware registers read handler  */
-  void (*regs_w)(unsigned int address, unsigned int data);  /* cart hardware registers write handler */
-} cart_hw_t;
-
-/* Cartridge type */
-typedef struct
-{
-  u8 *base;            /* ROM base (saved for OS/Cartridge ROM swap) */
-  u32 romsize;         /* ROM size */
-  u32 mask;            /* ROM mask */
-  u8 special;          /* custom external hardware (Lock-On, J-Cart, 3-D glasses, Terebi Oekaki,...) */
-  cart_hw_t hw;           /* cartridge internal hardware */
-  u8 lockrom[0x10000]; /* Game Genie / (Pro) Action Replay Lock-On ROM area (max 64KB) */
-  u8 rom[MAXROMSIZE];  /* cartridge ROM area */
-} md_cart_t;
-
 /* Function prototypes */
 extern void md_cart_init(void);
 extern void md_cart_reset(int hard_reset);

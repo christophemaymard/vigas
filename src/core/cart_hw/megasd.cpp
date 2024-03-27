@@ -45,6 +45,7 @@
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/genesis.h"
+#include "core/cart_hw/md_cart.h"
 #include "core/mem68k.h"
 #include "core/membnk.h"
 #include "core/cart_hw/sram.h"

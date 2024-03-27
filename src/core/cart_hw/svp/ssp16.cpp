@@ -196,6 +196,7 @@
 #include "xee/fnd/data_type.h"
 
 #include "core/genesis.h"
+#include "core/cart_hw/md_cart.h"
 
 #ifdef LOG_SVP
 #include "osd.h"

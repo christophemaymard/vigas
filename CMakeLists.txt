@@ -145,7 +145,9 @@ add_executable(vigas
     inc/core/z80/osd_cpu.h
     inc/core/z80/z80.h
     inc/core/cart_hw/areplay.h
+    inc/core/cart_hw/cart_hw_t.h
     inc/core/cart_hw/eeprom_93c.h
+    inc/core/cart_hw/md_cart_t.h
     
     inc/gpgx/g_audio_renderer.h
     inc/gpgx/g_psg.h

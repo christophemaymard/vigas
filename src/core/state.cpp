@@ -49,6 +49,7 @@
 #include "core/system.h"
 #include "core/system_hardware.h"
 #include "core/genesis.h"
+#include "core/cart_hw/md_cart.h"
 #include "core/vdp_ctrl.h"
 #include "core/mem68k.h"
 #include "core/membnk.h"

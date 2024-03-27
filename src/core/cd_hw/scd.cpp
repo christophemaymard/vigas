@@ -51,6 +51,7 @@
 #include "core/system_cycle.h"
 #include "core/system_timing.h"
 #include "core/genesis.h"
+#include "core/cart_hw/md_cart.h"
 
 #ifdef LOG_SCD
 #include "core/vdp_ctrl.h"

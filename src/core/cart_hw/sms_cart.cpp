@@ -53,6 +53,7 @@
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
 #include "core/genesis.h"
+#include "core/cart_hw/md_cart.h"
 #include "core/input_hw/input.h"
 #include "core/cart_hw/sram.h"
 #include "core/state.h"

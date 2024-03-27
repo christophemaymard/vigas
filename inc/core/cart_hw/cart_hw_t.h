@@ -1,11 +1,12 @@
-/***************************************************************************************
+/****************************************************************************
  *  Genesis Plus
- *  Internal hardware & Bus controllers
  *
- *  Support for SG-1000, Mark-III, Master System, Game Gear, Mega Drive & Mega CD hardware
+ *  Copyright (C) 2007-2023  Eke-Eke (Genesis Plus GX)
  *
- *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
- *  Copyright (C) 2007-2024  Eke-Eke (Genesis Plus GX)
+ *  Most cartridge protections were initially documented by Haze
+ *  (http://haze.mameworld.info/)
+ *
+ *  Realtec mapper was documented by TascoDeluxe
  *
  *  Redistribution and use of this code or any derivative works are permitted
  *  provided that the following conditions are met:
@@ -39,42 +40,28 @@
  *
  ****************************************************************************************/
 
-#ifndef _GENESIS_H_
-#define _GENESIS_H_
+#ifndef __CORE_CART_HW_CART_HW_T_H__
+#define __CORE_CART_HW_CART_HW_T_H__
 
 #include "xee/fnd/data_type.h"
 
-#include "core/cart_hw/md_cart_t.h"
-#include "core/cd_hw/scd.h"
+//==============================================================================
 
-/* External Hardware */
-typedef union
+//------------------------------------------------------------------------------
+
+// Cartridge extra hardware.
+struct cart_hw_t
 {
-  md_cart_t md_cart;
-  cd_hw_t cd_hw;
-} external_t;
+  u8 regs[4];     // internal registers (R/W).
+  u32 mask[4];    // registers address mask.
+  u32 addr[4];    // registers address.
+  u16 realtec;    // realtec mapper.
+  u16 bankshift;  // cartridge with bankshift mecanism reseted on software reset.
+  unsigned int (*time_r)(unsigned int address);             // !TIME signal ($a130xx) read handler.
+  void (*time_w)(unsigned int address, unsigned int data);  // !TIME signal ($a130xx) write handler.
+  unsigned int (*regs_r)(unsigned int address);             // cart hardware registers read handler.
+  void (*regs_w)(unsigned int address, unsigned int data);  // cart hardware registers write handler.
+};
 
-/* Global variables */
-
-extern external_t ext;
-
-extern u8 boot_rom[0x800];
-extern u8 work_ram[0x10000];
-extern u8 zram[0x2000];
-extern u32 zbank;
-extern u8 zstate;
-extern u8 pico_current;
-
-/* Function prototypes */
-extern void gen_init(void);
-extern void gen_reset(int hard_reset);
-extern void gen_tmss_w(unsigned int offset, unsigned int data);
-extern void gen_bankswitch_w(unsigned int data);
-extern unsigned int gen_bankswitch_r(void);
-extern void gen_zbusreq_w(unsigned int state, unsigned int cycles);
-extern void gen_zreset_w(unsigned int state, unsigned int cycles);
-extern void gen_zbank_w(unsigned int state);
-extern int z80_irq_callback(int param);
-
-#endif /* _GEN_H_ */
+#endif // #ifndef __CORE_CART_HW_CART_HW_T_H__
 
