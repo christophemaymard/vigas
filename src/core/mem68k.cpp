@@ -46,12 +46,13 @@
 #include "osd.h"
 #include "core/macros.h"
 #include "core/m68k/m68k.h"
+#include "core/region_code.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/genesis.h"
 #include "core/vdp_ctrl.h"
 #include "core/membnk.h"
-#include "core/io_ctrl.h"
+#include "core/io_ctrl.h" // For io_68k_write() and io_68k_read().
 #include "core/input_hw/input.h"
 #include "core/cart_hw/svp/svp.h"
 

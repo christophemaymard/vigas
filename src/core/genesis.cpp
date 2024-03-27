@@ -51,6 +51,7 @@
 #include "osd.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
+#include "core/region_code.h"
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
@@ -58,7 +59,6 @@
 #include "core/mem68k.h"
 #include "core/memz80.h"
 #include "core/membnk.h"
-#include "core/io_ctrl.h"
 
 #include "core/cart_hw/md_cart.h"
 #include "core/cart_hw/sms_cart.h"

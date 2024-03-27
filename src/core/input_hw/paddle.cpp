@@ -41,7 +41,7 @@
 #include "xee/fnd/compiler.h"
 #include "xee/fnd/data_type.h"
 
-#include "core/io_ctrl.h"
+#include "core/region_code.h"
 #include "core/input_hw/input.h"
 
 static struct

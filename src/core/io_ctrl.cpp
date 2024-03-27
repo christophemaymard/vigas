@@ -45,6 +45,7 @@
 
 #include "osd.h"
 #include "core/z80/z80.h"
+#include "core/region_code.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/genesis.h"
@@ -68,7 +69,6 @@
 
 u8 io_reg[0x10];
 
-u8 region_code = REGION_USA;
 
 static struct port_t
 {
