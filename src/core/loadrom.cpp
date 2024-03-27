@@ -574,15 +574,6 @@ int load_rom(char *filename)
 {
   int i, size;
 
-#ifdef USE_DYNAMIC_ALLOC
-  if (!ext)
-  {
-    /* allocate & initialize memory for Cartridge / CD hardware if required */
-    ext = (external_t *)calloc(1, sizeof(external_t));
-    if (!ext) return (0);
-  }
-#endif
-
   /* clear any existing patches */
   ggenie_shutdown();
   areplay_shutdown();

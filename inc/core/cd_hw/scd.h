@@ -47,11 +47,7 @@
 #include "core/cd_hw/pcm.h"
 #include "core/cd_hw/cd_cart.h"
 
-#ifdef USE_DYNAMIC_ALLOC
-#define scd ext->cd_hw
-#else
 #define scd ext.cd_hw
-#endif
 
 /* CD hardware models */
 #define CD_TYPE_DEFAULT       0x00

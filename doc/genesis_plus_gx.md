@@ -39,7 +39,7 @@ Repository on GitHub: https://github.com/ekeeke/Genesis-Plus-GX
 | USE_8BPP_RENDERING |  |  |
 | USE_ABGR |  |  |
 | USE_DEBUGGER |  |  |
-| USE_DYNAMIC_ALLOC |  |  |
+| USE_DYNAMIC_ALLOC | Removed |  |
 | Z80_OVERCLOCK_SHIFT |  |  |
 
 

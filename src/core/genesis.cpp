@@ -64,11 +64,9 @@
 #include "core/cart_hw/sms_cart.h"
 #include "core/cd_hw/scd.h"
 
-#ifdef USE_DYNAMIC_ALLOC
-external_t *ext;
-#else                     /* External Hardware (Cartridge, CD unit, ...) */
+// External Hardware (Cartridge, CD unit, ...).
 external_t ext;
-#endif
+
 u8 boot_rom[0x800];    /* Genesis BOOT ROM   */
 u8 work_ram[0x10000];  /* 68K RAM  */
 u8 zram[0x2000];       /* Z80 RAM  */

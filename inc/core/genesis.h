@@ -55,11 +55,9 @@ typedef union
 } external_t;
 
 /* Global variables */
-#ifdef USE_DYNAMIC_ALLOC
-extern external_t *ext;
-#else
+
 extern external_t ext;
-#endif
+
 extern u8 boot_rom[0x800];
 extern u8 work_ram[0x10000];
 extern u8 zram[0x2000];
