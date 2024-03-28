@@ -44,7 +44,7 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
-#include "osd.h"
+#include "core/core_config.h"
 #include "core/macros.h"
 #include "core/m68k/m68k.h"
 #include "core/snd.h"
@@ -1032,8 +1032,8 @@ void cdd_read_audio(unsigned int samples)
 #endif
 
         /* CD-DA output mixing volume (0-100%) */
-        l = (l * config.cdda_volume) / 100;
-        r = (r * config.cdda_volume) / 100;
+        l = (l * core_config.cdda_volume) / 100;
+        r = (r * core_config.cdda_volume) / 100;
 
         /* update blip buffer */
         snd.blips[2]->blip_add_delta_fast(i, l - prev_l, r - prev_r);
@@ -1488,7 +1488,7 @@ void cdd_process(void)
         /* Wolf Team games (Annet Futatabi, Aisle Lord, Cobra Command, Earnest Evans, Road Avenger & Time Gal) need at least 11 interrupts delay  */
         /* Space Adventure Cobra (2nd morgue scene) needs at least 13 interrupts delay (incl. seek time, so 11 is OK) */
         /* By default, at least two interrupts latency is required by current emulation model (BIOS hangs otherwise) */
-        cdd.latency = 2 + 9*config.cd_latency;
+        cdd.latency = 2 + 9* core_config.cd_latency;
       }
 
       /* CD drive seek time */
@@ -1498,11 +1498,11 @@ void cdd_process(void)
       /* be enough delayed to start in sync with intro sequence, as compared with real hardware recording).        */
       if (lba > cdd.lba)
       {
-        cdd.latency += (((lba - cdd.lba) * 120 * config.cd_latency) / 270000);
+        cdd.latency += (((lba - cdd.lba) * 120 * core_config.cd_latency) / 270000);
       }
       else 
       {
-        cdd.latency += (((cdd.lba - lba) * 120 * config.cd_latency) / 270000);
+        cdd.latency += (((cdd.lba - lba) * 120 * core_config.cd_latency) / 270000);
       }
 
       /* update current LBA */
@@ -1565,11 +1565,11 @@ void cdd_process(void)
       /* seeking from 00:05:63 to 24:03:19, Panic! when seeking from 00:05:60 to 24:06:07) */
       if (lba > cdd.lba)
       {
-        cdd.latency = ((lba - cdd.lba) * 120 * config.cd_latency) / 270000;
+        cdd.latency = ((lba - cdd.lba) * 120 * core_config.cd_latency) / 270000;
       }
       else
       {
-        cdd.latency = ((cdd.lba - lba) * 120 * config.cd_latency) / 270000;
+        cdd.latency = ((cdd.lba - lba) * 120 * core_config.cd_latency) / 270000;
       }
 
       /* update current LBA */

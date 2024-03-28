@@ -38,7 +38,7 @@
 
 #include "core/cd_hw/pcm.h"
 
-#include "osd.h"
+#include "core/core_config.h"
 #include "core/snd.h"
 #include "core/ext.h" // For cdc and pcm.
 #include "xee/mem/memory.h"
@@ -197,8 +197,8 @@ void pcm_run(unsigned int length)
       else if (r > 32767) r = 32767;
 
       /* PCM output mixing level (0-100%) */
-      l = (l * config.pcm_volume) / 100;
-      r = (r * config.pcm_volume) / 100;
+      l = (l * core_config.pcm_volume) / 100;
+      r = (r * core_config.pcm_volume) / 100;
 
       /* update blip buffer */
       snd.blips[1]->blip_add_delta_fast(i, l - prev_l, r - prev_r);

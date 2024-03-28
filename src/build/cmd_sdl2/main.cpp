@@ -47,6 +47,7 @@
 #include "osd.h"
 #include "core/loadrom.h"
 #include "core/audio_subsystem.h"
+#include "core/core_config.h"
 #include "core/bitmap.h"
 #include "core/io_reg.h"
 #include "core/region_code.h"
@@ -264,14 +265,14 @@ static void sdl_video_update()
     SDL_FillRect(sdl_video.surf_screen, 0, 0);
 
 #if 0
-    if (config.render && (interlaced || config.ntsc))  rect.h *= 2;
-    if (config.ntsc) rect.w = (reg[12]&1) ? MD_NTSC_OUT_WIDTH(rect.w) : SMS_NTSC_OUT_WIDTH(rect.w);
-    if (config.ntsc)
+    if (core_config.render && (interlaced || core_config.ntsc))  rect.h *= 2;
+    if (core_config.ntsc) rect.w = (reg[12]&1) ? MD_NTSC_OUT_WIDTH(rect.w) : SMS_NTSC_OUT_WIDTH(rect.w);
+    if (core_config.ntsc)
     {
       sms_ntsc = (sms_ntsc_t *)malloc(sizeof(sms_ntsc_t));
       md_ntsc = (md_ntsc_t *)malloc(sizeof(md_ntsc_t));
 
-      switch (config.ntsc)
+      switch (core_config.ntsc)
       {
         case 1:
           sms_ntsc_init(sms_ntsc, &sms_ntsc_composite);
@@ -405,8 +406,8 @@ static int sdl_control_update(SDL_Keycode keystate)
 
       case SDLK_F3:
       {
-        if (config.bios == 0) config.bios = 3;
-        else if (config.bios == 3) config.bios = 1;
+        if (core_config.bios == 0) core_config.bios = 3;
+        else if (core_config.bios == 3) core_config.bios = 1;
         break;
       }
 
@@ -458,14 +459,14 @@ static int sdl_control_update(SDL_Keycode keystate)
 
       case SDLK_F9:
       {
-        config.region_detect = (config.region_detect + 1) % 5;
+        core_config.region_detect = (core_config.region_detect + 1) % 5;
         get_region(0);
 
         /* framerate has changed, reinitialize audio timings */
         audio_init(snd.sample_rate, 0);
 
         /* system with region BIOS should be reinitialized */
-        if ((system_hw == SYSTEM_MCD) || ((system_hw & SYSTEM_SMS) && (config.bios & 1)))
+        if ((system_hw == SYSTEM_MCD) || ((system_hw & SYSTEM_SMS) && (core_config.bios & 1)))
         {
           system_init();
           system_reset();
@@ -475,7 +476,7 @@ static int sdl_control_update(SDL_Keycode keystate)
           /* reinitialize I/O region register */
           if (system_hw == SYSTEM_MD)
           {
-            io_reg[0x00] = 0x20 | region_code | (config.bios & 1);
+            io_reg[0x00] = 0x20 | region_code | (core_config.bios & 1);
           }
           else
           {
@@ -519,14 +520,14 @@ static int sdl_control_update(SDL_Keycode keystate)
 
       case SDLK_F11:
       {
-        config.overscan =  (config.overscan + 1) & 3;
-        if ((system_hw == SYSTEM_GG) && !config.gg_extra)
+        core_config.overscan =  (core_config.overscan + 1) & 3;
+        if ((system_hw == SYSTEM_GG) && !core_config.gg_extra)
         {
-          bitmap.viewport.x = (config.overscan & 2) ? 14 : -48;
+          bitmap.viewport.x = (core_config.overscan & 2) ? 14 : -48;
         }
         else
         {
-          bitmap.viewport.x = (config.overscan & 2) * 7;
+          bitmap.viewport.x = (core_config.overscan & 2) * 7;
         }
         bitmap.viewport.changed = 3;
         break;
@@ -626,7 +627,7 @@ int sdl_input_update(void)
       input.analog[joynum][1] = y * 2;
 
       /* Vertical movement is upsidedown */
-      if (!config.invert_mouse)
+      if (!app_config.invert_mouse)
         input.analog[joynum][1] = 0 - input.analog[joynum][1];
 
       /* Start,Left,Right,Middle buttons -> 0 0 0 0 START MIDDLE RIGHT LEFT */

@@ -44,7 +44,7 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
-#include "osd.h"
+#include "core/core_config.h"
 #include "core/snd.h"
 #include "core/state.h"
 
@@ -213,7 +213,7 @@ int Sn76489::psg_context_load(u8* state)
   }
 
   // update mixed channels output.
-  if (config.hq_psg) {
+  if (core_config.hq_psg) {
     snd.blips[0]->blip_add_delta(m_clocks, delta[0], delta[1]);
   } else {
     snd.blips[0]->blip_add_delta_fast(m_clocks, delta[0], delta[1]);
@@ -439,7 +439,7 @@ void Sn76489::psg_update(unsigned int clocks)
     // apply any pending channel volume variations.
     if (m_chanDelta[i][0] | m_chanDelta[i][1]) {
       // update channel output.
-      if (config.hq_psg) {
+      if (core_config.hq_psg) {
         snd.blips[0]->blip_add_delta(m_clocks, m_chanDelta[i][0], m_chanDelta[i][1]);
       } else {
         snd.blips[0]->blip_add_delta_fast(m_clocks, m_chanDelta[i][0], m_chanDelta[i][1]);
@@ -464,7 +464,7 @@ void Sn76489::psg_update(unsigned int clocks)
         polarity = -polarity;
 
         // update channel output.
-        if (config.hq_psg) {
+        if (core_config.hq_psg) {
           snd.blips[0]->blip_add_delta(timestamp, polarity * m_chanOut[i][0], polarity * m_chanOut[i][1]);
         } else {
           snd.blips[0]->blip_add_delta_fast(timestamp, polarity * m_chanOut[i][0], polarity * m_chanOut[i][1]);
@@ -506,7 +506,7 @@ void Sn76489::psg_update(unsigned int clocks)
           shiftOutput = (shiftValue & 0x1) - shiftOutput;
 
           // update noise channel output.
-          if (config.hq_psg) {
+          if (core_config.hq_psg) {
             snd.blips[0]->blip_add_delta(timestamp, shiftOutput * m_chanOut[3][0], shiftOutput * m_chanOut[3][1]);
           } else {
             snd.blips[0]->blip_add_delta_fast(timestamp, shiftOutput * m_chanOut[3][0], shiftOutput * m_chanOut[3][1]);

@@ -41,7 +41,7 @@
 
 #include "xee/mem/memory.h"
 
-#include "osd.h" // For config.
+#include "core/core_config.h"
 #include "core/snd.h"
 #include "core/state.h"
 
@@ -102,7 +102,7 @@ void FmSynthesizerBase::EndFrame(unsigned int cycles)
   Update(cycles);
 
   // FM output pre-amplification.
-  int preamp = config.fm_preamp;
+  int preamp = core_config.fm_preamp;
 
   // FM frame initial timestamp.
   int time = m_fm_cycles_start;
@@ -118,7 +118,7 @@ void FmSynthesizerBase::EndFrame(unsigned int cycles)
   int r = 0;
 
   // flush FM samples.
-  if (config.hq_fm) {
+  if (core_config.hq_fm) {
     // high-quality Band-Limited synthesis.
     do {
       // left & right channels.

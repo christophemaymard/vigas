@@ -48,7 +48,7 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
-#include "osd.h"
+#include "core/core_config.h"
 #include "core/macros.h"
 #include "core/bitmap.h"
 #include "core/system_hardware.h"
@@ -1945,7 +1945,7 @@ void render_bg_m5_vs_enhanced(int line)
       /* The offset of the intermediary cell is an average of the offsets of the current 2-cell and the next 2-cell. */
       /* For the last column, the previously calculated offset is used */
       v_offset = ((int)next_v_line - (int)v_line) / 2;
-      v_offset = (abs(v_offset) >= config.enhanced_vscroll_limit) ? 0 : v_offset;
+      v_offset = (abs(v_offset) >= core_config.enhanced_vscroll_limit) ? 0 : v_offset;
     }
 
     /* Plane B name table */
@@ -2072,7 +2072,7 @@ void render_bg_m5_vs_enhanced(int line)
       if (column != end - 1)
       {
         v_offset = ((int)next_v_line - (int)v_line) / 2;
-        v_offset = (abs(v_offset) >= config.enhanced_vscroll_limit) ? 0 : v_offset;
+        v_offset = (abs(v_offset) >= core_config.enhanced_vscroll_limit) ? 0 : v_offset;
       }
 
       /* Plane A name table */
@@ -2959,7 +2959,7 @@ void render_bg_m5_vs_enhanced(int line)
       if (column != end - 1)
       {
         v_offset = ((int)next_v_line - (int)v_line) / 2;
-        v_offset = (abs(v_offset) >= config.enhanced_vscroll_limit) ? 0 : v_offset;
+        v_offset = (abs(v_offset) >= core_config.enhanced_vscroll_limit) ? 0 : v_offset;
       }
 
       /* Plane A name table */
@@ -3084,7 +3084,7 @@ void render_bg_m5_vs_enhanced(int line)
     if (column != width - 1)
     {
       v_offset = ((int)next_v_line - (int)v_line) / 2;
-      v_offset = (abs(v_offset) >= config.enhanced_vscroll_limit) ? 0 : v_offset;
+      v_offset = (abs(v_offset) >= core_config.enhanced_vscroll_limit) ? 0 : v_offset;
     }
     
     /* Plane B name table */
@@ -3661,7 +3661,7 @@ void render_obj_tms(int line)
   }
 
   /* handle Game Gear reduced screen (160x144) */
-  if ((system_hw == SYSTEM_GG) && !config.gg_extra && (v_counter < bitmap.viewport.h))
+  if ((system_hw == SYSTEM_GG) && !core_config.gg_extra && (v_counter < bitmap.viewport.h))
   {
     int line = v_counter - (bitmap.viewport.h - 144) / 2;
     if ((line < 0) || (line >= 144))
@@ -3776,7 +3776,7 @@ void render_obj_m4(int line)
   }
 
   /* handle Game Gear reduced screen (160x144) */
-  if ((system_hw == SYSTEM_GG) && !config.gg_extra && (v_counter < bitmap.viewport.h))
+  if ((system_hw == SYSTEM_GG) && !core_config.gg_extra && (v_counter < bitmap.viewport.h))
   {
     int line = v_counter - (bitmap.viewport.h - 144) / 2;
     if ((line < 0) || (line >= 144))
@@ -4829,14 +4829,14 @@ void remap_line(int line)
   if (line < 0) return;
 
   /* Adjust for interlaced output */
-  if (interlaced && config.render)
+  if (interlaced && core_config.render)
   {
     line = (line * 2) + odd_frame;
   }
 
 #if defined(USE_15BPP_RENDERING) || defined(USE_16BPP_RENDERING)
   /* NTSC Filter (only supported for 15 or 16-bit pixels rendering) */
-  if (config.ntsc)
+  if (core_config.ntsc)
   {
     if (reg[12] & 0x01)
     {
@@ -4855,11 +4855,11 @@ void remap_line(int line)
 #else
     /* Convert VDP pixel data to output pixel format */
     PIXEL_OUT_T *dst = ((PIXEL_OUT_T *)&bitmap.data[(line * bitmap.pitch)]);
-    if (config.lcd)
+    if (core_config.lcd)
     {
       do
       {
-        RENDER_PIXEL_LCD(src,dst,pixel,config.lcd);
+        RENDER_PIXEL_LCD(src,dst,pixel, core_config.lcd);
       }
       while (--width);
     }

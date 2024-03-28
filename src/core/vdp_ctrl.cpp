@@ -44,7 +44,7 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
-#include "osd.h"
+#include "core/core_config.h"
 #include "core/macros.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
@@ -362,16 +362,16 @@ void vdp_reset(void)
   hblank_end_cycle = HBLANK_H32_END_MCYCLE;
 
   /* default overscan area */
-  if ((system_hw == SYSTEM_GG) && !config.gg_extra)
+  if ((system_hw == SYSTEM_GG) && !core_config.gg_extra)
   {
     /* Display area reduced to 160x144 if overscan is disabled */
-    bitmap.viewport.x = (config.overscan & 2) ? 14 : -48;
-    bitmap.viewport.y = (config.overscan & 1) ? (24 * (vdp_pal + 1)) : -24;
+    bitmap.viewport.x = (core_config.overscan & 2) ? 14 : -48;
+    bitmap.viewport.y = (core_config.overscan & 1) ? (24 * (vdp_pal + 1)) : -24;
   }
   else
   {
-    bitmap.viewport.x = (config.overscan & 2) * 7;
-    bitmap.viewport.y = (config.overscan & 1) * 24 * (vdp_pal + 1);
+    bitmap.viewport.x = (core_config.overscan & 2) * 7;
+    bitmap.viewport.y = (core_config.overscan & 1) * 24 * (vdp_pal + 1);
   }
 
   /* default rendering mode */
@@ -440,7 +440,7 @@ void vdp_reset(void)
   reg[10] = 0xFF;
   
   /* Master System specific */
-  if ((system_hw & SYSTEM_SMS) && (!(config.bios & 1) || !(system_bios & SYSTEM_SMS)))
+  if ((system_hw & SYSTEM_SMS) && (!(core_config.bios & 1) || !(system_bios & SYSTEM_SMS)))
   {
     /* force registers initialization (normally done by BOOT ROM on all Master System models) */
     vdp_reg_w(0 , 0x36, 0);
@@ -458,7 +458,7 @@ void vdp_reset(void)
   }
 
   /* Mega Drive specific */
-  else if (((system_hw == SYSTEM_MD) || (system_hw == SYSTEM_MCD)) && (config.bios & 1) && !(system_bios & SYSTEM_MD))
+  else if (((system_hw == SYSTEM_MD) || (system_hw == SYSTEM_MCD)) && (core_config.bios & 1) && !(system_bios & SYSTEM_MD))
   {
     /* force registers initialization (normally done by BOOT ROM, only on Mega Drive model with TMSS) */
     vdp_reg_w(0 , 0x04, 0);
@@ -1760,7 +1760,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
             }
             else
             {
-              render_bg = (reg[11] & 0x04) ? (config.enhanced_vscroll ? render_bg_m5_vs_enhanced : render_bg_m5_vs) : render_bg_m5;
+              render_bg = (reg[11] & 0x04) ? (core_config.enhanced_vscroll ? render_bg_m5_vs_enhanced : render_bg_m5_vs) : render_bg_m5;
               render_obj = (reg[12] & 0x08) ? render_obj_m5_ste : render_obj_m5;
             }
 
@@ -1971,7 +1971,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
       /* Vertical Scrolling mode */
       if (d & 0x04)
       {
-        render_bg = im2_flag ? render_bg_m5_im2_vs : (config.enhanced_vscroll ? render_bg_m5_vs_enhanced : render_bg_m5_vs);
+        render_bg = im2_flag ? render_bg_m5_im2_vs : (core_config.enhanced_vscroll ? render_bg_m5_vs_enhanced : render_bg_m5_vs);
       }
       else
       {

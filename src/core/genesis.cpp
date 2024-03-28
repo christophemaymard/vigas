@@ -48,7 +48,7 @@
 
 #include "gpgx/g_fm_synthesizer.h"
 
-#include "osd.h"
+#include "core/core_config.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
 #include "core/region_code.h"
@@ -90,7 +90,7 @@ void gen_init(void)
   {
     /* initialize main 68k */
     m68k_init();
-    m68k.aerr_enabled = config.addr_error; 
+    m68k.aerr_enabled = core_config.addr_error;
 
     /* initialize main 68k memory map */
 
@@ -180,7 +180,7 @@ void gen_init(void)
     {
       /* initialize SUB-CPU */
       s68k_init();
-      s68k.aerr_enabled = config.addr_error; 
+      s68k.aerr_enabled = core_config.addr_error;
 
       /* initialize CD hardware */
       scd_init();
@@ -324,7 +324,7 @@ void gen_reset(int hard_reset)
     zbank = 0;  
 
     /* TMSS support */
-    if ((config.bios & 1) && (system_hw == SYSTEM_MD) && hard_reset)
+    if ((core_config.bios & 1) && (system_hw == SYSTEM_MD) && hard_reset)
     {
       int i;
 
@@ -397,7 +397,7 @@ void gen_reset(int hard_reset)
     else if (system_hw & (SYSTEM_SMS | SYSTEM_GG))
     {
       /* check if BIOS is not being used */
-      if ((!(config.bios & 1) || !(system_bios & (SYSTEM_SMS | SYSTEM_GG))))
+      if ((!(core_config.bios & 1) || !(system_bios & (SYSTEM_SMS | SYSTEM_GG))))
       {
         /* a few Master System (Ace of Aces, Shadow Dancer) & Game Gear (Ecco the Dolphin, Evander Holyfield Real Deal Boxing) games crash if SP is not properly initialized */
         Z80.sp.w.l = 0xDFF0;

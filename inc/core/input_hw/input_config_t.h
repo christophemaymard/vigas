@@ -36,26 +36,19 @@
  *
  ****************************************************************************************/
 
-#ifndef _CONFIG_H_
-#define _CONFIG_H_
+#ifndef __CORE_INPUT_HW_INPUT_CONFIG_T_H__
+#define __CORE_INPUT_HW_INPUT_CONFIG_T_H__
 
 #include "xee/fnd/data_type.h"
 
-/****************************************************************************
- * Config Option 
- *
- ****************************************************************************/
+//==============================================================================
 
-struct app_config_t
+//------------------------------------------------------------------------------
+
+struct input_config_t
 {
-  //u8 hot_swap;
-  u8 invert_mouse;
-  u8 gun_cursor[2];
+  u8 padtype;
 };
 
-/* Global variables */
-extern app_config_t app_config;
-extern void set_config_defaults(void);
-
-#endif /* _CONFIG_H_ */
+#endif // #ifndef __CORE_INPUT_HW_INPUT_CONFIG_T_H__
 

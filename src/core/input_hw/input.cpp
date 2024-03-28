@@ -39,7 +39,7 @@
 
 #include "core/input_hw/input.h"
 
-#include "osd.h"
+#include "core/core_config.h"
 #include "core/rominfo.h"
 #include "core/romtype.h"
 #include "core/system_hardware.h"
@@ -104,9 +104,9 @@ void input_init(void)
     case SYSTEM_GAMEPAD:
     {
       /* 2-buttons, 3-buttons or 6-buttons control pad */
-      if (config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
+      if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
       {
-        input.dev[0] = config.input[player].padtype;
+        input.dev[0] = core_config.input[player].padtype;
       }
       else
       {
@@ -144,9 +144,9 @@ void input_init(void)
         if (player < MAX_INPUTS)
         {
           /* only allow 3-buttons or 6-buttons control pad */
-          if (config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
+          if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
           {
-            input.dev[i] = config.input[player].padtype & DEVICE_PAD6B;
+            input.dev[i] = core_config.input[player].padtype & DEVICE_PAD6B;
           }
           else
           {
@@ -165,9 +165,9 @@ void input_init(void)
         if (player < MAX_INPUTS)
         {
           /* only allow 3-buttons or 6-buttons control pad */
-          if (config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
+          if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
           {
-            input.dev[i] = config.input[player].padtype & DEVICE_PAD6B;
+            input.dev[i] = core_config.input[player].padtype & DEVICE_PAD6B;
           }
           else
           {
@@ -231,9 +231,9 @@ void input_init(void)
   {
     case SYSTEM_GAMEPAD:
     {
-      if (config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
+      if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
       {
-        input.dev[4] = config.input[player].padtype;
+        input.dev[4] = core_config.input[player].padtype;
       }
       else
       {
@@ -291,9 +291,9 @@ void input_init(void)
         if (player < MAX_INPUTS)
         {
           /* only allow 3-buttons or 6-buttons control pad */
-          if (config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
+          if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
           {
-            input.dev[i] = config.input[player].padtype & DEVICE_PAD6B;
+            input.dev[i] = core_config.input[player].padtype & DEVICE_PAD6B;
           }
           else
           {
@@ -357,9 +357,9 @@ void input_init(void)
       if (player < MAX_INPUTS)
       {
         /* only allow 3-buttons or 6-buttons control pad */
-        if (config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
+        if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
         {
-          input.dev[i] = config.input[player].padtype & DEVICE_PAD6B;
+          input.dev[i] = core_config.input[player].padtype & DEVICE_PAD6B;
         }
         else
         {

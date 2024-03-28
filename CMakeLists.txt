@@ -104,6 +104,8 @@ add_executable(vigas
     inc/build/cmd_sdl2/osd.h
     inc/core/audio_subsystem.h
     inc/core/bitmap.h
+    inc/core/core_config.h
+    inc/core/core_config_t.h
     inc/core/ext.h
     inc/core/external_t.h
     inc/core/genesis.h
@@ -208,6 +210,7 @@ add_executable(vigas
     src/core/cd_hw/scd.cpp
     src/core/audio_subsystem.cpp
     src/core/bitmap.cpp
+    src/core/core_config.cpp
     src/core/ext.cpp
     src/core/genesis.cpp
     src/core/io_ctrl.cpp

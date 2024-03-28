@@ -40,7 +40,7 @@
 
 #include "xee/mem/memory.h"
 
-#include "osd.h"
+#include "core/core_config.h"
 #include "core/io_reg.h"
 #include "core/snd.h"
 #include "core/state.h"
@@ -87,9 +87,9 @@ void AudioRenderer::Init()
   s32 fm_type = 0;
 
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD) {
-    fm_type = config.ym3438 ? kFmTypeYm3438 : kFmTypeYm2612;
+    fm_type = core_config.ym3438 ? kFmTypeYm3438 : kFmTypeYm2612;
   } else {
-    fm_type = config.ym2413 ? kFmTypeYm2413 : kFmTypeNull;
+    fm_type = core_config.ym2413 ? kFmTypeYm2413 : kFmTypeNull;
   }
 
   // Build a new FM synthesizer chip if the expected type to initialize is 
@@ -151,7 +151,7 @@ void AudioRenderer::ResetChips()
   gpgx::g_psg->psg_reset();
 
   // Maybe the panning argument (0xff) should be determined as it is done in LoadContext().
-  gpgx::g_psg->psg_config(0, config.psg_preamp, 0xff);
+  gpgx::g_psg->psg_config(0, core_config.psg_preamp, 0xff);
 }
 
 //------------------------------------------------------------------------------
@@ -167,18 +167,18 @@ void AudioRenderer::ResetLowPassFilter()
 
 void AudioRenderer::ApplyEqualizationSettings()
 {
-  m_eq[0]->init_3band_state(config.low_freq, config.high_freq, snd.sample_rate);
-  m_eq[1]->init_3band_state(config.low_freq, config.high_freq, snd.sample_rate);
+  m_eq[0]->init_3band_state(core_config.low_freq, core_config.high_freq, snd.sample_rate);
+  m_eq[1]->init_3band_state(core_config.low_freq, core_config.high_freq, snd.sample_rate);
 
-  f64 lg = (f64)(config.lg) / 100.0;
+  f64 lg = (f64)(core_config.lg) / 100.0;
   m_eq[0]->SetLowGainControl(lg);
   m_eq[1]->SetLowGainControl(lg);
 
-  f64 mg = (f64)(config.mg) / 100.0;
+  f64 mg = (f64)(core_config.mg) / 100.0;
   m_eq[0]->SetMiddleGainControl(mg);
   m_eq[1]->SetMiddleGainControl(mg);
 
-  f64 hg = (f64)(config.hg) / 100.0;
+  f64 hg = (f64)(core_config.hg) / 100.0;
   m_eq[0]->SetHighGainControl(hg);
   m_eq[1]->SetHighGainControl(hg);
 }
@@ -227,15 +227,15 @@ s32 AudioRenderer::Update(s16* output_buffer)
   }
 
   // Audio filtering.
-  if (config.filter) {
+  if (core_config.filter) {
     int samples = size;
     s16* out = output_buffer;
     s32 l, r;
 
     // Use low-pass filtering ?
-    if (config.filter & 1) {
+    if (core_config.filter & 1) {
       // single-pole low-pass filter (6 dB/octave).
-      u32 factora = config.lp_range;
+      u32 factora = core_config.lp_range;
       u32 factorb = 0x10000 - factora;
 
       // restore previous sample.
@@ -261,7 +261,7 @@ s32 AudioRenderer::Update(s16* output_buffer)
       rrp = r;
     } 
     // Use equalization filtering ?
-    else if (config.filter & 2) {
+    else if (core_config.filter & 2) {
       do {
         // 3 Band EQ.
         l = m_eq[0]->do_3band(out[0]);
@@ -281,7 +281,7 @@ s32 AudioRenderer::Update(s16* output_buffer)
   }
 
   // Mono output mixing.
-  if (config.mono) {
+  if (core_config.mono) {
     s16 out;
     int samples = size;
     do {
@@ -332,9 +332,9 @@ s32 AudioRenderer::LoadContext(u8* state)
   bufferptr += gpgx::g_psg->psg_context_load(&state[bufferptr]);
 
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD) {
-    gpgx::g_psg->psg_config(0, config.psg_preamp, 0xff);
+    gpgx::g_psg->psg_config(0, core_config.psg_preamp, 0xff);
   } else {
-    gpgx::g_psg->psg_config(0, config.psg_preamp, io_reg[6]);
+    gpgx::g_psg->psg_config(0, core_config.psg_preamp, io_reg[6]);
   }
 
   return bufferptr;
@@ -347,9 +347,9 @@ s32 AudioRenderer::SaveContext(u8* state)
   int bufferptr = 0;
 
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD) {
-    save_param(&config.ym3438, sizeof(config.ym3438));
+    save_param(&core_config.ym3438, sizeof(core_config.ym3438));
   } else {
-    save_param(&config.ym2413, sizeof(config.ym2413));
+    save_param(&core_config.ym2413, sizeof(core_config.ym2413));
   }
 
   // Save the context of the FM synthesizer.
@@ -426,7 +426,7 @@ gpgx::ic::ym2612::Ym2612* AudioRenderer::CreateYm2612FmSynthesizer()
   gpgx::ic::ym2612::Ym2612* ym2612 = new gpgx::ic::ym2612::Ym2612();
 
   ym2612->YM2612Init();
-  ym2612->YM2612Config(config.ym2612);
+  ym2612->YM2612Config(core_config.ym2612);
 
   // chip is running at sample clock.
   ym2612->SetClockRatio(gpgx::ic::ym2612::Ym2612::kYm2612ClockRatio * 24);

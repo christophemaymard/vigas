@@ -38,65 +38,65 @@
 
 #include "build/cmd_sdl2/config.h"
 
+#include "core/core_config.h"
 #include "core/input_hw/input.h"
 #include "gpgx/ic/ym2612/ym2612_type.h"
 
-t_config config;
-
+app_config_t app_config;
 
 void set_config_defaults(void)
 {
   int i;
 
   /* sound options */
-  config.psg_preamp     = 150;
-  config.fm_preamp      = 100;
-  config.cdda_volume    = 100;
-  config.pcm_volume     = 100;
-  config.hq_fm          = 1;
-  config.hq_psg         = 1;
-  config.filter         = 1;
-  config.low_freq       = 200;
-  config.high_freq      = 8000;
-  config.lg             = 100;
-  config.mg             = 100;
-  config.hg             = 100;
-  config.lp_range       = 0x9999; /* 0.6 in 0.16 fixed point */
-  config.ym2612         = gpgx::ic::ym2612::YM2612_DISCRETE;
-  config.ym2413         = 2; /* = AUTO (0 = always OFF, 1 = always ON) */
-  config.ym3438         = 0;
-  config.mono           = 0;
+  core_config.psg_preamp     = 150;
+  core_config.fm_preamp      = 100;
+  core_config.cdda_volume    = 100;
+  core_config.pcm_volume     = 100;
+  core_config.hq_fm          = 1;
+  core_config.hq_psg         = 1;
+  core_config.filter         = 1;
+  core_config.low_freq       = 200;
+  core_config.high_freq      = 8000;
+  core_config.lg             = 100;
+  core_config.mg             = 100;
+  core_config.hg             = 100;
+  core_config.lp_range       = 0x9999; /* 0.6 in 0.16 fixed point */
+  core_config.ym2612         = gpgx::ic::ym2612::YM2612_DISCRETE;
+  core_config.ym2413         = 2; /* = AUTO (0 = always OFF, 1 = always ON) */
+  core_config.ym3438         = 0;
+  core_config.mono           = 0;
 
   /* system options */
-  config.system         = 0; /* = AUTO (or SYSTEM_SG, SYSTEM_SGII, SYSTEM_SGII_RAM_EXT, SYSTEM_MARKIII, SYSTEM_SMS, SYSTEM_SMS2, SYSTEM_GG, SYSTEM_MD) */
-  config.region_detect  = 0; /* = AUTO (1 = USA, 2 = EUROPE, 3 = JAPAN/NTSC, 4 = JAPAN/PAL) */
-  config.vdp_mode       = 0; /* = AUTO (1 = NTSC, 2 = PAL) */
-  config.master_clock   = 0; /* = AUTO (1 = NTSC, 2 = PAL) */
-  config.force_dtack    = 0;
-  config.addr_error     = 1;
-  config.bios           = 0;
-  config.lock_on        = 0; /* = OFF (or TYPE_SK, TYPE_GG & TYPE_AR) */
-  config.add_on         = 0; /* = HW_ADDON_AUTO (or HW_ADDON_MEGACD, HW_ADDON_MEGASD & HW_ADDON_ONE) */
-  config.cd_latency     = 1;
+  core_config.system         = 0; /* = AUTO (or SYSTEM_SG, SYSTEM_SGII, SYSTEM_SGII_RAM_EXT, SYSTEM_MARKIII, SYSTEM_SMS, SYSTEM_SMS2, SYSTEM_GG, SYSTEM_MD) */
+  core_config.region_detect  = 0; /* = AUTO (1 = USA, 2 = EUROPE, 3 = JAPAN/NTSC, 4 = JAPAN/PAL) */
+  core_config.vdp_mode       = 0; /* = AUTO (1 = NTSC, 2 = PAL) */
+  core_config.master_clock   = 0; /* = AUTO (1 = NTSC, 2 = PAL) */
+  core_config.force_dtack    = 0;
+  core_config.addr_error     = 1;
+  core_config.bios           = 0;
+  core_config.lock_on        = 0; /* = OFF (or TYPE_SK, TYPE_GG & TYPE_AR) */
+  core_config.add_on         = 0; /* = HW_ADDON_AUTO (or HW_ADDON_MEGACD, HW_ADDON_MEGASD & HW_ADDON_ONE) */
+  core_config.cd_latency     = 1;
 
   /* display options */
-  config.overscan = 0;  /* 3 = all borders (0 = no borders , 1 = vertical borders only, 2 = horizontal borders only) */
-  config.gg_extra = 0;  /* 1 = show extended Game Gear screen (256x192) */
-  config.render   = 0;  /* 1 = double resolution output (only when interlaced mode 2 is enabled) */
-  config.ntsc     = 0;
-  config.lcd      = 0;  /* 0.8 fixed point */
-  config.enhanced_vscroll = 0;
-  config.enhanced_vscroll_limit = 8;
+  core_config.overscan = 0;  /* 3 = all borders (0 = no borders , 1 = vertical borders only, 2 = horizontal borders only) */
+  core_config.gg_extra = 0;  /* 1 = show extended Game Gear screen (256x192) */
+  core_config.render   = 0;  /* 1 = double resolution output (only when interlaced mode 2 is enabled) */
+  core_config.ntsc     = 0;
+  core_config.lcd      = 0;  /* 0.8 fixed point */
+  core_config.enhanced_vscroll = 0;
+  core_config.enhanced_vscroll_limit = 8;
 
   /* controllers options */
   input.system[0]       = SYSTEM_GAMEPAD;
   input.system[1]       = SYSTEM_GAMEPAD;
-  config.gun_cursor[0]  = 1;
-  config.gun_cursor[1]  = 1;
-  config.invert_mouse   = 0;
+  app_config.gun_cursor[0]  = 1;
+  app_config.gun_cursor[1]  = 1;
+  app_config.invert_mouse   = 0;
   for (i=0;i<MAX_INPUTS;i++)
   {
     /* autodetected control pad type */
-    config.input[i].padtype = DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B;
+    core_config.input[i].padtype = DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B;
   }
 }

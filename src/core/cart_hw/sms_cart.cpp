@@ -45,6 +45,7 @@
 #include "xee/mem/memory.h"
 
 #include "osd.h"
+#include "core/core_config.h"
 #include "core/loadrom.h" // For load_bios().
 #include "core/z80/z80.h"
 #include "core/io_reg.h"
@@ -522,17 +523,17 @@ void sms_cart_init(void)
   cart.special = 0;
 
   /* YM2413 chip in AUTO mode */
-  if (config.ym2413 & 2)
+  if (core_config.ym2413 & 2)
   {
     if ((system_hw & SYSTEM_SMS) && (region_code == REGION_JAPAN_NTSC))
     {
       /* japanese Master System has built-in FM chip */
-      config.ym2413 = 3;
+      core_config.ym2413 = 3;
     }
     else
     {
       /* by default, FM chip is disabled */
-      config.ym2413 = 2;
+      core_config.ym2413 = 2;
     }
   }
 
@@ -560,15 +561,15 @@ void sms_cart_init(void)
       cart.special = game_list[i].g_3d;
 
       /* auto-detect system hardware */
-      if (!config.system || ((config.system == SYSTEM_GG) && (game_list[i].system == SYSTEM_GGMS)))
+      if (!core_config.system || ((core_config.system == SYSTEM_GG) && (game_list[i].system == SYSTEM_GGMS)))
       {
         system_hw = game_list[i].system;
       }
 
       /* auto-detect YM2413 chip support in AUTO mode */
-      if (config.ym2413 & 2)
+      if (core_config.ym2413 & 2)
       {
-        config.ym2413 |= game_list[i].fm;
+        core_config.ym2413 |= game_list[i].fm;
       }
 
       /* game found, leave loop */
@@ -628,7 +629,7 @@ void sms_cart_init(void)
   }
 
   /* BIOS support */
-  if (config.bios & 1)
+  if (core_config.bios & 1)
   {
     /* load BIOS file */
     int bios_size = load_bios(system_hw);
@@ -647,7 +648,7 @@ void sms_cart_init(void)
     }
 
     /* unload cartridge if required & BIOS ROM is loaded */
-    if (!(config.bios & 2) && bios_rom.pages)
+    if (!(core_config.bios & 2) && bios_rom.pages)
     {
       cart_rom.pages = 0;
     }
@@ -846,7 +847,7 @@ int sms_cart_region_detect(void)
   u32 crc = crc32(0, cart.rom, cart.romsize);
 
   /* Turma da Mônica em: O Resgate & Wonder Boy III enable FM support on japanese hardware only */
-  if (config.ym2413 && ((crc == 0x22CCA9BB) || (crc == 0x679E1676)))
+  if (core_config.ym2413 && ((crc == 0x22CCA9BB) || (crc == 0x679E1676)))
   {
     return REGION_JAPAN_NTSC;
   }
@@ -862,7 +863,7 @@ int sms_cart_region_detect(void)
   while(i--);
 
   /* Mark-III hardware */
-  if (config.system == SYSTEM_MARKIII)
+  if (core_config.system == SYSTEM_MARKIII)
   {
     /* Japan only */
     region_code = REGION_JAPAN_NTSC;

@@ -49,6 +49,7 @@
 #include "xee/mem/memory.h"
 
 #include "osd.h"
+#include "core/core_config.h"
 #include "core/m68k/m68k.h"
 #include "core/audio_subsystem.h"
 #include "core/rominfo.h"
@@ -755,7 +756,7 @@ void md_cart_init(void)
   areplay_shutdown();
 
   /* initialize extra hardware */
-  switch (config.lock_on)
+  switch (core_config.lock_on)
   {
     case TYPE_GG:
     {
@@ -823,7 +824,7 @@ void md_cart_init(void)
         MEGASD ADD-ON
   ***********************************************/
   /* enable MegaSD overlay for cartridge ROM (max. 8MB) when Mega CD hardware is disabled and either MegaSD add-on is forced enabled or automatic add-on detection is enabled and MegaSD compatible disc image is loaded */
-  if ((cart.romsize <= 0x800000) && (system_hw == SYSTEM_MD) && ((config.add_on == HW_ADDON_MEGASD) || ((config.add_on | cdd.loaded) == HW_ADDON_MEGASD)))
+  if ((cart.romsize <= 0x800000) && (system_hw == SYSTEM_MD) && ((core_config.add_on == HW_ADDON_MEGASD) || ((core_config.add_on | cdd.loaded) == HW_ADDON_MEGASD)))
   {
     cart.special |= HW_MEGASD;
   }
@@ -882,7 +883,7 @@ void md_cart_reset(int hard_reset)
   }
 
   /* Lock-ON */
-  switch (config.lock_on)
+  switch (core_config.lock_on)
   {
     case TYPE_GG:
     {

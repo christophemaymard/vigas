@@ -41,7 +41,7 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
-#include "osd.h"
+#include "core/core_config.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
 #include "core/io_reg.h"
@@ -123,7 +123,7 @@ int state_load(unsigned char *state)
   load_param(io_reg, sizeof(io_reg));
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
   {
-    io_reg[0] = region_code | 0x20 | (config.bios & 1);
+    io_reg[0] = region_code | 0x20 | (core_config.bios & 1);
   }
   else
   {
