@@ -131,6 +131,7 @@ add_executable(vigas
     inc/core/types.h
     inc/core/vdp_ctrl.h
     inc/core/vdp_render.h
+    inc/core/crypto/crypto_crc32.h
     inc/core/debug/cpuhook.h
     inc/core/input_hw/activator.h
     inc/core/input_hw/gamepad.h
@@ -194,7 +195,6 @@ add_executable(vigas
     src/build/cmd_sdl2/error.cpp
     src/build/cmd_sdl2/fileio.cpp
     src/build/cmd_sdl2/main.cpp
-    src/build/cmd_sdl2/osd.cpp
     src/core/cart_hw/eeprom_i2c.cpp
     src/core/cart_hw/eeprom_spi.cpp
     src/core/cart_hw/ggenie.cpp
@@ -231,6 +231,7 @@ add_executable(vigas
     src/core/system_hardware.cpp
     src/core/vdp_ctrl.cpp
     src/core/vdp_render.cpp
+    src/core/crypto/crypto_crc32.cpp
     src/core/debug/cpuhook.cpp
     src/core/input_hw/activator.cpp
     src/core/input_hw/gamepad.cpp

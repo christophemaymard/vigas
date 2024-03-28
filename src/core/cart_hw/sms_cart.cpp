@@ -44,7 +44,6 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
-#include "osd.h"
 #include "core/core_config.h"
 #include "core/loadrom.h" // For load_bios().
 #include "core/z80/z80.h"
@@ -58,6 +57,7 @@
 #include "core/input_hw/input.h"
 #include "core/cart_hw/special_hw_sms.h"
 #include "core/cart_hw/sram.h"
+#include "core/crypto/crypto_crc32.h"
 #include "core/state.h"
 
 #include "core/cart_hw/eeprom_93c.h"

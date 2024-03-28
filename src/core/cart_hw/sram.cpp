@@ -42,10 +42,10 @@
 
 #include "xee/mem/memory.h"
 
-#include "osd.h"
 #include "core/macros.h"
 #include "core/ext.h" // For cart.
 #include "core/rominfo.h"
+#include "core/crypto/crypto_crc32.h"
 
 T_SRAM sram;
 
