@@ -39,7 +39,7 @@
 #include "build/cmd_sdl2/config.h"
 
 #include "core/core_config.h"
-#include "core/input_hw/input.h"
+#include "core/input_hw/input.h" // For input and MAX_DEVICES.
 #include "gpgx/ic/ym2612/ym2612_type.h"
 
 app_config_t app_config;
@@ -94,7 +94,7 @@ void set_config_defaults(void)
   app_config.gun_cursor[0]  = 1;
   app_config.gun_cursor[1]  = 1;
   app_config.invert_mouse   = 0;
-  for (i=0;i<MAX_INPUTS;i++)
+  for (i=0;i< MAX_DEVICES;i++)
   {
     /* autodetected control pad type */
     core_config.input[i].padtype = DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B;

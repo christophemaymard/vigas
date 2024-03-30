@@ -140,7 +140,7 @@ void input_init(void)
     {
       for (i=0; i< 4; i++)
       {
-        if (player < MAX_INPUTS)
+        if (player < MAX_DEVICES)
         {
           /* only allow 3-buttons or 6-buttons control pad */
           if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
@@ -161,7 +161,7 @@ void input_init(void)
     {
       for (i=0; i<4; i++)
       {
-        if (player < MAX_INPUTS)
+        if (player < MAX_DEVICES)
         {
           /* only allow 3-buttons or 6-buttons control pad */
           if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
@@ -183,7 +183,7 @@ void input_init(void)
     {
       for (i=0; i<4; i++)
       {
-        if (player < MAX_INPUTS)
+        if (player < MAX_DEVICES)
         {
           input.dev[i] = DEVICE_PAD2B;
           player++;
@@ -221,7 +221,7 @@ void input_init(void)
     }
   }
 
-  if (player == MAX_INPUTS)
+  if (player == MAX_DEVICES)
   {
     return;
   }
@@ -274,7 +274,7 @@ void input_init(void)
     {
       for (i=4; i<6; i++)
       {
-        if (player < MAX_INPUTS)
+        if (player < MAX_DEVICES)
         {
           input.dev[i] = DEVICE_LIGHTGUN;
           player++;
@@ -287,7 +287,7 @@ void input_init(void)
     {
       for (i=4; i<8; i++)
       {
-        if (player < MAX_INPUTS)
+        if (player < MAX_DEVICES)
         {
           /* only allow 3-buttons or 6-buttons control pad */
           if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
@@ -309,7 +309,7 @@ void input_init(void)
     {
       for (i=4; i<8; i++)
       {
-        if (player < MAX_INPUTS)
+        if (player < MAX_DEVICES)
         {
           input.dev[i] = DEVICE_PAD2B;
           player++;
@@ -353,7 +353,7 @@ void input_init(void)
     /* two additional gamepads */
     for (i=5; i<7; i++)
     {
-      if (player < MAX_INPUTS)
+      if (player < MAX_DEVICES)
       {
         /* only allow 3-buttons or 6-buttons control pad */
         if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
