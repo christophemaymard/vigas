@@ -850,16 +850,6 @@ int load_rom(char *filename)
     system_hw = core_config.system;
   }
 
-  /* restore previous input settings */
-  if (old_system[0] != -1)
-  {
-    input.system[0] = old_system[0];
-  }
-  if (old_system[1] != -1)
-  {
-    input.system[1] = old_system[1];
-  }
-
   /* default gun settings */
   input.x_offset = (input.system[1] == SYSTEM_MENACER) ? 64 : 0;
   input.y_offset = 0;
@@ -867,16 +857,6 @@ int load_rom(char *filename)
   /* autodetect gun support */
   if (strstr(rominfo.international,"MENACER") != NULL)
   {
-    /* save current setting */
-    if (old_system[0] == -1)
-    {
-      old_system[0] = input.system[0];
-    }
-    if (old_system[1] == -1)
-    {
-      old_system[1] = input.system[1];
-    }
-
     /* force MENACER configuration */
     input.system[0] = SYSTEM_GAMEPAD;
     input.system[1] = SYSTEM_MENACER;
@@ -885,16 +865,6 @@ int load_rom(char *filename)
   }
   else if (strstr(rominfo.international,"T2 ; THE ARCADE GAME") != NULL)
   {
-    /* save current setting */
-    if (old_system[0] == -1)
-    {
-      old_system[0] = input.system[0];
-    }
-    if (old_system[1] == -1)
-    {
-      old_system[1] = input.system[1];
-    }
-
     /* force MENACER configuration */
     input.system[0] = SYSTEM_GAMEPAD;
     input.system[1] = SYSTEM_MENACER;
@@ -903,16 +873,6 @@ int load_rom(char *filename)
   }
   else if (strstr(rominfo.international,"BODY COUNT") != NULL)
   {
-    /* save current setting */
-    if (old_system[0] == -1)
-    {
-      old_system[0] = input.system[0];
-    }
-    if (old_system[1] == -1)
-    {
-      old_system[1] = input.system[1];
-    }
-
     /* force MENACER configuration */
     input.system[0] = SYSTEM_GAMEPAD;
     input.system[1] = SYSTEM_MENACER;
@@ -921,16 +881,6 @@ int load_rom(char *filename)
   }
   else if (strstr(rominfo.international,"CORPSE KILLER") != NULL)
   {
-    /* save current setting */
-    if (old_system[0] == -1)
-    {
-      old_system[0] = input.system[0];
-    }
-    if (old_system[1] == -1)
-    {
-      old_system[1] = input.system[1];
-    }
-
     /* force MENACER configuration */
     input.system[0] = SYSTEM_GAMEPAD;
     input.system[1] = SYSTEM_MENACER;
@@ -939,16 +889,6 @@ int load_rom(char *filename)
   }
   else if (strstr(rominfo.international,"CRIME PATROL") != NULL)
   {
-    /* save current setting */
-    if (old_system[0] == -1)
-    {
-      old_system[0] = input.system[0];
-    }
-    if (old_system[1] == -1)
-    {
-      old_system[1] = input.system[1];
-    }
-
     /* force MENACER configuration */
     input.system[0] = SYSTEM_GAMEPAD;
     input.system[1] = SYSTEM_MENACER;
@@ -957,16 +897,6 @@ int load_rom(char *filename)
   }
   else if (strstr(rominfo.international,"MAD DOG II THE LOST GOLD") != NULL)
   {
-    /* save current setting */
-    if (old_system[0] == -1)
-    {
-      old_system[0] = input.system[0];
-    }
-    if (old_system[1] == -1)
-    {
-      old_system[1] = input.system[1];
-    }
-
     /* force MENACER configuration */
     input.system[0] = SYSTEM_GAMEPAD;
     input.system[1] = SYSTEM_MENACER;
@@ -975,16 +905,6 @@ int load_rom(char *filename)
   }
   else if (strstr(rominfo.international,"MAD DOG MCCREE") != NULL)
   {
-    /* save current setting */
-    if (old_system[0] == -1)
-    {
-      old_system[0] = input.system[0];
-    }
-    if (old_system[1] == -1)
-    {
-      old_system[1] = input.system[1];
-    }
-
     /* force MENACER configuration */
     input.system[0] = SYSTEM_GAMEPAD;
     input.system[1] = SYSTEM_MENACER;
@@ -993,16 +913,6 @@ int load_rom(char *filename)
   }
   else if (strstr(rominfo.international,"WHO SHOT JOHNNY ROCK?") != NULL)
   {
-    /* save current setting */
-    if (old_system[0] == -1)
-    {
-      old_system[0] = input.system[0];
-    }
-    if (old_system[1] == -1)
-    {
-      old_system[1] = input.system[1];
-    }
-
     /* force MENACER configuration */
     input.system[0] = SYSTEM_GAMEPAD;
     input.system[1] = SYSTEM_MENACER;
@@ -1012,16 +922,6 @@ int load_rom(char *filename)
   else if ((strstr(rominfo.international,"LETHAL ENFORCERS") != NULL) ||
            (strstr(rominfo.international,"SNATCHER") != NULL))
   {
-    /* save current setting */
-    if (old_system[0] == -1)
-    {
-      old_system[0] = input.system[0];
-    }
-    if (old_system[1] == -1)
-    {
-      old_system[1] = input.system[1];
-    }
-
     /* force JUSTIFIER configuration */
     input.system[0] = SYSTEM_GAMEPAD;
     input.system[1] = SYSTEM_JUSTIFIER;

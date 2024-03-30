@@ -150,7 +150,6 @@ typedef struct
 
 /* Global variables */
 extern t_input input;
-extern int old_system[2];
 
 /* Function prototypes */
 extern void input_init(void);

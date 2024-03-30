@@ -548,12 +548,6 @@ void sms_cart_init(void)
       /* auto-detect required peripherals */
       if (game_list[i].peripheral)
       {
-        /* save current input settings */
-        if (old_system[0] == -1)
-        {
-          old_system[0] = input.system[0];
-        }
-
         input.system[0] = game_list[i].peripheral;
       }
 

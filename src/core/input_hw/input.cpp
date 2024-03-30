@@ -59,7 +59,6 @@
 #include "core/input_hw/graphic_board.h"
 
 t_input input;
-int old_system[2] = {-1,-1};
 
 
 void input_init(void)
