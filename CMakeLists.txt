@@ -137,6 +137,7 @@ add_executable(vigas
     inc/core/input_hw/gamepad.h
     inc/core/input_hw/graphic_board.h
     inc/core/input_hw/input.h
+    inc/core/input_hw/input_config_t.h
     inc/core/input_hw/lightgun.h
     inc/core/input_hw/mouse.h
     inc/core/input_hw/paddle.h
@@ -177,6 +178,7 @@ add_executable(vigas
     inc/gpgx/audio/effect/fm_synthesizer_base.h
     inc/gpgx/audio/effect/null_fm_synthesizer.h
     inc/gpgx/ic/sn76489/sn76489.h
+    inc/gpgx/ic/sn76489/sn76489_type.h
     inc/gpgx/ic/ym2413/opll_ch.h
     inc/gpgx/ic/ym2413/opll_slot.h
     inc/gpgx/ic/ym2413/ym2413.h
