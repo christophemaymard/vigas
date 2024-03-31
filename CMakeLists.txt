@@ -137,7 +137,6 @@ add_executable(vigas
     inc/core/input_hw/gamepad.h
     inc/core/input_hw/graphic_board.h
     inc/core/input_hw/input.h
-    inc/core/input_hw/input_config_t.h
     inc/core/input_hw/lightgun.h
     inc/core/input_hw/mouse.h
     inc/core/input_hw/paddle.h

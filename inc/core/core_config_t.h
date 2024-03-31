@@ -42,7 +42,6 @@
 #include "xee/fnd/data_type.h"
 
 #include "core/input_hw/input.h" // For MAX_DEVICES.
-#include "core/input_hw/input_config_t.h"
 
 //==============================================================================
 
@@ -184,8 +183,6 @@ struct core_config_t
 
   u8 enhanced_vscroll;
   u8 enhanced_vscroll_limit;
-
-  input_config_t input[MAX_DEVICES];
 };
 
 #endif // #ifndef __CORE_CORE_CONFIG_T_H__

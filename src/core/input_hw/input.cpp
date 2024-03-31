@@ -102,15 +102,7 @@ void input_init(void)
   {
     case SYSTEM_GAMEPAD:
     {
-      /* 2-buttons, 3-buttons or 6-buttons control pad */
-      if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
-      {
-        input.dev[0] = core_config.input[player].padtype;
-      }
-      else
-      {
-        input.dev[0] = padtype;
-      }
+      input.dev[0] = padtype;
       player++;
       break;
     }
@@ -143,14 +135,7 @@ void input_init(void)
         if (player < MAX_DEVICES)
         {
           /* only allow 3-buttons or 6-buttons control pad */
-          if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
-          {
-            input.dev[i] = core_config.input[player].padtype & DEVICE_PAD6B;
-          }
-          else
-          {
-            input.dev[i] = padtype & DEVICE_PAD6B;
-          }
+          input.dev[i] = padtype & DEVICE_PAD6B;
           player++;
         }
       }
@@ -164,14 +149,7 @@ void input_init(void)
         if (player < MAX_DEVICES)
         {
           /* only allow 3-buttons or 6-buttons control pad */
-          if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
-          {
-            input.dev[i] = core_config.input[player].padtype & DEVICE_PAD6B;
-          }
-          else
-          {
-            input.dev[i] = padtype & DEVICE_PAD6B;
-          }
+          input.dev[i] = padtype & DEVICE_PAD6B;
           player++;
         }
       }
@@ -230,14 +208,7 @@ void input_init(void)
   {
     case SYSTEM_GAMEPAD:
     {
-      if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
-      {
-        input.dev[4] = core_config.input[player].padtype;
-      }
-      else
-      {
-        input.dev[4] = padtype;
-      }
+      input.dev[4] = padtype;
       player++;
       break;
     }
@@ -290,14 +261,7 @@ void input_init(void)
         if (player < MAX_DEVICES)
         {
           /* only allow 3-buttons or 6-buttons control pad */
-          if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
-          {
-            input.dev[i] = core_config.input[player].padtype & DEVICE_PAD6B;
-          }
-          else
-          {
-            input.dev[i] = padtype & DEVICE_PAD6B;
-          }
+          input.dev[i] = padtype & DEVICE_PAD6B;
           player++;
         }
       }
@@ -356,14 +320,7 @@ void input_init(void)
       if (player < MAX_DEVICES)
       {
         /* only allow 3-buttons or 6-buttons control pad */
-        if (core_config.input[player].padtype != (DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B))
-        {
-          input.dev[i] = core_config.input[player].padtype & DEVICE_PAD6B;
-        }
-        else
-        {
-          input.dev[i] = padtype & DEVICE_PAD6B;
-        }
+        input.dev[i] = padtype & DEVICE_PAD6B;
         player ++;
       }
     }

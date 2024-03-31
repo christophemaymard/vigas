@@ -94,9 +94,4 @@ void set_config_defaults(void)
   app_config.gun_cursor[0]  = 1;
   app_config.gun_cursor[1]  = 1;
   app_config.invert_mouse   = 0;
-  for (i=0;i< MAX_DEVICES;i++)
-  {
-    /* autodetected control pad type */
-    core_config.input[i].padtype = DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B;
-  }
 }
