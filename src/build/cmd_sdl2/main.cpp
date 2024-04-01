@@ -63,9 +63,6 @@
 #include "core/cart_hw/sram.h"
 #include "core/state.h"
 
-#include "core/ntsc/sms_ntsc.h"
-#include "core/ntsc/md_ntsc.h"
-
 #include "gpgx/g_audio_renderer.h"
 
 #define SOUND_FREQUENCY 48000
@@ -192,8 +189,6 @@ static void sdl_sound_close()
 }
 
 /* video */
-md_ntsc_t *md_ntsc;
-sms_ntsc_t *sms_ntsc;
 
 static int sdl_video_init()
 {
@@ -263,46 +258,6 @@ static void sdl_video_update()
 
     /* clear destination surface */
     SDL_FillRect(sdl_video.surf_screen, 0, 0);
-
-#if 0
-    if (core_config.render && (interlaced || core_config.ntsc))  rect.h *= 2;
-    if (core_config.ntsc) rect.w = (reg[12]&1) ? MD_NTSC_OUT_WIDTH(rect.w) : SMS_NTSC_OUT_WIDTH(rect.w);
-    if (core_config.ntsc)
-    {
-      sms_ntsc = (sms_ntsc_t *)malloc(sizeof(sms_ntsc_t));
-      md_ntsc = (md_ntsc_t *)malloc(sizeof(md_ntsc_t));
-
-      switch (core_config.ntsc)
-      {
-        case 1:
-          sms_ntsc_init(sms_ntsc, &sms_ntsc_composite);
-          md_ntsc_init(md_ntsc, &md_ntsc_composite);
-          break;
-        case 2:
-          sms_ntsc_init(sms_ntsc, &sms_ntsc_svideo);
-          md_ntsc_init(md_ntsc, &md_ntsc_svideo);
-          break;
-        case 3:
-          sms_ntsc_init(sms_ntsc, &sms_ntsc_rgb);
-          md_ntsc_init(md_ntsc, &md_ntsc_rgb);
-          break;
-      }
-    }
-    else
-    {
-      if (sms_ntsc)
-      {
-        free(sms_ntsc);
-        sms_ntsc = NULL;
-      }
-
-      if (md_ntsc)
-      {
-        free(md_ntsc);
-        md_ntsc = NULL;
-      }
-    }
-#endif
   }
 
   SDL_BlitSurface(sdl_video.surf_bitmap, &sdl_video.srect, sdl_video.surf_screen, &sdl_video.drect);

@@ -54,9 +54,6 @@
 #include "core/system_hardware.h"
 #include "core/vdp_ctrl.h"
 
-#include "core/ntsc/md_ntsc.h"
-#include "core/ntsc/sms_ntsc.h"
-
 #ifndef HAVE_NO_SPRITE_LIMIT
 #define MAX_SPRITES_PER_LINE 20
 #define TMS_MAX_SPRITES_PER_LINE 4
@@ -64,11 +61,6 @@
 #define MODE5_MAX_SPRITES_PER_LINE (bitmap.viewport.w >> 4)
 #define MODE5_MAX_SPRITE_PIXELS max_sprite_pixels
 #endif
-
-/*** NTSC Filters ***/
-extern md_ntsc_t *md_ntsc;
-extern sms_ntsc_t *sms_ntsc;
-
 
 /* Output pixels type*/
 #if defined(USE_8BPP_RENDERING)
@@ -4834,21 +4826,6 @@ void remap_line(int line)
     line = (line * 2) + odd_frame;
   }
 
-#if defined(USE_15BPP_RENDERING) || defined(USE_16BPP_RENDERING)
-  /* NTSC Filter (only supported for 15 or 16-bit pixels rendering) */
-  if (core_config.ntsc)
-  {
-    if (reg[12] & 0x01)
-    {
-      md_ntsc_blit(md_ntsc, ( MD_NTSC_IN_T const * )pixel, src, width, line);
-    }
-    else
-    {
-      sms_ntsc_blit(sms_ntsc, ( SMS_NTSC_IN_T const * )pixel, src, width, line);
-    }
-  }
-  else
-#endif
   {
 #ifdef CUSTOM_BLITTER
     CUSTOM_BLITTER(line, width, pixel, src)

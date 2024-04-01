@@ -152,12 +152,6 @@ add_executable(vigas
     inc/core/m68k/m68kops.h
     inc/core/m68k/s68kconf.h
     inc/core/m68k/s68ki_cycles.h
-    inc/core/ntsc/md_ntsc.h
-    inc/core/ntsc/md_ntsc_config.h
-    inc/core/ntsc/md_ntsc_impl.h
-    inc/core/ntsc/sms_ntsc.h
-    inc/core/ntsc/sms_ntsc_config.h
-    inc/core/ntsc/sms_ntsc_impl.h
     inc/core/cart_hw/svp/ssp16.h
     inc/core/cart_hw/svp/svp.h
     inc/core/z80/osd_cpu.h
@@ -247,8 +241,6 @@ add_executable(vigas
     src/core/input_hw/xe_1ap.cpp
     src/core/m68k/m68kcpu.cpp
     src/core/m68k/s68kcpu.cpp
-    src/core/ntsc/md_ntsc.cpp
-    src/core/ntsc/sms_ntsc.cpp
     src/core/cart_hw/svp/ssp16.cpp
     src/core/cart_hw/svp/svp.cpp
     src/core/z80/z80.cpp
