@@ -48,6 +48,7 @@
 
 #include "gpgx/g_fm_synthesizer.h"
 
+#include "core/boot_rom.h"
 #include "core/core_config.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
@@ -65,7 +66,6 @@
 #include "core/cart_hw/sms_cart.h" // For sms_cart_init() and sms_cart_reset().
 #include "core/cd_hw/scd.h" // For scd_init() and scd_reset().
 
-u8 boot_rom[0x800];    /* Genesis BOOT ROM   */
 u8 work_ram[0x10000];  /* 68K RAM  */
 u8 zram[0x2000];       /* Z80 RAM  */
 u32 zbank;             /* Z80 bank window address */

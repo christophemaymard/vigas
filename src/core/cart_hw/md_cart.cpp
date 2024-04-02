@@ -52,11 +52,11 @@
 #include "core/core_config.h"
 #include "core/m68k/m68k.h"
 #include "core/audio_subsystem.h"
+#include "core/boot_rom.h"
 #include "core/rominfo.h"
 #include "core/snd.h"
 #include "core/system_hardware.h"
 #include "core/ext.h" // For cart and cdd.
-#include "core/genesis.h" // For boot_rom.
 #include "core/cd_hw/scd.h"
 #include "core/cd_hw/cdd.h"
 #include "core/mem68k.h"
