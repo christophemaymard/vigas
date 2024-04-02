@@ -50,6 +50,7 @@
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/ext.h" // For cart, scd, cdc, gfx and SCYCLES_PER_LINE.
+#include "core/zram.h"
 #include "core/genesis.h"
 #include "core/vdp_ctrl.h"
 #include "core/membnk.h"

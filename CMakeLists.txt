@@ -133,6 +133,7 @@ add_executable(vigas
     inc/core/vdp_ctrl.h
     inc/core/vdp_render.h
     inc/core/work_ram.h
+    inc/core/zram.h
     inc/core/crypto/crypto_crc32.h
     inc/core/debug/cpuhook.h
     inc/core/input_hw/activator.h
@@ -230,6 +231,7 @@ add_executable(vigas
     src/core/vdp_ctrl.cpp
     src/core/vdp_render.cpp
     src/core/work_ram.cpp
+    src/core/zram.cpp
     src/core/crypto/crypto_crc32.cpp
     src/core/debug/cpuhook.cpp
     src/core/input_hw/activator.cpp

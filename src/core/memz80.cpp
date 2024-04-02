@@ -54,6 +54,7 @@
 #include "core/region_code.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
+#include "core/zram.h"
 #include "core/genesis.h"
 #include "core/vdp_ctrl.h"
 #include "core/membnk.h"
