@@ -118,6 +118,7 @@ add_executable(vigas
     inc/core/mem68k.h
     inc/core/membnk.h
     inc/core/memz80.h
+    inc/core/pico_current.h
     inc/core/region_code.h
     inc/core/rominfo.h
     inc/core/romtype.h
@@ -220,6 +221,7 @@ add_executable(vigas
     src/core/mem68k.cpp
     src/core/membnk.cpp
     src/core/memz80.cpp
+    src/core/pico_current.cpp
     src/core/region_code.cpp
     src/core/rominfo.cpp
     src/core/romtype.cpp

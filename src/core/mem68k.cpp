@@ -46,6 +46,7 @@
 #include "core/core_config.h"
 #include "core/macros.h"
 #include "core/m68k/m68k.h"
+#include "core/pico_current.h"
 #include "core/region_code.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"

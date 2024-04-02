@@ -51,6 +51,7 @@
 #include "core/core_config.h"
 #include "core/bitmap.h"
 #include "core/io_reg.h"
+#include "core/pico_current.h"
 #include "core/region_code.h"
 #include "core/rominfo.h"
 #include "core/snd.h"
@@ -58,7 +59,7 @@
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
 #include "core/ext.h" // For scd.
-#include "core/genesis.h" // For pico_current and gen_reset().
+#include "core/genesis.h" // For gen_reset().
 #include "core/vdp_ctrl.h"
 #include "core/input_hw/input.h"
 #include "core/cart_hw/sram.h"

@@ -52,6 +52,7 @@
 #include "core/core_config.h"
 #include "core/m68k/m68k.h"
 #include "core/z80/z80.h"
+#include "core/pico_current.h"
 #include "core/region_code.h"
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
@@ -69,8 +70,6 @@
 #include "core/cart_hw/md_cart.h" // Fo md_cart_init() and md_cart_reset().
 #include "core/cart_hw/sms_cart.h" // For sms_cart_init() and sms_cart_reset().
 #include "core/cd_hw/scd.h" // For scd_init() and scd_reset().
-
-u8 pico_current;       /* PICO current page */
 
 static u8 tmss[4];     /* TMSS security register */
 
