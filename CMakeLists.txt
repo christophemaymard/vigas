@@ -135,6 +135,7 @@ add_executable(vigas
     inc/core/work_ram.h
     inc/core/zbank.h
     inc/core/zram.h
+    inc/core/zstate.h
     inc/core/crypto/crypto_crc32.h
     inc/core/debug/cpuhook.h
     inc/core/input_hw/activator.h
@@ -234,6 +235,7 @@ add_executable(vigas
     src/core/work_ram.cpp
     src/core/zbank.cpp
     src/core/zram.cpp
+    src/core/zstate.cpp
     src/core/crypto/crypto_crc32.cpp
     src/core/debug/cpuhook.cpp
     src/core/input_hw/activator.cpp

@@ -54,7 +54,8 @@
 #include "core/system_timing.h"
 #include "core/ext.h" // For cart and scd.
 #include "core/work_ram.h"
-#include "core/genesis.h" // For gen_init(), gen_reset() and zstate.
+#include "core/zstate.h"
+#include "core/genesis.h" // For gen_init() and gen_reset().
 #include "core/cd_hw/scd.h"
 #include "core/vdp_ctrl.h"
 #include "core/vdp_render.h"

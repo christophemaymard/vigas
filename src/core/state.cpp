@@ -51,7 +51,8 @@
 #include "core/work_ram.h"
 #include "core/zbank.h"
 #include "core/zram.h"
-#include "core/genesis.h"
+#include "core/zstate.h"
+#include "core/genesis.h" // For z80_irq_callback().
 #include "core/cart_hw/md_cart.h"
 #include "core/vdp_ctrl.h"
 #include "core/mem68k.h"

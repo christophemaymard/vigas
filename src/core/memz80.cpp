@@ -56,7 +56,8 @@
 #include "core/system_timing.h"
 #include "core/zbank.h"
 #include "core/zram.h"
-#include "core/genesis.h"
+#include "core/zstate.h"
+#include "core/genesis.h" // For gen_zbank_w()
 #include "core/vdp_ctrl.h"
 #include "core/membnk.h"
 #include "core/io_ctrl.h"
