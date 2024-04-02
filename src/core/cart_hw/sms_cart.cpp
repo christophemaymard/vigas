@@ -53,7 +53,7 @@
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
 #include "core/ext.h" // For cart.
-#include "core/genesis.h" // For work_ram.
+#include "core/work_ram.h"
 #include "core/input_hw/input.h"
 #include "core/cart_hw/special_hw_sms.h"
 #include "core/cart_hw/sram.h"

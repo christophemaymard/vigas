@@ -54,7 +54,8 @@
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/ext.h" // For cart and scd.
-#include "core/genesis.h" // For work_ram and zstate.
+#include "core/genesis.h" // For zstate.
+#include "core/work_ram.h"
 #include "core/vdp_render.h"
 #include "core/io_ctrl.h"
 #include "core/cart_hw/special_hw_sms.h"

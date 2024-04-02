@@ -48,6 +48,7 @@
 #include "core/region_code.h"
 #include "core/system.h"
 #include "core/system_hardware.h"
+#include "core/work_ram.h"
 #include "core/genesis.h"
 #include "core/cart_hw/md_cart.h"
 #include "core/vdp_ctrl.h"

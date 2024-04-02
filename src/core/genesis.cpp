@@ -58,6 +58,7 @@
 #include "core/system_timing.h"
 #include "core/ext.h" // For scd, cart.
 #include "core/vdp_ctrl.h"
+#include "core/work_ram.h"
 #include "core/mem68k.h"
 #include "core/memz80.h"
 #include "core/membnk.h"
@@ -66,7 +67,6 @@
 #include "core/cart_hw/sms_cart.h" // For sms_cart_init() and sms_cart_reset().
 #include "core/cd_hw/scd.h" // For scd_init() and scd_reset().
 
-u8 work_ram[0x10000];  /* 68K RAM  */
 u8 zram[0x2000];       /* Z80 RAM  */
 u32 zbank;             /* Z80 bank window address */
 u8 zstate;             /* Z80 bus state (d0 = /RESET, d1 = BUSREQ, d2 = WAIT) */
