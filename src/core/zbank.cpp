@@ -1,8 +1,6 @@
 /***************************************************************************************
- *  Genesis Plus
- *  Internal hardware & Bus controllers
- *
- *  Support for SG-1000, Mark-III, Master System, Game Gear, Mega Drive & Mega CD hardware
+ *  Genesis Plus GX
+ *  Z80 bank window address
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2024  Eke-Eke (Genesis Plus GX)
@@ -39,25 +37,11 @@
  *
  ****************************************************************************************/
 
-#ifndef _GENESIS_H_
-#define _GENESIS_H_
+#include "core/zbank.h"
 
-#include "xee/fnd/data_type.h"
+//==============================================================================
 
-/* Global variables */
-extern u8 zstate;
-extern u8 pico_current;
+//------------------------------------------------------------------------------
 
-/* Function prototypes */
-extern void gen_init(void);
-extern void gen_reset(int hard_reset);
-extern void gen_tmss_w(unsigned int offset, unsigned int data);
-extern void gen_bankswitch_w(unsigned int data);
-extern unsigned int gen_bankswitch_r(void);
-extern void gen_zbusreq_w(unsigned int state, unsigned int cycles);
-extern void gen_zreset_w(unsigned int state, unsigned int cycles);
-extern void gen_zbank_w(unsigned int state);
-extern int z80_irq_callback(int param);
-
-#endif /* _GEN_H_ */
+u32 zbank;
 

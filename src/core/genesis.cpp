@@ -59,6 +59,7 @@
 #include "core/ext.h" // For scd, cart.
 #include "core/vdp_ctrl.h"
 #include "core/work_ram.h"
+#include "core/zbank.h"
 #include "core/zram.h"
 #include "core/mem68k.h"
 #include "core/memz80.h"
@@ -68,7 +69,6 @@
 #include "core/cart_hw/sms_cart.h" // For sms_cart_init() and sms_cart_reset().
 #include "core/cd_hw/scd.h" // For scd_init() and scd_reset().
 
-u32 zbank;             /* Z80 bank window address */
 u8 zstate;             /* Z80 bus state (d0 = /RESET, d1 = BUSREQ, d2 = WAIT) */
 u8 pico_current;       /* PICO current page */
 

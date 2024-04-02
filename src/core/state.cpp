@@ -49,6 +49,7 @@
 #include "core/system.h"
 #include "core/system_hardware.h"
 #include "core/work_ram.h"
+#include "core/zbank.h"
 #include "core/zram.h"
 #include "core/genesis.h"
 #include "core/cart_hw/md_cart.h"
