@@ -45,8 +45,9 @@
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/ext.h" // For scd, cart, cdd and SCYCLES_PER_LINE.
+#include "core/zbank_memory_map.h"
 #include "core/mem68k.h"
-#include "core/membnk.h"
+#include "core/membnk.h" // For zbank_unused_w().
 #include "core/cart_hw/sram.h"
 #include "core/state.h"
 

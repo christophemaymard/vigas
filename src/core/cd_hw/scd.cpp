@@ -51,6 +51,7 @@
 #include "core/system_cycle.h"
 #include "core/system_timing.h"
 #include "core/ext.h" // For cdc, cdd, scd and SCYCLES_PER_LINE.
+#include "core/zbank_memory_map.h"
 #include "core/cart_hw/md_cart.h" // For md_cart_context_save() and md_cart_context_load().
 #include "core/cd_hw/cd_cart.h" // For cd_cart_init().
 #include "core/cd_hw/cdc.h"
@@ -63,7 +64,7 @@
 #endif
 
 #include "core/mem68k.h"
-#include "core/membnk.h"
+#include "core/membnk.h" // For zbank_unused_r() and zbank_unused_w().
 #include "core/state.h"
 
 /*--------------------------------------------------------------------------*/

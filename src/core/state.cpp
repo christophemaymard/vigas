@@ -50,6 +50,7 @@
 #include "core/system_hardware.h"
 #include "core/work_ram.h"
 #include "core/zbank.h"
+#include "core/zbank_memory_map.h"
 #include "core/zram.h"
 #include "core/zstate.h"
 #include "core/genesis.h" // For z80_irq_callback().

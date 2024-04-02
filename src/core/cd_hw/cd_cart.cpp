@@ -42,9 +42,10 @@
 
 #include "core/m68k/m68k.h"
 #include "core/ext.h" // For scd.
+#include "core/zbank_memory_map.h"
 #include "core/cart_hw/md_cart.h" // For md_cart_init().
 #include "core/mem68k.h"
-#include "core/membnk.h"
+#include "core/membnk.h" // For zbank_unused_w().
 #include "core/cart_hw/sram.h"
 
 /*--------------------------------------------------------------------------*/

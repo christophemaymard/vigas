@@ -46,9 +46,9 @@
 
 #include "core/m68k/m68k.h"
 #include "core/ext.h" // // For cart.
+#include "core/zbank_memory_map.h"
 #include "core/cart_hw/special_hw_md.h"
 #include "core/mem68k.h"
-#include "core/membnk.h"
 #include "core/rominfo.h"
 #include "core/cart_hw/sram.h"
 

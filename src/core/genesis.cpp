@@ -61,6 +61,7 @@
 #include "core/vdp_ctrl.h"
 #include "core/work_ram.h"
 #include "core/zbank.h"
+#include "core/zbank_memory_map.h"
 #include "core/zram.h"
 #include "core/zstate.h"
 #include "core/mem68k.h"

@@ -57,10 +57,11 @@
 #include "core/snd.h"
 #include "core/system_hardware.h"
 #include "core/ext.h" // For cart and cdd.
+#include "core/zbank_memory_map.h"
 #include "core/cd_hw/scd.h"
 #include "core/cd_hw/cdd.h"
 #include "core/mem68k.h"
-#include "core/membnk.h"
+#include "core/membnk.h" // For zbank_unused_w() and zbank_unused_r().
 #include "core/input_hw/input.h"
 #include "core/cart_hw/cart_hw_t.h"
 #include "core/cart_hw/hw_addon.h"

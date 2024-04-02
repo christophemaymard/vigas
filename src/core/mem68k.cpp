@@ -51,11 +51,12 @@
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/ext.h" // For cart, scd, cdc, gfx and SCYCLES_PER_LINE.
+#include "core/zbank_memory_map.h"
 #include "core/zram.h"
 #include "core/zstate.h"
 #include "core/genesis.h"
 #include "core/vdp_ctrl.h"
-#include "core/membnk.h"
+#include "core/membnk.h" // For zbank_unused_r() and zbank_unused_w().
 #include "core/io_ctrl.h" // For io_68k_write() and io_68k_read().
 #include "core/input_hw/input.h"
 #include "core/cart_hw/svp/svp.h"

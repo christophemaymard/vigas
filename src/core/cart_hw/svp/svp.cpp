@@ -17,7 +17,7 @@
 
 #include "core/m68k/m68k.h"
 #include "core/ext.h" // For cart.
-#include "core/membnk.h"
+#include "core/zbank_memory_map.h"
 
 #include "core/cart_hw/svp/ssp16.h"
 

@@ -135,6 +135,8 @@ add_executable(vigas
     inc/core/vdp_render.h
     inc/core/work_ram.h
     inc/core/zbank.h
+    inc/core/zbank_memory_map.h
+    inc/core/zbank_memory_map_t.h
     inc/core/zram.h
     inc/core/zstate.h
     inc/core/crypto/crypto_crc32.h
@@ -236,6 +238,7 @@ add_executable(vigas
     src/core/vdp_render.cpp
     src/core/work_ram.cpp
     src/core/zbank.cpp
+    src/core/zbank_memory_map.cpp
     src/core/zram.cpp
     src/core/zstate.cpp
     src/core/crypto/crypto_crc32.cpp

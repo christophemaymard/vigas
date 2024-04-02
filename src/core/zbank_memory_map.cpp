@@ -1,5 +1,5 @@
 /***************************************************************************************
- *  Genesis Plus
+ *  Genesis Plus GX
  *  Z80 bank access to 68k bus
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
@@ -37,16 +37,10 @@
  *
  ****************************************************************************************/
 
-#ifndef _MEMBNK_H_
-#define _MEMBNK_H_
+#include "core/zbank_memory_map.h"
 
-extern unsigned int zbank_unused_r(unsigned int address);
-extern void zbank_unused_w(unsigned int address, unsigned int data);
-extern unsigned int zbank_lockup_r(unsigned int address);
-extern void zbank_lockup_w(unsigned int address, unsigned int data);
-extern unsigned int zbank_read_ctrl_io(unsigned int address);
-extern void zbank_write_ctrl_io(unsigned int address, unsigned int data);
-extern unsigned int zbank_read_vdp(unsigned int address);
-extern void zbank_write_vdp(unsigned int address, unsigned int data);
+//==============================================================================
 
-#endif /* _MEMBNK_H_ */
+//------------------------------------------------------------------------------
+
+zbank_memory_map_t zbank_memory_map[256];
