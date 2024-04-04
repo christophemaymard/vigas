@@ -45,7 +45,6 @@
 
 #include "osd.h" // For osd_input_update();
 #include "core/m68k/m68k.h"
-#include "core/z80/z80.h"
 #include "core/audio_subsystem.h"
 #include "core/bitmap.h"
 #include "core/core_config.h"
@@ -66,7 +65,10 @@
 
 #include "core/cart_hw/svp/ssp16.h"
 
+#include "gpgx/cpu/z80/z80_line_state.h"
+
 #include "gpgx/g_audio_renderer.h"
+#include "gpgx/g_z80.h"
 
 static u8 pause_b;
 
@@ -234,7 +236,7 @@ void system_frame_gen(int do_skip)
     m68k_run(vint_cycle);
     if (zstate == 1)
     {
-      z80_run(vint_cycle);
+      gpgx::g_z80->Run(vint_cycle);
     }
 
     /* set VINT flag */
@@ -249,18 +251,18 @@ void system_frame_gen(int do_skip)
     }
 
     /* assert Z80 interrupt */
-    Z80.irq_state = ASSERT_LINE;
+    gpgx::g_z80->SetIRQLine(gpgx::cpu::z80::LineState::kAssertLine);
   }
 
   /* run 68k & Z80 until end of line */
   m68k_run(MCYCLES_PER_LINE);
   if (zstate == 1)
   {
-    z80_run(MCYCLES_PER_LINE);
+    gpgx::g_z80->Run(MCYCLES_PER_LINE);
   }
 
   /* Z80 interrupt is cleared at the end of the line */
-  Z80.irq_state = CLEAR_LINE;
+  gpgx::g_z80->SetIRQLine(gpgx::cpu::z80::LineState::kClearLine);
 
   /* run SVP chip */
   if (svp)
@@ -297,7 +299,7 @@ void system_frame_gen(int do_skip)
     m68k_run(mcycles_vdp + MCYCLES_PER_LINE);
     if (zstate == 1)
     {
-      z80_run(mcycles_vdp + MCYCLES_PER_LINE);
+      gpgx::g_z80->Run(mcycles_vdp + MCYCLES_PER_LINE);
     }
 
     /* run SVP chip */
@@ -345,7 +347,7 @@ void system_frame_gen(int do_skip)
   m68k_run(mcycles_vdp + MCYCLES_PER_LINE);
   if (zstate == 1)
   {
-    z80_run(mcycles_vdp + MCYCLES_PER_LINE);
+    gpgx::g_z80->Run(mcycles_vdp + MCYCLES_PER_LINE);
   }
 
   /* run SVP chip */
@@ -405,7 +407,7 @@ void system_frame_gen(int do_skip)
     m68k_run(mcycles_vdp + MCYCLES_PER_LINE);
     if (zstate == 1)
     {
-      z80_run(mcycles_vdp + MCYCLES_PER_LINE);
+      gpgx::g_z80->Run(mcycles_vdp + MCYCLES_PER_LINE);
     }
 
     /* run SVP chip */
@@ -430,7 +432,7 @@ void system_frame_gen(int do_skip)
   input_end_frame(mcycles_vdp);
   m68k.refresh_cycles -= mcycles_vdp;
   m68k.cycles -= mcycles_vdp;
-  Z80.cycles -= mcycles_vdp;
+  gpgx::g_z80->SubCycles(mcycles_vdp);
   dma_endCycles = 0;
 }
 
@@ -577,7 +579,7 @@ void system_frame_scd(int do_skip)
     m68k_run(vint_cycle);
     if (zstate == 1)
     {
-      z80_run(vint_cycle);
+      gpgx::g_z80->Run(vint_cycle);
     }
 
     /* set VINT flag */
@@ -592,7 +594,7 @@ void system_frame_scd(int do_skip)
     }
 
     /* assert Z80 interrupt */
-    Z80.irq_state = ASSERT_LINE;
+    gpgx::g_z80->SetIRQLine(gpgx::cpu::z80::LineState::kAssertLine);
   }
 
   /* run both 68k & CD hardware until end of line */
@@ -601,11 +603,11 @@ void system_frame_scd(int do_skip)
   /* run Z80 until end of line */
   if (zstate == 1)
   {
-    z80_run(MCYCLES_PER_LINE);
+    gpgx::g_z80->Run(MCYCLES_PER_LINE);
   }
 
   /* Z80 interrupt is cleared at the end of the line */
-  Z80.irq_state = CLEAR_LINE;
+  gpgx::g_z80->SetIRQLine(gpgx::cpu::z80::LineState::kClearLine);
 
   /* update VDP cycle count */
   mcycles_vdp = MCYCLES_PER_LINE;
@@ -638,7 +640,7 @@ void system_frame_scd(int do_skip)
     /* run Z80 until end of line */
     if (zstate == 1)
     {
-      z80_run(mcycles_vdp + MCYCLES_PER_LINE);
+      gpgx::g_z80->Run(mcycles_vdp + MCYCLES_PER_LINE);
     }
 
     /* update VDP cycle count */
@@ -682,7 +684,7 @@ void system_frame_scd(int do_skip)
   /* run Z80 until end of line */
   if (zstate == 1)
   {
-    z80_run(mcycles_vdp + MCYCLES_PER_LINE);
+    gpgx::g_z80->Run(mcycles_vdp + MCYCLES_PER_LINE);
   }
 
   /* update VDP cycle count */
@@ -738,7 +740,7 @@ void system_frame_scd(int do_skip)
     /* run Z80 until end of line */
     if (zstate == 1)
     {
-      z80_run(mcycles_vdp + MCYCLES_PER_LINE);
+      gpgx::g_z80->Run(mcycles_vdp + MCYCLES_PER_LINE);
     }
 
     /* update VDP cycle count */
@@ -758,7 +760,7 @@ void system_frame_scd(int do_skip)
   input_end_frame(mcycles_vdp);
   m68k.refresh_cycles -= mcycles_vdp;
   m68k.cycles -= mcycles_vdp;
-  Z80.cycles -= mcycles_vdp;
+  gpgx::g_z80->SubCycles(mcycles_vdp);
   dma_endCycles = 0;
 }
 
@@ -933,13 +935,13 @@ void system_frame_sms(int do_skip)
       /* IRQ line is latched between instructions, during instruction last cycle.       */
       /* This means that if Z80 cycle count is exactly a multiple of MCYCLES_PER_LINE,  */
       /* interrupt should be triggered AFTER the next instruction.                      */
-      if ((Z80.cycles % MCYCLES_PER_LINE) == 0)
+      if ((gpgx::g_z80->GetCycles() % MCYCLES_PER_LINE) == 0)
       {
-        z80_run(Z80.cycles + 1);
+        gpgx::g_z80->Run(gpgx::g_z80->GetCycles() + 1);
       }
 
       /* Z80 interrupt */
-      Z80.irq_state = ASSERT_LINE;
+      gpgx::g_z80->SetIRQLine(gpgx::cpu::z80::LineState::kAssertLine);
     }
   }
 
@@ -947,7 +949,7 @@ void system_frame_sms(int do_skip)
   osd_input_update();
 
   /* run Z80 until end of line */
-  z80_run(MCYCLES_PER_LINE);
+  gpgx::g_z80->Run(MCYCLES_PER_LINE);
 
   /* make sure VINT flag was not read (then cleared) by last instruction */
   if (v_counter == bitmap.viewport.h)
@@ -959,7 +961,7 @@ void system_frame_sms(int do_skip)
     vint_pending = 0x20;
     if (reg[1] & 0x20)
     {
-      Z80.irq_state = ASSERT_LINE;
+      gpgx::g_z80->SetIRQLine(gpgx::cpu::z80::LineState::kAssertLine);
     }
   }
 
@@ -1002,7 +1004,7 @@ void system_frame_sms(int do_skip)
     input_refresh();
 
     /* run Z80 until end of line */
-    z80_run(mcycles_vdp + MCYCLES_PER_LINE);
+    gpgx::g_z80->Run(mcycles_vdp + MCYCLES_PER_LINE);
 
     /* update VDP cycle count */
     mcycles_vdp += MCYCLES_PER_LINE;
@@ -1040,8 +1042,8 @@ void system_frame_sms(int do_skip)
       if (!pause_b)
       {
         pause_b = 1;
-        z80_set_nmi_line(ASSERT_LINE);
-        z80_set_nmi_line(CLEAR_LINE);
+        gpgx::g_z80->SetNMILine(gpgx::cpu::z80::LineState::kAssertLine);
+        gpgx::g_z80->SetNMILine(gpgx::cpu::z80::LineState::kClearLine);
       }
     }
     else
@@ -1083,7 +1085,7 @@ void system_frame_sms(int do_skip)
   input_refresh();
 
   /* run Z80 until end of line */
-  z80_run(mcycles_vdp + MCYCLES_PER_LINE);
+  gpgx::g_z80->Run(mcycles_vdp + MCYCLES_PER_LINE);
 
   /* update VDP cycle count */
   mcycles_vdp += MCYCLES_PER_LINE;
@@ -1133,13 +1135,13 @@ void system_frame_sms(int do_skip)
         /* IRQ line is latched between instructions, during instruction last cycle.       */
         /* This means that if Z80 cycle count is exactly a multiple of MCYCLES_PER_LINE,  */
         /* interrupt should be triggered AFTER the next instruction.                      */
-        if ((Z80.cycles % MCYCLES_PER_LINE) == 0)
+        if ((gpgx::g_z80->GetCycles() % MCYCLES_PER_LINE) == 0)
         {
-          z80_run(Z80.cycles + 1);
+          gpgx::g_z80->Run(gpgx::g_z80->GetCycles() + 1);
         }
 
         /* assert Z80 interrupt */
-        Z80.irq_state = ASSERT_LINE;
+        gpgx::g_z80->SetIRQLine(gpgx::cpu::z80::LineState::kAssertLine);
       }
     }
     else
@@ -1149,7 +1151,7 @@ void system_frame_sms(int do_skip)
     }
 
     /* run Z80 until end of line */
-    z80_run(mcycles_vdp + MCYCLES_PER_LINE);
+    gpgx::g_z80->Run(mcycles_vdp + MCYCLES_PER_LINE);
 
     /* update VDP cycle count */
     mcycles_vdp += MCYCLES_PER_LINE;
@@ -1165,5 +1167,5 @@ void system_frame_sms(int do_skip)
 
   /* adjust timings for next frame */
   input_end_frame(mcycles_vdp);
-  Z80.cycles -= mcycles_vdp;
+  gpgx::g_z80->SubCycles(mcycles_vdp);
 }

@@ -43,9 +43,10 @@
 #include "xee/fnd/data_type.h"
 
 #include "core/m68k/m68k.h"
-#include "core/z80/z80.h"
 #include "core/system_hardware.h"
 #include "core/input_hw/input.h"
+
+#include "gpgx/g_z80.h"
 
 static struct
 {
@@ -116,7 +117,7 @@ static XEE_INLINE unsigned char gamepad_read(int port)
   unsigned int step = gamepad[port].Counter | (data >> 6);
 
   /* get current timestamp */
-  unsigned int cycles = ((system_hw & SYSTEM_PBC) == SYSTEM_MD) ? m68k.cycles : Z80.cycles;
+  unsigned int cycles = ((system_hw & SYSTEM_PBC) == SYSTEM_MD) ? m68k.cycles : gpgx::g_z80->GetCycles();
 
   /* TH direction switching latency */
   if (cycles < gamepad[port].Latency)
@@ -212,7 +213,7 @@ static XEE_INLINE void gamepad_write(int port, unsigned char data, unsigned char
   else
   {
     /* retrieve current timestamp */
-    unsigned int cycles = ((system_hw & SYSTEM_PBC) == SYSTEM_MD) ? m68k.cycles : Z80.cycles;
+    unsigned int cycles = ((system_hw & SYSTEM_PBC) == SYSTEM_MD) ? m68k.cycles : gpgx::g_z80->GetCycles();
 
     /* TH is pulled high when not configured as output by I/O controller */
     data = 0x40;

@@ -47,11 +47,11 @@
 #include "xee/mem/memory.h"
 
 #include "gpgx/g_fm_synthesizer.h"
+#include "gpgx/g_z80.h"
 
 #include "core/boot_rom.h"
 #include "core/core_config.h"
 #include "core/m68k/m68k.h"
-#include "core/z80/z80.h"
 #include "core/pico_current.h"
 #include "core/region_code.h"
 #include "core/system_bios.h"
@@ -83,7 +83,7 @@ void gen_init(void)
   int i;
 
   /* initialize Z80 */
-  z80_init(0,z80_irq_callback);
+  gpgx::g_z80->Init(z80_irq_callback);
 
   /* 8-bit / 16-bit modes */
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
@@ -163,16 +163,14 @@ void gen_init(void)
       /* $4000-$FFFF is mapped to hardware but Z80 PC should never point there */
       for (i=0; i<64; i++)
       {
-        z80_readmap[i] = &zram[(i & 7) << 10];
+        gpgx::g_z80->SetReadMemoryMapBase(i, &zram[(i & 7) << 10]);
       }
 
       /* initialize Z80 memory handlers */
-      z80_writemem  = z80_memory_w;
-      z80_readmem   = z80_memory_r;
+      gpgx::g_z80->SetMemoryHandlers(z80_memory_r, z80_memory_w);
 
       /* initialize Z80 port handlers */
-      z80_writeport = z80_unused_port_w;
-      z80_readport  = z80_unused_port_r;
+      gpgx::g_z80->SetPortHandlers(z80_unused_port_r, z80_unused_port_w);
     }
 
     /* $000000-$7FFFFF : external hardware area */
@@ -202,8 +200,7 @@ void gen_init(void)
       /* Master System compatibility mode */
       case SYSTEM_PBC:
       {
-        z80_writeport = z80_md_port_w;
-        z80_readport  = z80_md_port_r;
+        gpgx::g_z80->SetPortHandlers(z80_md_port_r, z80_md_port_w);
         break;
       }
 
@@ -215,8 +212,7 @@ void gen_init(void)
         sms_cart_init();
 
         /* initialize Z80 ports handlers */
-        z80_writeport = z80_gg_port_w;
-        z80_readport  = z80_gg_port_r;
+        gpgx::g_z80->SetPortHandlers(z80_gg_port_r, z80_gg_port_w);
         break;
       }
 
@@ -224,16 +220,14 @@ void gen_init(void)
       case SYSTEM_SMS:
       case SYSTEM_SMS2:
       {
-        z80_writeport = z80_ms_port_w;
-        z80_readport  = z80_ms_port_r;
+        gpgx::g_z80->SetPortHandlers(z80_ms_port_r, z80_ms_port_w);
         break;
       }
 
       /* Mark-III hardware */
       case SYSTEM_MARKIII:
       {
-        z80_writeport = z80_m3_port_w;
-        z80_readport  = z80_m3_port_r;
+        gpgx::g_z80->SetPortHandlers(z80_m3_port_r, z80_m3_port_w);
         break;
       }
 
@@ -242,8 +236,7 @@ void gen_init(void)
       case SYSTEM_SGII:
       case SYSTEM_SGII_RAM_EXT:
       {
-        z80_writeport = z80_sg_port_w;
-        z80_readport  = z80_sg_port_r;
+        gpgx::g_z80->SetPortHandlers(z80_sg_port_r, z80_sg_port_w);
         break;
       }
     }
@@ -287,7 +280,7 @@ void gen_reset(int hard_reset)
   m68k.cycles = (m68k.cycles / 7) * 7;
 
   /* Z80 M-cycles should be a multiple of 15 */
-  Z80.cycles = (m68k.cycles / 15) * 15;
+  gpgx::g_z80->SetCycles((m68k.cycles / 15) * 15);
 
   /* 8-bit / 16-bit modes */
   if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
@@ -373,7 +366,7 @@ void gen_reset(int hard_reset)
   }
 
   /* reset Z80 */
-  z80_reset();
+  gpgx::g_z80->Reset();
 
   /* some Z80 registers need to be initialized on Power ON */
   if (hard_reset)
@@ -388,9 +381,9 @@ void gen_reset(int hard_reset)
          C7 -- -- : RST $00
          01 01 -- : LD BC, $xx01
       */
-      Z80.hl.w.l = 0xE001;
-      Z80.sp.w.l = 0xDFFF;
-      Z80.r = 4;
+      gpgx::g_z80->SetHLRegister(0xE001);
+      gpgx::g_z80->SetSPRegister(0xDFFF);
+      gpgx::g_z80->SetRRegister(4);
     }
 
     /* Master System & Game Gear specific */
@@ -400,7 +393,7 @@ void gen_reset(int hard_reset)
       if ((!(core_config.bios & 1) || !(system_bios & (SYSTEM_SMS | SYSTEM_GG))))
       {
         /* a few Master System (Ace of Aces, Shadow Dancer) & Game Gear (Ecco the Dolphin, Evander Holyfield Real Deal Boxing) games crash if SP is not properly initialized */
-        Z80.sp.w.l = 0xDFF0;
+        gpgx::g_z80->SetSPRegister(0xDFF0);
       }
     }
   }
@@ -486,7 +479,7 @@ void gen_zbusreq_w(unsigned int data, unsigned int cycles)
     if (zstate == 1)
     {
       /* resynchronize with 68k */ 
-      z80_run(cycles);
+      gpgx::g_z80->Run(cycles);
 
       /* enable 68k access to Z80 bus */
       m68k.memory_map[0xa0].read8   = z80_read_byte;
@@ -504,7 +497,7 @@ void gen_zbusreq_w(unsigned int data, unsigned int cycles)
     if (zstate == 3)
     {
       /* resynchronize with 68k (Z80 cycles should remain a multiple of 15 MClocks) */
-      Z80.cycles = ((cycles + 14) / 15) * 15;
+      gpgx::g_z80->SetCycles(((cycles + 14) / 15) * 15);
 
       /* disable 68k access to Z80 bus */
       m68k.memory_map[0xa0].read8   = m68k_read_bus_8;
@@ -526,10 +519,10 @@ void gen_zreset_w(unsigned int data, unsigned int cycles)
     if (zstate == 0)
     {
       /* resynchronize with 68k (Z80 cycles should remain a multiple of 15 MClocks) */
-      Z80.cycles = ((cycles + 14) / 15) * 15;
+      gpgx::g_z80->SetCycles(((cycles + 14) / 15) * 15);
 
       /* reset Z80 & YM2612 */
-      z80_reset();
+      gpgx::g_z80->Reset();
       gpgx::g_fm_synthesizer->SyncAndReset(cycles);
     }
 
@@ -543,7 +536,7 @@ void gen_zreset_w(unsigned int data, unsigned int cycles)
       m68k.memory_map[0xa0].write16 = z80_write_word;
 
       /* reset Z80 & YM2612 */
-      z80_reset();
+      gpgx::g_z80->Reset();
       gpgx::g_fm_synthesizer->SyncAndReset(cycles);
     }
 
@@ -556,7 +549,7 @@ void gen_zreset_w(unsigned int data, unsigned int cycles)
     if (zstate == 1)
     {
       /* resynchronize with 68k */
-      z80_run(cycles);
+      gpgx::g_z80->Run(cycles);
     }
 
     /* check if 68k had access to Z80 bus */

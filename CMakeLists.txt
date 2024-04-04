@@ -162,8 +162,6 @@ add_executable(vigas
     inc/core/m68k/s68ki_cycles.h
     inc/core/cart_hw/svp/ssp16.h
     inc/core/cart_hw/svp/svp.h
-    inc/core/z80/osd_cpu.h
-    inc/core/z80/z80.h
     inc/core/cart_hw/areplay.h
     inc/core/cart_hw/cart_hw_t.h
     inc/core/cart_hw/eeprom_93c.h
@@ -172,12 +170,21 @@ add_executable(vigas
     inc/gpgx/g_audio_renderer.h
     inc/gpgx/g_psg.h
     inc/gpgx/g_fm_synthesizer.h
+    inc/gpgx/g_z80.h
+    
     inc/gpgx/audio/audio_renderer.h
     inc/gpgx/audio/blip_buffer.h
     inc/gpgx/audio/effect/equalizer_3band.h
     inc/gpgx/audio/effect/fm_synthesizer.h
     inc/gpgx/audio/effect/fm_synthesizer_base.h
     inc/gpgx/audio/effect/null_fm_synthesizer.h
+    
+    inc/gpgx/cpu/z80/z80.h
+    inc/gpgx/cpu/z80/z80_line_state.h
+    inc/gpgx/cpu/z80/z80_macro.h
+    inc/gpgx/cpu/z80/z80_register_pair.h
+    inc/gpgx/cpu/z80/z80_table_index.h
+    
     inc/gpgx/ic/sn76489/sn76489.h
     inc/gpgx/ic/sn76489/sn76489_type.h
     inc/gpgx/ic/ym2413/opll_ch.h
@@ -193,6 +200,8 @@ add_executable(vigas
     inc/gpgx/ic/ym3438/opn2_context.h
     inc/gpgx/ic/ym3438/ym3438.h
     inc/gpgx/ic/ym3438/ym3438_mode.h
+
+    inc/gpgx/vgs/vdp_irq_handler_z80.h
     
     src/build/cmd_sdl2/config.cpp
     src/build/cmd_sdl2/error.cpp
@@ -258,22 +267,32 @@ add_executable(vigas
     src/core/m68k/s68kcpu.cpp
     src/core/cart_hw/svp/ssp16.cpp
     src/core/cart_hw/svp/svp.cpp
-    src/core/z80/z80.cpp
     src/core/cart_hw/areplay.cpp
     src/core/cart_hw/eeprom_93c.cpp
     
     src/gpgx/g_audio_renderer.cpp
     src/gpgx/g_psg.cpp
     src/gpgx/g_fm_synthesizer.cpp
+    src/gpgx/g_z80.cpp
+    
     src/gpgx/audio/audio_renderer.cpp
     src/gpgx/audio/blip_buffer.cpp
     src/gpgx/audio/effect/equalizer_3band.cpp
     src/gpgx/audio/effect/fm_synthesizer_base.cpp
     src/gpgx/audio/effect/null_fm_synthesizer.cpp
+    
+    src/gpgx/cpu/z80/z80.cpp
+    src/gpgx/cpu/z80/z80_context.cpp
+    src/gpgx/cpu/z80/z80_cycles.cpp
+    src/gpgx/cpu/z80/z80_opcodes.cpp
+    src/gpgx/cpu/z80/z80_operations.cpp
+    
     src/gpgx/ic/sn76489/sn76489.cpp
     src/gpgx/ic/ym2413/ym2413.cpp
     src/gpgx/ic/ym2612/ym2612.cpp
     src/gpgx/ic/ym3438/ym3438.cpp
+
+    src/gpgx/vgs/vdp_irq_handler_z80.cpp
 )
 
 target_include_directories(vigas PRIVATE 

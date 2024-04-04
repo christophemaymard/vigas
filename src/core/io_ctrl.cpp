@@ -44,7 +44,6 @@
 #include "xee/fnd/data_type.h"
 
 #include "core/core_config.h"
-#include "core/z80/z80.h"
 #include "core/io_reg.h"
 #include "core/region_code.h"
 #include "core/system_hardware.h"
@@ -66,6 +65,7 @@
 #include "core/input_hw/graphic_board.h"
 
 #include "gpgx/g_psg.h"
+#include "gpgx/g_z80.h"
 
 
 static struct port_t
@@ -339,7 +339,7 @@ void io_reset(void)
     if ((system_hw & SYSTEM_SMS) || (system_hw & SYSTEM_GG))
     {
       /* RAM, I/O and either BIOS or Cartridge ROM are enabled */
-      io_reg[0x0E] = (z80_readmap[0] == cart.rom + 0x400000) ? 0xE0 : 0xA8;
+      io_reg[0x0E] = (gpgx::g_z80->GetReadMemoryMapBase(0) == cart.rom + 0x400000) ? 0xE0 : 0xA8;
     }
     else
     {
@@ -637,7 +637,7 @@ void io_gg_write(unsigned int offset, unsigned int data)
 
     case 6: /* PSG Stereo output control */
       io_reg[6] = data;
-      gpgx::g_psg->psg_config(Z80.cycles, core_config.psg_preamp, data);
+      gpgx::g_psg->psg_config(gpgx::g_z80->GetCycles(), core_config.psg_preamp, data);
       return;
 
     default: /* Read-only */

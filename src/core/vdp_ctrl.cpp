@@ -44,10 +44,11 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
+#include "gpgx/cpu/z80/z80_line_state.h"
+
 #include "core/core_config.h"
 #include "core/macros.h"
 #include "core/m68k/m68k.h"
-#include "core/z80/z80.h"
 #include "core/bitmap.h"
 #include "core/system_bios.h"
 #include "core/system_cycle.h"
@@ -62,6 +63,9 @@
 #include "core/cart_hw/svp/svp.h"
 #include "core/state.h"
 #include "core/hvc.h"
+
+#include "gpgx/g_z80.h"
+#include "gpgx/vgs/vdp_irq_handler_z80.h"
 
 /* Mark a pattern as modified */
 #define MARK_BG_DIRTY(addr)                         \
@@ -269,8 +273,8 @@ void vdp_init(void)
   else
   {
     /* Z80 cpu */
-    set_irq_line = z80_set_irq_line;
-    set_irq_line_delay = z80_set_irq_line;
+    set_irq_line = gpgx::vgs::z80_vdp_set_irq_line;
+    set_irq_line_delay = gpgx::vgs::z80_vdp_set_irq_line;
   }
 }
 
@@ -705,7 +709,7 @@ void vdp_dma_update(unsigned int cycles)
     if (zstate & 4)
     {
       /* force Z80 to wait until end of DMA timeframe */
-      Z80.cycles = dma_endCycles;
+      gpgx::g_z80->SetCycles(dma_endCycles);
 #ifdef LOGVDP
       error("-->Z80 CPU waiting for %d cycles\n", dma_cycles);
 #endif
@@ -920,7 +924,7 @@ void vdp_z80_ctrl_w(unsigned int data)
       if ((code & 0x03) == 0x02)
       {
         /* VDP register write */
-        vdp_reg_w(data & 0x1F, addr_latch, Z80.cycles);
+        vdp_reg_w(data & 0x1F, addr_latch, gpgx::g_z80->GetCycles());
 
         /* Clear pending flag  */
         pending = 0;
@@ -1003,7 +1007,7 @@ void vdp_z80_ctrl_w(unsigned int data)
               dma_src = (reg[22] << 8) | reg[21];
 
               /* Trigger DMA */
-              vdp_dma_update(Z80.cycles);
+              vdp_dma_update(gpgx::g_z80->GetCycles());
               break;
             }
 
@@ -1059,7 +1063,7 @@ void vdp_sms_ctrl_w(unsigned int data)
       int mode, prev = (reg[0] & 0x06) | (reg[1] & 0x18);
 
       /* Write VDP register 0-15 */
-      vdp_reg_w(data & 0x0F, addr_latch, Z80.cycles);
+      vdp_reg_w(data & 0x0F, addr_latch, gpgx::g_z80->GetCycles());
 
       /* Check VDP mode changes */
       mode = (reg[0] & 0x06) | (reg[1] & 0x18);
@@ -1179,7 +1183,7 @@ void vdp_tms_ctrl_w(unsigned int data)
       data &= 0x07;
 
       /* Write VDP register */
-      vdp_reg_w(data, addr_latch, Z80.cycles);
+      vdp_reg_w(data, addr_latch, gpgx::g_z80->GetCycles());
  
       /* Check VDP mode changes */
       if (data < 2)
@@ -1262,7 +1266,7 @@ unsigned int vdp_68k_ctrl_r(unsigned int cycles)
   if ((v_counter == bitmap.viewport.h) && (cycles >= vint_cycle))
   {
     /* check Z80 interrupt state to assure VINT has not already been triggered (and flag cleared) */
-    if (Z80.irq_state != ASSERT_LINE)
+    if (gpgx::g_z80->GetIRQLine() != gpgx::cpu::z80::LineState::kAssertLine)
     {
       temp |= 0x80;
     }
@@ -1382,10 +1386,10 @@ unsigned int vdp_z80_ctrl_r(unsigned int cycles)
   hint_pending = vint_pending = 0;
 
   /* Clear Z80 interrupt */
-  Z80.irq_state = CLEAR_LINE;
+  gpgx::g_z80->SetIRQLine(gpgx::cpu::z80::LineState::kClearLine);
 
 #ifdef LOGVDP
-  error("[%d(%d)][%d(%d)] VDP Z80 status read -> 0x%x (0x%x) (%x)\n", v_counter, (v_counter + (cycles - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, cycles, cycles%MCYCLES_PER_LINE, temp, status, Z80.pc.w.l);
+  error("[%d(%d)][%d(%d)] VDP Z80 status read -> 0x%x (0x%x) (%x)\n", v_counter, (v_counter + (cycles - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, cycles, cycles%MCYCLES_PER_LINE, temp, status, gpgx::g_z80->GetPCRegister());
 #endif
   return (temp);
 }
@@ -2730,7 +2734,7 @@ static void vdp_z80_data_w_m5(unsigned int data)
     }
 
     /* Trigger DMA */
-    vdp_dma_update(Z80.cycles);
+    vdp_dma_update(gpgx::g_z80->GetCycles());
   }
 }
 
@@ -2817,7 +2821,7 @@ static void vdp_z80_data_w_ms(unsigned int data)
     int index;
 
     /* Check if we are already on next line */
-    if ((Z80.cycles - mcycles_vdp) >= MCYCLES_PER_LINE)
+    if ((gpgx::g_z80->GetCycles() - mcycles_vdp) >= MCYCLES_PER_LINE)
     {
       /* update line counter */
       int line = (v_counter + 1) % lines_per_frame;
@@ -2845,7 +2849,7 @@ static void vdp_z80_data_w_ms(unsigned int data)
     }
 
 #ifdef LOGVDP
-    error("[%d(%d)][%d(%d)] VRAM 0x%x write -> 0x%x (%x)\n", v_counter, (v_counter + (Z80.cycles - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, Z80.cycles, Z80.cycles%MCYCLES_PER_LINE, index, data, Z80.pc.w.l);
+    error("[%d(%d)][%d(%d)] VRAM 0x%x write -> 0x%x (%x)\n", v_counter, (v_counter + (gpgx::g_z80->GetCycles() - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, gpgx::g_z80->GetCycles(), gpgx::g_z80->GetCycles()%MCYCLES_PER_LINE, index, data, gpgx::g_z80->GetPCRegister());
 #endif
   }
   else
@@ -2872,7 +2876,7 @@ static void vdp_z80_data_w_ms(unsigned int data)
       }
     }
 #ifdef LOGVDP
-    error("[%d(%d)][%d(%d)] CRAM 0x%x write -> 0x%x (%x)\n", v_counter, (v_counter + (Z80.cycles - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, Z80.cycles, Z80.cycles%MCYCLES_PER_LINE, addr, data, Z80.pc.w.l);
+    error("[%d(%d)][%d(%d)] CRAM 0x%x write -> 0x%x (%x)\n", v_counter, (v_counter + (gpgx::g_z80->GetCycles() - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, gpgx::g_z80->GetCycles(), gpgx::g_z80->GetCycles()%MCYCLES_PER_LINE, addr, data, gpgx::g_z80->GetPCRegister());
 #endif
   }
 
@@ -2893,7 +2897,7 @@ static void vdp_z80_data_w_gg(unsigned int data)
     int index;
 
     /* Check if we are already on next line */
-    if ((Z80.cycles - mcycles_vdp) >= MCYCLES_PER_LINE)
+    if ((gpgx::g_z80->GetCycles() - mcycles_vdp) >= MCYCLES_PER_LINE)
     {
       /* update line counter */
       int line = (v_counter + 1) % lines_per_frame;
@@ -2920,7 +2924,7 @@ static void vdp_z80_data_w_gg(unsigned int data)
       MARK_BG_DIRTY(index);
     }
 #ifdef LOGVDP
-    error("[%d(%d)][%d(%d)] VRAM 0x%x write -> 0x%x (%x)\n", v_counter, (v_counter + (Z80.cycles - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, Z80.cycles, Z80.cycles%MCYCLES_PER_LINE, index, data, Z80.pc.w.l);
+    error("[%d(%d)][%d(%d)] VRAM 0x%x write -> 0x%x (%x)\n", v_counter, (v_counter + (gpgx::g_z80->GetCycles() - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, gpgx::g_z80->GetCycles(), gpgx::g_z80->GetCycles()%MCYCLES_PER_LINE, index, data, gpgx::g_z80->GetPCRegister());
 #endif
   }
   else
@@ -2958,7 +2962,7 @@ static void vdp_z80_data_w_gg(unsigned int data)
       cached_write = data;
     }
 #ifdef LOGVDP
-    error("[%d(%d)][%d(%d)] CRAM 0x%x write -> 0x%x (%x)\n", v_counter, (v_counter + (Z80.cycles - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, Z80.cycles, Z80.cycles%MCYCLES_PER_LINE, addr, data, Z80.pc.w.l);
+    error("[%d(%d)][%d(%d)] CRAM 0x%x write -> 0x%x (%x)\n", v_counter, (v_counter + (gpgx::g_z80->GetCycles() - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, gpgx::g_z80->GetCycles(), gpgx::g_z80->GetCycles()%MCYCLES_PER_LINE, addr, data, gpgx::g_z80->GetPCRegister());
 #endif
   }
 
@@ -2984,7 +2988,7 @@ static void vdp_z80_data_w_sg(unsigned int data)
   addr++;
 
 #ifdef LOGVDP
-  error("[%d(%d)][%d(%d)] VRAM 0x%x write -> 0x%x (%x)\n", v_counter, (v_counter + (Z80.cycles - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, Z80.cycles, Z80.cycles%MCYCLES_PER_LINE, index, data, Z80.pc.w.l);
+  error("[%d(%d)][%d(%d)] VRAM 0x%x write -> 0x%x (%x)\n", v_counter, (v_counter + (gpgx::g_z80->GetCycles() - mcycles_vdp)/MCYCLES_PER_LINE)%lines_per_frame, gpgx::g_z80->GetCycles(), gpgx::g_z80->GetCycles()%MCYCLES_PER_LINE, index, data, gpgx::g_z80->GetPCRegister());
 #endif
 }
 

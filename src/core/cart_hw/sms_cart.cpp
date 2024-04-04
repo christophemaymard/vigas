@@ -46,7 +46,6 @@
 
 #include "core/core_config.h"
 #include "core/loadrom.h" // For load_bios().
-#include "core/z80/z80.h"
 #include "core/io_reg.h"
 #include "core/region_code.h"
 #include "core/rominfo.h"
@@ -62,6 +61,8 @@
 
 #include "core/cart_hw/eeprom_93c.h"
 #include "core/input_hw/terebi_oekaki.h"
+
+#include "gpgx/g_z80.h"
 
 #define MAPPER_NONE           (0x00)
 #define MAPPER_TEREBI         (0x01)
@@ -740,7 +741,7 @@ void sms_cart_reset(void)
   if (bios_rom.pages == 1)
   {
     /* BIOS ROM is mapped to $0000-$03FF */
-    z80_readmap[0] = cart.rom + 0x400000;
+    gpgx::g_z80->SetReadMemoryMapBase(0, cart.rom + 0x400000);
   }
 }
 
@@ -811,7 +812,7 @@ void sms_cart_switch(u8 mode)
   if ((bios_rom.pages == 1) && ((mode & 0x48) == 0x08))
   {
     /* BIOS ROM is mapped to $0000-$03FF */
-    z80_readmap[0] = cart.rom + 0x400000;
+    gpgx::g_z80->SetReadMemoryMapBase(0, cart.rom + 0x400000);
   }
 }
 
@@ -1001,7 +1002,7 @@ static void mapper_reset(void)
     for (i = 0x30; i < 0x40; i++)
     {
       /* $C000-$FFFF mapped to 1KB internal RAM (mirrored) */
-      z80_readmap[i] = z80_writemap[i] = &work_ram[0];
+      gpgx::g_z80->SetMemoryMapBase(i, &work_ram[0]);
     }
   }
   else if (system_hw == SYSTEM_SGII)
@@ -1010,7 +1011,7 @@ static void mapper_reset(void)
     for (i = 0x30; i < 0x40; i++)
     {
       /* $C000-$FFFF mapped to 2KB internal RAM (mirrored) */
-      z80_readmap[i] = z80_writemap[i] = &work_ram[(i & 0x01) << 10];
+      gpgx::g_z80->SetMemoryMapBase(i, &work_ram[(i & 0x01) << 10]);
     }
   }
   else
@@ -1019,7 +1020,7 @@ static void mapper_reset(void)
     for (i = 0x30; i < 0x40; i++)
     {
       /* $C000-$FFFF mapped to 8KB internal RAM (mirrored) */
-      z80_readmap[i] = z80_writemap[i] = &work_ram[(i & 0x07) << 10];
+      gpgx::g_z80->SetMemoryMapBase(i, &work_ram[(i & 0x07) << 10]);
     }
   }
 
@@ -1029,13 +1030,12 @@ static void mapper_reset(void)
     /* $0000-$BFFF mapped to unused cartridge areas */
     for(i = 0x00; i < 0x30; i++)
     {
-      z80_writemap[i] = cart.rom + 0x510000;
-      z80_readmap[i]  = cart.rom + 0x510400;
+      gpgx::g_z80->SetWriteMemoryMapBase(i, cart.rom + 0x510000);
+      gpgx::g_z80->SetReadMemoryMapBase(i, cart.rom + 0x510400);
     }
 
     /* set default Z80 memory handlers */
-    z80_readmem = read_mapper_none;
-    z80_writemem = write_mapper_none;
+    gpgx::g_z80->SetMemoryHandlers(read_mapper_none, write_mapper_none);
     return;
   }
 
@@ -1046,8 +1046,8 @@ static void mapper_reset(void)
     for (i = 0x00; i < 0x20; i++)
     {
       /* by default, $0000-$7FFF mapped to cartridge ROM lower KB (mirrored if less than 32KB) */
-      z80_readmap[i] = &slot.rom[(i % slot.pages) << 10];
-      z80_writemap[i] = cart.rom + 0x510000; /* unused area */
+      gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[(i % slot.pages) << 10]);
+      gpgx::g_z80->SetWriteMemoryMapBase(i, cart.rom + 0x510000); /* unused area */
     }
 
     /* 8KB RAM extension adapter (type A) */
@@ -1056,7 +1056,7 @@ static void mapper_reset(void)
       for (i = 0x08; i < 0x10; i++)
       {
         /* $2000-$3FFF mapped to 8KB external RAM */
-        z80_readmap[i] = z80_writemap[i] = &work_ram[0x2000 + ((i & 0x07) << 10)];
+        gpgx::g_z80->SetMemoryMapBase(i, &work_ram[0x2000 + ((i & 0x07) << 10)]);
       }
     }
 
@@ -1067,7 +1067,7 @@ static void mapper_reset(void)
       for (i = 0x20; i < 0x30; i++)
       {
         /* $8000-$BFFF mapped to 8KB external RAM (mirrored) */
-        z80_readmap[i] = z80_writemap[i] = &work_ram[0x2000 + ((i & 0x07) << 10)];
+        gpgx::g_z80->SetMemoryMapBase(i, &work_ram[0x2000 + ((i & 0x07) << 10)]);
       }
     }
     else if (slot.mapper == MAPPER_RAM_2K)
@@ -1076,7 +1076,7 @@ static void mapper_reset(void)
       for (i = 0x20; i < 0x30; i++)
       {
         /* $8000-$BFFF mapped to 2KB external RAM (mirrored) */
-        z80_readmap[i] = z80_writemap[i] = &work_ram[0x2000 + ((i & 0x01) << 10)];
+        gpgx::g_z80->SetMemoryMapBase(i, &work_ram[0x2000 + ((i & 0x01) << 10)]);
       }
     }
     else if (slot.pages <= 0x20)
@@ -1085,8 +1085,8 @@ static void mapper_reset(void)
       for (i = 0x20; i < 0x30; i++)
       {
         /* $8000-$BFFF mapped to unused area */
-        z80_writemap[i] = cart.rom + 0x510000;
-        z80_readmap[i]  = cart.rom + 0x510400;
+        gpgx::g_z80->SetWriteMemoryMapBase(i, cart.rom + 0x510000);
+        gpgx::g_z80->SetReadMemoryMapBase(i, cart.rom + 0x510400);
       }
     }
     else
@@ -1095,8 +1095,8 @@ static void mapper_reset(void)
       for (i = 0x20; i < 0x30; i++)
       {
         /* $8000-$BFFF mapped to cartridge ROM upper KB (mirrored if less than 48KB) */
-        z80_readmap[i] = &slot.rom[(0x20 + (i % (slot.pages - 0x20))) << 10];
-        z80_writemap[i] = cart.rom + 0x510000; /* unused area */
+        gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[(0x20 + (i % (slot.pages - 0x20))) << 10]);
+        gpgx::g_z80->SetWriteMemoryMapBase(i, cart.rom + 0x510000); /* unused area */
       }
     }
   }
@@ -1106,8 +1106,8 @@ static void mapper_reset(void)
     for (i = 0x00; i < 0x30; i++)
     {
       /* by default, $0000-$BFFF is mapped to cartridge ROM lower 48KB */
-      z80_readmap[i] = &slot.rom[i << 10];
-      z80_writemap[i] = cart.rom + 0x510000; /* unused area */
+      gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[i << 10]);
+      gpgx::g_z80->SetWriteMemoryMapBase(i, cart.rom + 0x510000); /* unused area */
     }
 
     /* reset ROM paging hardware */
@@ -1125,7 +1125,7 @@ static void mapper_reset(void)
         /* first 8KB bank ($0000-$1FFF) is mapped to last 8KB cartridge ROM page */
         for (i = 0x00; i < 0x08; i++)
         {
-          z80_readmap[i] = &slot.rom[(0x0f << 13) | ((i & 0x07) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[(0x0f << 13) | ((i & 0x07) << 10)]);
         }
       }
     }
@@ -1163,109 +1163,88 @@ static void mapper_reset(void)
   {
     case MAPPER_SEGA:
     case MAPPER_SEGA_X:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_sega;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_sega);
       break;
 
     case MAPPER_CODIES:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_codies;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_codies);
       break;
 
     case MAPPER_KOREA:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_korea;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_korea);
       break;
 
     case MAPPER_KOREA_8K:
-      z80_readmem = read_mapper_korea_8k;
-      z80_writemem = write_mapper_korea_8k;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_korea_8k, write_mapper_korea_8k);
       break;
 
     case MAPPER_KOREA_16K:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_korea_16k;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_korea_16k);
       break;
 
     case MAPPER_MSX:
     case MAPPER_MSX_NEMESIS:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_msx;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_msx);
       break;
 
     case MAPPER_MULTI_16K:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_multi_16k;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_multi_16k);
       break;
 
     case MAPPER_MULTI_2x16K_V1:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_multi_2x16k_v1;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_multi_2x16k_v1);
       break;
 
     case MAPPER_MULTI_2x16K_V2:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_multi_2x16k_v2;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_multi_2x16k_v2);
       break;
 
     case MAPPER_MULTI_16K_32K:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_multi_16k_32k;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_multi_16k_32k);
       break;
 
     case MAPPER_MULTI_32K:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_multi_32k;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_multi_32k);
       break;
 
     case MAPPER_MULTI_32K_16K:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_multi_32k_16k;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_multi_32k_16k);
       break;
 
     case MAPPER_HICOM:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_hicom;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_hicom);
       break;
 
     case MAPPER_MULTI_8K:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_multi_8k;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_multi_8k);
       break;
 
     case MAPPER_MULTI_4x8K:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_multi_4x8k;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_multi_4x8k);
       break;
 
     case MAPPER_ZEMINA_4x8K:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_zemina_4x8k;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_zemina_4x8k);
       break;
 
     case MAPPER_ZEMINA_16K_32K:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_zemina_16k_32k;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_zemina_16k_32k);
       break;
 
     case MAPPER_HWASUNG:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_hwasung;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_hwasung);
       break;
 
     case MAPPER_93C46:
-      z80_readmem = read_mapper_93c46;
-      z80_writemem = write_mapper_93c46;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_93c46, write_mapper_93c46);
       break;
 
     case MAPPER_TEREBI:
-      z80_readmem = read_mapper_terebi;
-      z80_writemem = write_mapper_terebi;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_terebi, write_mapper_terebi);
       break;
 
     default:
-      z80_readmem = read_mapper_default;
-      z80_writemem = write_mapper_none;
+      gpgx::g_z80->SetMemoryHandlers(read_mapper_default, write_mapper_none);
       break;
   }
 }
@@ -1287,7 +1266,7 @@ static void mapper_8k_w(int offset, unsigned char data)
     {
       for (i = 0x20; i < 0x28; i++)
       {
-        z80_readmap[i] = &page[(i & 0x07) << 10];
+        gpgx::g_z80->SetReadMemoryMapBase(i, &page[(i & 0x07) << 10]);
       }
 
       /* Multi Korean mapper specific */
@@ -1298,7 +1277,7 @@ static void mapper_8k_w(int offset, unsigned char data)
           /* $0000-$1FFF is mirror of $8000-$9FFF */
           for (i = 0x00; i < 0x08; i++)
           {
-            z80_readmap[i] = z80_readmap[0x20 + i];
+            gpgx::g_z80->MirrorReadMemoryMapBase(i, 0x20 + i);
           }
         }
         else
@@ -1306,7 +1285,7 @@ static void mapper_8k_w(int offset, unsigned char data)
           /* $2000-$3FFF is mapped to cartridge ROM page #60 */
           for (i = 0x00; i < 0x08; i++)
           {
-            z80_readmap[i] = &slot.rom[(0x3C % slot.pages) << 13] + ((i & 0x07) << 10);
+            gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[(0x3C % slot.pages) << 13] + ((i & 0x07) << 10));
           }
         }
       }
@@ -1317,7 +1296,7 @@ static void mapper_8k_w(int offset, unsigned char data)
     {
       for (i = 0x28; i < 0x30; i++)
       {
-        z80_readmap[i] = &page[(i & 0x07) << 10];
+        gpgx::g_z80->SetReadMemoryMapBase(i, &page[(i & 0x07) << 10]);
       }
 
       /* Multi Korean mapper specific */
@@ -1326,7 +1305,7 @@ static void mapper_8k_w(int offset, unsigned char data)
         /* $2000-$3FFF is mirror of $A000-$BFFF */
         for (i = 0x08; i < 0x10; i++)
         {
-          z80_readmap[i] = z80_readmap[0x20 + i];
+          gpgx::g_z80->MirrorReadMemoryMapBase(i, 0x20 + i);
         }
       }
       else if (slot.mapper == MAPPER_ZEMINA_4x8K)
@@ -1336,7 +1315,7 @@ static void mapper_8k_w(int offset, unsigned char data)
           /* $2000-$3FFF is mirror of $A000-$BFFF */
           for (i = 0x08; i < 0x10; i++)
           {
-            z80_readmap[i] = z80_readmap[0x20 + i];
+            gpgx::g_z80->MirrorReadMemoryMapBase(i, 0x20 + i);
           }
         }
         else
@@ -1344,7 +1323,7 @@ static void mapper_8k_w(int offset, unsigned char data)
           /* $2000-$3FFF is mapped to cartridge ROM page #60 */
           for (i = 0x08; i < 0x10; i++)
           {
-            z80_readmap[i] = &slot.rom[(0x3C % slot.pages) << 13] + ((i & 0x07) << 10);
+            gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[(0x3C % slot.pages) << 13] + ((i & 0x07) << 10));
           }
         }
       }
@@ -1356,7 +1335,7 @@ static void mapper_8k_w(int offset, unsigned char data)
     {
       for (i = 0x10; i < 0x18; i++)
       {
-        z80_readmap[i] = &page[(i & 0x07) << 10];
+        gpgx::g_z80->SetReadMemoryMapBase(i, &page[(i & 0x07) << 10]);
       }
       break;
     }
@@ -1365,7 +1344,7 @@ static void mapper_8k_w(int offset, unsigned char data)
     {
       for (i = 0x18; i < 0x20; i++)
       {
-        z80_readmap[i] = &page[(i & 0x07) << 10];
+        gpgx::g_z80->SetReadMemoryMapBase(i, &page[(i & 0x07) << 10]);
       }
       break;
     }
@@ -1402,7 +1381,7 @@ static void mapper_16k_w(int offset, unsigned char data)
         /* external RAM (upper or lower 16KB) mapped at $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = z80_writemap[i] = &sram.sram[((data & 0x04) << 12) + ((i & 0x0F) << 10)];
+          gpgx::g_z80->SetMemoryMapBase(i, &sram.sram[((data & 0x04) << 12) + ((i & 0x0F) << 10)]);
         }
       }
       else
@@ -1419,8 +1398,8 @@ static void mapper_16k_w(int offset, unsigned char data)
         /* cartridge ROM mapped at $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = &slot.rom[(page << 14) | ((i & 0x0F) << 10)];
-          z80_writemap[i] = cart.rom + 0x510000; /* unused area */
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[(page << 14) | ((i & 0x0F) << 10)]);
+          gpgx::g_z80->SetWriteMemoryMapBase(i, cart.rom + 0x510000); /* unused area */
         }
       }
 
@@ -1429,7 +1408,7 @@ static void mapper_16k_w(int offset, unsigned char data)
         /* external RAM (lower 16KB) mapped at $C000-$FFFF */
         for (i = 0x30; i < 0x40; i++)
         {
-          z80_readmap[i] = z80_writemap[i] = &sram.sram[(i & 0x0F) << 10];
+          gpgx::g_z80->SetMemoryMapBase(i, &sram.sram[(i & 0x0F) << 10]);
         }
       }
       else
@@ -1437,7 +1416,7 @@ static void mapper_16k_w(int offset, unsigned char data)
         /* internal RAM (8KB mirrored) mapped at $C000-$FFFF */
         for (i = 0x30; i < 0x40; i++)
         {
-          z80_readmap[i] = z80_writemap[i] = &work_ram[(i & 0x07) << 10];
+          gpgx::g_z80->SetMemoryMapBase(i, &work_ram[(i & 0x07) << 10]);
         }
       }
       break;
@@ -1448,12 +1427,12 @@ static void mapper_16k_w(int offset, unsigned char data)
       /* first 1KB is not fixed (CODEMASTER or MULTI mappers only) */
       if (slot.mapper >= MAPPER_CODIES)
       {
-        z80_readmap[0] = &slot.rom[(page << 14)];
+        gpgx::g_z80->SetReadMemoryMapBase(0, &slot.rom[(page << 14)]);
       }
 
       for (i = 0x01; i < 0x10; i++)
       {
-        z80_readmap[i] = &slot.rom[(page << 14) | ((i & 0x0F) << 10)];
+        gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[(page << 14) | ((i & 0x0F) << 10)]);
       }
       break;
     }
@@ -1462,7 +1441,7 @@ static void mapper_16k_w(int offset, unsigned char data)
     {
       for (i = 0x10; i < 0x20; i++)
       {
-        z80_readmap[i] = &slot.rom[(page << 14) | ((i & 0x0F) << 10)];
+        gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[(page << 14) | ((i & 0x0F) << 10)]);
       }
 
       /* cartridge RAM switch (CODEMASTER mapper only, see Ernie Elf's Golf) */
@@ -1473,7 +1452,7 @@ static void mapper_16k_w(int offset, unsigned char data)
           /* external RAM (8KB) mapped at $A000-$BFFF */
           for (i = 0x28; i < 0x30; i++)
           {
-            z80_readmap[i] = z80_writemap[i] = &sram.sram[(i & 0x0F) << 10];
+            gpgx::g_z80->SetMemoryMapBase(i, &sram.sram[(i & 0x0F) << 10]);
           }
         }
         else
@@ -1484,8 +1463,8 @@ static void mapper_16k_w(int offset, unsigned char data)
           /* cartridge ROM mapped at $A000-$BFFF */
           for (i = 0x28; i < 0x30; i++)
           {
-            z80_readmap[i] = &slot.rom[(page << 14) | ((i & 0x0F) << 10)];
-            z80_writemap[i] = cart.rom + 0x510000; /* unused area */
+            gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[(page << 14) | ((i & 0x0F) << 10)]);
+            gpgx::g_z80->SetWriteMemoryMapBase(i, cart.rom + 0x510000); /* unused area */
           }
         }
       }
@@ -1498,7 +1477,7 @@ static void mapper_16k_w(int offset, unsigned char data)
           /* $8000-$BFFF is not mapped to cartridge ROM (unused area) */
           for (i = 0x20; i < 0x30; i++)
           {
-            z80_readmap[i] = cart.rom + 0x510400;
+            gpgx::g_z80->SetReadMemoryMapBase(i, cart.rom + 0x510400);
           }
         }
         else
@@ -1506,13 +1485,13 @@ static void mapper_16k_w(int offset, unsigned char data)
           /* $8000-$9FFF is mirror of $6000-$7FFF */
           for (i = 0x20; i < 0x28; i++)
           {
-            z80_readmap[i] = z80_readmap[i - 0x08];
+            gpgx::g_z80->MirrorReadMemoryMapBase(i, i - 0x08);
           }
 
           /* $A000-$BFFF is mirror of $4000-$5FFF */
           for (i = 0x28; i < 0x30; i++)
           {
-            z80_readmap[i] = z80_readmap[i - 0x18];
+            gpgx::g_z80->MirrorReadMemoryMapBase(i, i - 0x18);
           }
         }
       }
@@ -1523,7 +1502,7 @@ static void mapper_16k_w(int offset, unsigned char data)
           /* $8000-$BFFF is not mapped to cartridge ROM (unused area) */
           for (i = 0x20; i < 0x30; i++)
           {
-            z80_readmap[i] = cart.rom + 0x510400;
+            gpgx::g_z80->SetReadMemoryMapBase(i, cart.rom + 0x510400);
           }
         }
         else
@@ -1531,13 +1510,13 @@ static void mapper_16k_w(int offset, unsigned char data)
           /* $8000-$9FFF is mirror of $6000-$7FFF */
           for (i = 0x20; i < 0x28; i++)
           {
-            z80_readmap[i] = z80_readmap[i - 0x08];
+            gpgx::g_z80->MirrorReadMemoryMapBase(i, i - 0x08);
           }
 
           /* $A000-$BFFF is mirror of $4000-$5FFF */
           for (i = 0x28; i < 0x30; i++)
           {
-            z80_readmap[i] = z80_readmap[i - 0x18];
+            gpgx::g_z80->MirrorReadMemoryMapBase(i, i - 0x18);
           }
         }
       }
@@ -1553,7 +1532,7 @@ static void mapper_16k_w(int offset, unsigned char data)
       /* first 8KB */
       for (i = 0x20; i < 0x28; i++)
       {
-        z80_readmap[i] = &slot.rom[(page << 14) | ((i & 0x0F) << 10)];
+        gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[(page << 14) | ((i & 0x0F) << 10)]);
       }
 
       /* check that cartridge RAM (8KB) is not mapped at $A000-$BFFF (CODEMASTER mapper only) */
@@ -1562,7 +1541,7 @@ static void mapper_16k_w(int offset, unsigned char data)
       /* last 8KB */
       for (i = 0x28; i < 0x30; i++)
       {
-        z80_readmap[i] = &slot.rom[(page << 14) | ((i & 0x0F) << 10)];
+        gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[(page << 14) | ((i & 0x0F) << 10)]);
       }
       break;
     }
@@ -1595,13 +1574,13 @@ static void mapper_32k_w(unsigned char data)
         /* lower 16K of selected 32K page is mapped in $0000-$3FFF (mirrored in $4000-$7FFF) */
         for (i = 0x00; i < 0x20; i++)
         {
-          z80_readmap[i] = &page[(i & 0xF) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(i & 0xF) << 10]);
         }
 
         /* upper 8K of latest 32K page is mirrored in $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = &slot.rom[0x1FE000 + ((i & 0x7) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x1FE000 + ((i & 0x7) << 10)]);
         }
         break;
       }
@@ -1611,13 +1590,13 @@ static void mapper_32k_w(unsigned char data)
         /* upper 16K of selected 32K page is mapped in $0000-$3FFF (mirrored in $4000-$7FFF) */
         for (i = 0x00; i < 0x20; i++)
         {
-          z80_readmap[i] = &page[(0x10 + (i & 0xF)) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(0x10 + (i & 0xF)) << 10]);
         }
 
         /* upper 8K of latest 32K page is mirrored in $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = &slot.rom[0x1FE000 + ((i & 0x7) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x1FE000 + ((i & 0x7) << 10)]);
         }
         break;
       }
@@ -1628,13 +1607,13 @@ static void mapper_32k_w(unsigned char data)
         /* selected 32K page is mapped in $0000-$7FFF */
         for (i = 0x00; i < 0x20; i++)
         {
-          z80_readmap[i] = &page[i << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[i << 10]);
         }
 
         /* upper 8K of latest 32K page is mirrored in $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = &slot.rom[0x1FE000 + ((i & 0x7) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x1FE000 + ((i & 0x7) << 10)]);
         }
         break;
       }
@@ -1644,19 +1623,19 @@ static void mapper_32k_w(unsigned char data)
         /* lower 16K of middle 32K page (MSX BIOS) is mapped in $0000-$3FFF */
         for (i = 0x00; i < 0x10; i++)
         {
-          z80_readmap[i] = &slot.rom[0x100000 + ((i & 0xF) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x100000 + ((i & 0xF) << 10)]);
         }
 
         /* lower 16K of selected 32K page is mapped in $4000-$7FFF */
         for (i = 0x10; i < 0x20; i++)
         {
-          z80_readmap[i] = &page[(i & 0xF) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(i & 0xF) << 10]);
         }
 
         /* upper 8K of latest 32K page is mirrored in $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = &slot.rom[0x1FE000 + ((i & 0x7) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x1FE000 + ((i & 0x7) << 10)]);
         }
         break;
       }
@@ -1666,19 +1645,19 @@ static void mapper_32k_w(unsigned char data)
         /* lower 16K of middle 32K page (MSX BIOS) is mapped in $0000-$3FFF */
         for (i = 0x00; i < 0x10; i++)
         {
-          z80_readmap[i] = &slot.rom[0x100000 + ((i & 0xF) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x100000 + ((i & 0xF) << 10)]);
         }
 
         /* upper 16K of selected 32K page is mapped in $4000-$7FFF */
         for (i = 0x10; i < 0x20; i++)
         {
-          z80_readmap[i] = &page[(0x10 + (i & 0xF)) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(0x10 + (i & 0xF)) << 10]);
         }
 
         /* upper 8K of latest 32K page is mirrored in $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = &slot.rom[0x1FE000 + ((i & 0x7) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x1FE000 + ((i & 0x7) << 10)]);
         }
         break;
       }
@@ -1688,19 +1667,19 @@ static void mapper_32k_w(unsigned char data)
         /* lower 16K of middle 32K page (MSX BIOS) is mapped in $0000-$3FFF */
         for (i = 0x00; i < 0x10; i++)
         {
-          z80_readmap[i] = &slot.rom[0x100000 + ((i & 0xF) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x100000 + ((i & 0xF) << 10)]);
         }
 
         /* upper 16K of latest 32K page is mapped in $4000-$7FFF */
         for (i = 0x10; i < 0x20; i++)
         {
-          z80_readmap[i] = &slot.rom[0x1FC000 + ((i & 0xF) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x1FC000 + ((i & 0xF) << 10)]);
         }
 
         /* lower 16K of selected 32K page is mapped in $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = &page[(i & 0xF) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(i & 0xF) << 10]);
         }
         break;
       }
@@ -1710,19 +1689,19 @@ static void mapper_32k_w(unsigned char data)
         /* lower 16K of middle 32K page (MSX BIOS) is mapped in $0000-$3FFF */
         for (i = 0x00; i < 0x10; i++)
         {
-          z80_readmap[i] = &slot.rom[0x100000 + ((i & 0xF) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x100000 + ((i & 0xF) << 10)]);
         }
 
         /* upper 16K of latest 32K page is mapped in $4000-$7FFF */
         for (i = 0x10; i < 0x20; i++)
         {
-          z80_readmap[i] = &slot.rom[0x1FC000 + ((i & 0xF) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x1FC000 + ((i & 0xF) << 10)]);
         }
 
         /* upper 16K of selected 32K page is mapped in $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = &page[(0x10 + (i & 0xF)) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(0x10 + (i & 0xF)) << 10]);
         }
         break;
       }
@@ -1732,19 +1711,19 @@ static void mapper_32k_w(unsigned char data)
         /* lower 16K of middle 32K page (MSX BIOS) is mapped in $0000-$3FFF */
         for (i = 0x00; i < 0x10; i++)
         {
-          z80_readmap[i] = &slot.rom[0x100000 + ((i & 0xF) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x100000 + ((i & 0xF) << 10)]);
         }
 
         /* lower 16K of selected 32K page is mapped in $4000-$7FFF */
         for (i = 0x10; i < 0x20; i++)
         {
-          z80_readmap[i] = &page[(i & 0xF) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(i & 0xF) << 10]);
         }
 
         /* lower 16K of selected 32K page (8K permuted) is mapped in $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = z80_readmap[(i ^ 0x8) - 0x10];
+          gpgx::g_z80->MirrorReadMemoryMapBase(i, (i ^ 0x8) - 0x10);
         }
         break;
       }
@@ -1754,19 +1733,19 @@ static void mapper_32k_w(unsigned char data)
         /* lower 16K of middle 32K page (MSX BIOS) is mapped in $0000-$3FFF */
         for (i = 0x00; i < 0x10; i++)
         {
-          z80_readmap[i] = &slot.rom[0x100000 + ((i & 0xF) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x100000 + ((i & 0xF) << 10)]);
         }
 
         /* upper 16K of selected 32K page is mapped in $4000-$7FFF */
         for (i = 0x10; i < 0x20; i++)
         {
-          z80_readmap[i] = &page[(0x10 + (i & 0xF)) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(0x10 + (i & 0xF)) << 10]);
         }
 
         /* upper 16K of selected 32K page (8K permuted) is mapped in $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = z80_readmap[(i ^ 0x8) - 0x10];
+          gpgx::g_z80->MirrorReadMemoryMapBase(i, (i ^ 0x8) - 0x10);
         }
         break;
       }
@@ -1776,19 +1755,19 @@ static void mapper_32k_w(unsigned char data)
         /* lower 16K of middle 32K page (MSX BIOS) is mapped in $0000-$3FFF */
         for (i = 0x00; i < 0x10; i++)
         {
-          z80_readmap[i] = &slot.rom[0x100000 + ((i & 0xF) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x100000 + ((i & 0xF) << 10)]);
         }
 
         /* lower 16K of selected 32K page is mapped in $4000-$7FFF */
         for (i = 0x10; i < 0x20; i++)
         {
-          z80_readmap[i] = &page[(i & 0xF) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(i & 0xF) << 10]);
         }
 
         /* upper 16K of selected 32K page is mapped in $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = &page[(0x10 + (i & 0xF)) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(0x10 + (i & 0xF)) << 10]);
         }
         break;
       }
@@ -1798,19 +1777,19 @@ static void mapper_32k_w(unsigned char data)
         /* lower 16K of middle 32K page (MSX BIOS) is mapped in $0000-$3FFF */
         for (i = 0x00; i < 0x10; i++)
         {
-          z80_readmap[i] = &slot.rom[0x100000 + ((i & 0xF) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x100000 + ((i & 0xF) << 10)]);
         }
 
         /* upper 16K of selected 32K page is mapped in $4000-$7FFF */
         for (i = 0x10; i < 0x20; i++)
         {
-          z80_readmap[i] = &page[(0x10 + (i & 0xF)) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(0x10 + (i & 0xF)) << 10]);
         }
 
         /* lower 16K of selected 32K page is mapped in $8000-$BFFF */
         for (i = 0x20; i < 0x30; i++)
         {
-          z80_readmap[i] = &page[(i & 0xF) << 10];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &page[(i & 0xF) << 10]);
         }
         break;
       }
@@ -1820,7 +1799,7 @@ static void mapper_32k_w(unsigned char data)
         /* upper 8K of latest 32K page is mirrored in $0000-$BFFF */
         for (i = 0x00; i < 0x30; i++)
         {
-          z80_readmap[i] = &slot.rom[0x1FE000 + ((i & 0x7) << 10)];
+          gpgx::g_z80->SetReadMemoryMapBase(i, &slot.rom[0x1FE000 + ((i & 0x7) << 10)]);
         }
         break;
       }
@@ -1831,13 +1810,13 @@ static void mapper_32k_w(unsigned char data)
     /* selected 32K page is mapped at $0000-$7FFF */
     for (i = 0x00; i < 0x20; i++)
     {
-      z80_readmap[i] = &page[i << 10];
+      gpgx::g_z80->SetReadMemoryMapBase(i, &page[i << 10]);
     }
 
     /* lower 16K of selected 32K page is mirrored in $8000-$BFFF */
     for (i = 0x20; i < 0x30; i++)
     {
-      z80_readmap[i] = z80_readmap[i & 0x0F];
+      gpgx::g_z80->MirrorReadMemoryMapBase(i, i & 0x0F);
     }
   }
 
@@ -1849,7 +1828,7 @@ static void mapper_32k_w(unsigned char data)
 
 static void write_mapper_none(unsigned int address, unsigned char data)
 {
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_sega(unsigned int address, unsigned char data)
@@ -1859,7 +1838,7 @@ static void write_mapper_sega(unsigned int address, unsigned char data)
     mapper_16k_w(address & 3, data);
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_codies(unsigned int address, unsigned char data)
@@ -1882,7 +1861,7 @@ static void write_mapper_codies(unsigned int address, unsigned char data)
     return;
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_multi_16k(unsigned int address, unsigned char data)
@@ -1905,7 +1884,7 @@ static void write_mapper_multi_16k(unsigned int address, unsigned char data)
     return;
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_multi_2x16k_v1(unsigned int address, unsigned char data)
@@ -1929,7 +1908,7 @@ static void write_mapper_multi_2x16k_v1(unsigned int address, unsigned char data
     }
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_multi_2x16k_v2(unsigned int address, unsigned char data)
@@ -1967,12 +1946,12 @@ static void write_mapper_multi_2x16k_v2(unsigned int address, unsigned char data
     }
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_multi_16k_32k(unsigned int address, unsigned char data)
 {
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 
   address &= 0xBFEF;
 
@@ -2004,7 +1983,7 @@ static void write_mapper_multi_32k(unsigned int address, unsigned char data)
     return;
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_multi_32k_16k(unsigned int address, unsigned char data)
@@ -2028,7 +2007,7 @@ static void write_mapper_multi_32k_16k(unsigned int address, unsigned char data)
     mapper_32k_w(data);
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_hicom(unsigned int address, unsigned char data)
@@ -2038,12 +2017,12 @@ static void write_mapper_hicom(unsigned int address, unsigned char data)
     mapper_32k_w(data);
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_multi_8k(unsigned int address, unsigned char data)
 {
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 
   address &= 0xFF00;
 
@@ -2083,7 +2062,7 @@ static void write_mapper_multi_4x8k(unsigned int address, unsigned char data)
     return;
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_zemina_4x8k(unsigned int address, unsigned char data)
@@ -2100,7 +2079,7 @@ static void write_mapper_zemina_4x8k(unsigned int address, unsigned char data)
     return;
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_zemina_16k_32k(unsigned int address, unsigned char data)
@@ -2121,7 +2100,7 @@ static void write_mapper_zemina_16k_32k(unsigned int address, unsigned char data
     return;
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_hwasung(unsigned int address, unsigned char data)
@@ -2141,7 +2120,7 @@ static void write_mapper_hwasung(unsigned int address, unsigned char data)
     return;
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 
@@ -2153,7 +2132,7 @@ static void write_mapper_korea(unsigned int address, unsigned char data)
     return;
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_msx(unsigned int address, unsigned char data)
@@ -2164,7 +2143,7 @@ static void write_mapper_msx(unsigned int address, unsigned char data)
     return;
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_korea_8k(unsigned int address, unsigned char data)
@@ -2204,7 +2183,7 @@ static void write_mapper_korea_8k(unsigned int address, unsigned char data)
     mapper_8k_w(1,(1 + (data << 1)) & 0xFF);
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_korea_16k(unsigned int address, unsigned char data)
@@ -2227,7 +2206,7 @@ static void write_mapper_korea_16k(unsigned int address, unsigned char data)
     mapper_16k_w(address & 3, data);
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_93c46(unsigned int address, unsigned char data)
@@ -2258,7 +2237,7 @@ static void write_mapper_93c46(unsigned int address, unsigned char data)
     mapper_16k_w(address & 3, data);
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static void write_mapper_terebi(unsigned int address, unsigned char data)
@@ -2269,7 +2248,7 @@ static void write_mapper_terebi(unsigned int address, unsigned char data)
     return;
   }
 
-  z80_writemap[address >> 10][address & 0x03FF] = data;
+  gpgx::g_z80->Write8MemoryMap(address, data);
 }
 
 static unsigned char read_mapper_93c46(unsigned int address)
@@ -2279,7 +2258,7 @@ static unsigned char read_mapper_93c46(unsigned int address)
     return eeprom_93c_read();
   }
 
-  return z80_readmap[address >> 10][address & 0x03FF];
+  return gpgx::g_z80->Read8MemoryMap(address);
 }
 
 static unsigned char read_mapper_terebi(unsigned int address)
@@ -2294,12 +2273,12 @@ static unsigned char read_mapper_terebi(unsigned int address)
     return (terebi_oekaki_read() & 0xFF);
   }
 
-  return z80_readmap[address >> 10][address & 0x03FF];
+  return gpgx::g_z80->Read8MemoryMap(address);
 }
 
 static unsigned char read_mapper_korea_8k(unsigned int address)
 {
-  unsigned char data = z80_readmap[address >> 10][address & 0x03FF];
+  unsigned char data = gpgx::g_z80->Read8MemoryMap(address);
 
   /* 16KB page */
   unsigned char page = address >> 14;
@@ -2319,16 +2298,16 @@ static unsigned char read_mapper_korea_8k(unsigned int address)
 
 static unsigned char read_mapper_default(unsigned int address)
 {
-  return z80_readmap[address >> 10][address & 0x03FF];
+  return gpgx::g_z80->Read8MemoryMap(address);
 }
 
 static unsigned char read_mapper_none(unsigned int address)
 {
   if (address >= 0xC000)
   {
-    return z80_readmap[address >> 10][address & 0x03FF];
+    return gpgx::g_z80->Read8MemoryMap(address);
   }
 
   /* return last fetched z80 instruction / data */
-  return z80_last_fetch;
+  return gpgx::g_z80->GetLastFetch();
 }

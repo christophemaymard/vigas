@@ -46,10 +46,10 @@
 
 #include "gpgx/g_fm_synthesizer.h"
 #include "gpgx/g_psg.h"
+#include "gpgx/g_z80.h"
 
 #include "core/core_config.h"
 #include "core/m68k/m68k.h"
-#include "core/z80/z80.h"
 #include "core/io_reg.h"
 #include "core/region_code.h"
 #include "core/system_hardware.h"
@@ -70,14 +70,14 @@
 static XEE_INLINE void z80_unused_w(unsigned int address, unsigned char data)
 {
 #ifdef LOGERROR
-  error("Z80 unused write %04X = %02X (%x)\n", address, data, Z80.pc.w.l);
+  error("Z80 unused write %04X = %02X (%x)\n", address, data, gpgx::g_z80->GetPCRegister());
 #endif
 }
 
 static XEE_INLINE unsigned char z80_unused_r(unsigned int address)
 {
 #ifdef LOGERROR
-  error("Z80 unused read %04X (%x)\n", address, Z80.pc.w.l);
+  error("Z80 unused read %04X (%x)\n", address, gpgx::g_z80->GetPCRegister());
 #endif
   return 0xFF;
 }
@@ -85,11 +85,11 @@ static XEE_INLINE unsigned char z80_unused_r(unsigned int address)
 static XEE_INLINE void z80_lockup_w(unsigned int address, unsigned char data)
 {
 #ifdef LOGERROR
-  error("Z80 lockup write %04X = %02X (%x)\n", address, data, Z80.pc.w.l);
+  error("Z80 lockup write %04X = %02X (%x)\n", address, data, gpgx::g_z80->GetPCRegister());
 #endif
   if (!core_config.force_dtack)
   {
-    Z80.cycles = 0xFFFFFFFF;
+    gpgx::g_z80->SetCycles(0xFFFFFFFF);
     zstate = 0;
   }
 }
@@ -97,11 +97,11 @@ static XEE_INLINE void z80_lockup_w(unsigned int address, unsigned char data)
 static XEE_INLINE unsigned char z80_lockup_r(unsigned int address)
 {
 #ifdef LOGERROR
-  error("Z80 lockup read %04X (%x)\n", address, Z80.pc.w.l);
+  error("Z80 lockup read %04X (%x)\n", address, gpgx::g_z80->GetPCRegister());
 #endif
   if (!core_config.force_dtack)
   {
-    Z80.cycles = 0xFFFFFFFF;
+    gpgx::g_z80->SetCycles(0xFFFFFFFF);
     zstate = 0;
   }
   return 0xFF;
@@ -115,10 +115,10 @@ static XEE_INLINE unsigned char z80_lockup_r(unsigned int address)
 static void z80_request_68k_bus_access(void)
 {
   /* check if 68k bus is accessed by VDP DMA */
-  if ((Z80.cycles < dma_endCycles) && (dma_type < 2))
+  if ((gpgx::g_z80->GetCycles() < dma_endCycles) && (dma_type < 2))
   {
     /* force Z80 to wait until end of DMA */
-    Z80.cycles = dma_endCycles;
+    gpgx::g_z80->SetCycles(dma_endCycles);
 
     /* check if DMA is not finished at the end of current timeframe */
     if (dma_length)
@@ -129,7 +129,7 @@ static void z80_request_68k_bus_access(void)
   }
 
   /* average Z80 wait-states when accessing 68k area */
-  Z80.cycles += 3 * 15;
+  gpgx::g_z80->AddCycles(3 * 15);
 }
 
 unsigned char z80_memory_r(unsigned int address)
@@ -144,7 +144,7 @@ unsigned char z80_memory_r(unsigned int address)
 
     case 2: /* $4000-$5FFF: YM2612 */
     {
-      return gpgx::g_fm_synthesizer->Read(Z80.cycles, address & 3);
+      return gpgx::g_fm_synthesizer->Read(gpgx::g_z80->GetCycles(), address & 3);
     }
 
     case 3: /* $7F00-$7FFF: VDP */
@@ -190,7 +190,7 @@ void z80_memory_w(unsigned int address, unsigned char data)
 
     case 2: /* $4000-$5FFF: YM2612 */
     {
-      gpgx::g_fm_synthesizer->Write(Z80.cycles, address & 3, data);
+      gpgx::g_fm_synthesizer->Write(gpgx::g_z80->GetCycles(), address & 3, data);
       return;
     }
 
@@ -253,12 +253,12 @@ void z80_memory_w(unsigned int address, unsigned char data)
 unsigned char z80_unused_port_r(unsigned int port)
 {
 #if LOGERROR
-  error("Z80 unused read from port %04X (%x)\n", port, Z80.pc.w.l);
+  error("Z80 unused read from port %04X (%x)\n", port, gpgx::g_z80->GetPCRegister());
 #endif
   if (system_hw == SYSTEM_SMS)
   {
-    unsigned int address = (Z80.pc.w.l - 1) & 0xFFFF;
-    return z80_readmap[address >> 10][address & 0x3FF];
+    unsigned int address = (gpgx::g_z80->GetPCRegister() - 1) & 0xFFFF;
+    return gpgx::g_z80->Read8MemoryMap(address);
   }
   return 0xFF;
 }
@@ -266,7 +266,7 @@ unsigned char z80_unused_port_r(unsigned int port)
 void z80_unused_port_w(unsigned int port, unsigned char data)
 {
 #if LOGERROR
-  error("Z80 unused write to port %04X = %02X (%x)\n", port, data, Z80.pc.w.l);
+  error("Z80 unused write to port %04X = %02X (%x)\n", port, data, gpgx::g_z80->GetPCRegister());
 #endif
 }
 
@@ -280,14 +280,14 @@ void z80_md_port_w(unsigned int port, unsigned char data)
   {
     case 0x01:
     {
-      io_z80_write(1, data, Z80.cycles + PBC_CYCLE_OFFSET);
+      io_z80_write(1, data, gpgx::g_z80->GetCycles() + PBC_CYCLE_OFFSET);
       return;
     }
 
     case 0x40:
     case 0x41:
     {
-      gpgx::g_psg->psg_write(Z80.cycles, data);
+      gpgx::g_psg->psg_write(gpgx::g_z80->GetCycles(), data);
       return;
     }
 
@@ -310,7 +310,7 @@ void z80_md_port_w(unsigned int port, unsigned char data)
       /* write FM chip if enabled */
       if ((port >= 0xF0) && (core_config.ym2413 & 1))
       {
-        gpgx::g_fm_synthesizer->Write(Z80.cycles, port, data);
+        gpgx::g_fm_synthesizer->Write(gpgx::g_z80->GetCycles(), port, data);
         return;
       }
 
@@ -326,12 +326,12 @@ unsigned char z80_md_port_r(unsigned int port)
   {
     case 0x40:
     {
-      return ((vdp_hvc_r(Z80.cycles - 15) >> 8) & 0xFF);
+      return ((vdp_hvc_r(gpgx::g_z80->GetCycles() - 15) >> 8) & 0xFF);
     }
 
     case 0x41:
     {
-      return (vdp_hvc_r(Z80.cycles - 15) & 0xFF);
+      return (vdp_hvc_r(gpgx::g_z80->GetCycles() - 15) & 0xFF);
     }
 
     case 0x80:
@@ -341,7 +341,7 @@ unsigned char z80_md_port_r(unsigned int port)
 
     case 0x81:
     {
-      return vdp_z80_ctrl_r(Z80.cycles);
+      return vdp_z80_ctrl_r(gpgx::g_z80->GetCycles());
     }
 
     default:
@@ -356,7 +356,7 @@ unsigned char z80_md_port_r(unsigned int port)
       /* read FM chip if enabled */
       if ((port >= 0xF0) && (core_config.ym2413 & 1))
       {
-        return gpgx::g_fm_synthesizer->Read(Z80.cycles, port);
+        return gpgx::g_fm_synthesizer->Read(gpgx::g_z80->GetCycles(), port);
       }
 
       return z80_unused_port_r(port);
@@ -390,7 +390,7 @@ void z80_gg_port_w(unsigned int port, unsigned char data)
       /* full address range is decoded by Game Gear I/O chip (fixes G-LOC Air Battle) */
       else if ((port == 0x3E) || (port == 0x3F))
       {
-        io_z80_write(port & 1, data, Z80.cycles + SMS_CYCLE_OFFSET);
+        io_z80_write(port & 1, data, gpgx::g_z80->GetCycles() + SMS_CYCLE_OFFSET);
         return;
       }
 
@@ -401,7 +401,7 @@ void z80_gg_port_w(unsigned int port, unsigned char data)
     case 0x40:
     case 0x41:
     {
-      gpgx::g_psg->psg_write(Z80.cycles, data);
+      gpgx::g_psg->psg_write(gpgx::g_z80->GetCycles(), data);
       return;
     }
 
@@ -447,12 +447,12 @@ unsigned char z80_gg_port_r(unsigned int port)
 
     case 0x40:
     {
-      return ((vdp_hvc_r(Z80.cycles) >> 8) & 0xFF);
+      return ((vdp_hvc_r(gpgx::g_z80->GetCycles()) >> 8) & 0xFF);
     }
 
     case 0x41:
     {
-      return (vdp_hvc_r(Z80.cycles) & 0xFF);
+      return (vdp_hvc_r(gpgx::g_z80->GetCycles()) & 0xFF);
     }
 
     case 0x80:
@@ -462,7 +462,7 @@ unsigned char z80_gg_port_r(unsigned int port)
 
     case 0x81:
     {
-      return vdp_z80_ctrl_r(Z80.cycles);
+      return vdp_z80_ctrl_r(gpgx::g_z80->GetCycles());
     }
 
     default:
@@ -495,7 +495,7 @@ void z80_ms_port_w(unsigned int port, unsigned char data)
       /* full address range is decoded by 315-5297 I/O chip (fixes Super Tetris / Power Boggle Boggle) */
       if ((region_code != REGION_JAPAN_NTSC) || ((port & 0xFE) == 0x3E))
       {
-        io_z80_write(port & 1, data, Z80.cycles + SMS_CYCLE_OFFSET);
+        io_z80_write(port & 1, data, gpgx::g_z80->GetCycles() + SMS_CYCLE_OFFSET);
         return;
       }
 
@@ -506,7 +506,7 @@ void z80_ms_port_w(unsigned int port, unsigned char data)
     case 0x40:
     case 0x41:
     {
-      gpgx::g_psg->psg_write(Z80.cycles, data);
+      gpgx::g_psg->psg_write(gpgx::g_z80->GetCycles(), data);
       return;
     }
 
@@ -535,7 +535,7 @@ void z80_ms_port_w(unsigned int port, unsigned char data)
           /* internal YM2413 chip */
           if ((port == 0xF0) || (port == 0xF1))
           {
-            gpgx::g_fm_synthesizer->Write(Z80.cycles, port, data);
+            gpgx::g_fm_synthesizer->Write(gpgx::g_z80->GetCycles(), port, data);
             return;
           }
 
@@ -549,8 +549,8 @@ void z80_ms_port_w(unsigned int port, unsigned char data)
                 1  0 : disable both PSG & FM output
                 1  1 : enable both PSG and FM output
             */
-            gpgx::g_psg->psg_config(Z80.cycles, core_config.psg_preamp, ((data + 1) & 0x02) ? 0x00 : 0xFF);
-            gpgx::g_fm_synthesizer->Write(Z80.cycles, 0x02, data);
+            gpgx::g_psg->psg_config(gpgx::g_z80->GetCycles(), core_config.psg_preamp, ((data + 1) & 0x02) ? 0x00 : 0xFF);
+            gpgx::g_fm_synthesizer->Write(gpgx::g_z80->GetCycles(), 0x02, data);
             io_reg[6] = data;
             return;
           }
@@ -558,7 +558,7 @@ void z80_ms_port_w(unsigned int port, unsigned char data)
         else if (!(port & 4))
         {
           /* external FM board */
-          gpgx::g_fm_synthesizer->Write(Z80.cycles, port, data);
+          gpgx::g_fm_synthesizer->Write(gpgx::g_z80->GetCycles(), port, data);
           return;
         }
       }
@@ -581,12 +581,12 @@ unsigned char z80_ms_port_r(unsigned int port)
 
     case 0x40:
     {
-      return ((vdp_hvc_r(Z80.cycles) >> 8) & 0xFF);
+      return ((vdp_hvc_r(gpgx::g_z80->GetCycles()) >> 8) & 0xFF);
     }
 
     case 0x41:
     {
-      return (vdp_hvc_r(Z80.cycles) & 0xFF);
+      return (vdp_hvc_r(gpgx::g_z80->GetCycles()) & 0xFF);
     }
 
     case 0x80:
@@ -596,7 +596,7 @@ unsigned char z80_ms_port_r(unsigned int port)
 
     case 0x81:
     {
-      return vdp_z80_ctrl_r(Z80.cycles);
+      return vdp_z80_ctrl_r(gpgx::g_z80->GetCycles());
     }
 
     default:
@@ -634,7 +634,7 @@ unsigned char z80_ms_port_r(unsigned int port)
         /* read FM board if enabled */
         if (!(port & 4) && (core_config.ym2413 & 1))
         {
-          data = gpgx::g_fm_synthesizer->Read(Z80.cycles, port);
+          data = gpgx::g_fm_synthesizer->Read(gpgx::g_z80->GetCycles(), port);
         }
 
         /* read I/O ports if enabled */
@@ -667,7 +667,7 @@ void z80_m3_port_w(unsigned int port, unsigned char data)
     case 0x40:
     case 0x41:
     {
-      gpgx::g_psg->psg_write(Z80.cycles, data);
+      gpgx::g_psg->psg_write(gpgx::g_z80->GetCycles(), data);
       return;
     }
 
@@ -688,13 +688,13 @@ void z80_m3_port_w(unsigned int port, unsigned char data)
       /* write to FM sound unit (FM-70) if enabled */
       if (!(port & 4) && (core_config.ym2413 & 1))
       {
-        gpgx::g_fm_synthesizer->Write(Z80.cycles, port, data);
+        gpgx::g_fm_synthesizer->Write(gpgx::g_z80->GetCycles(), port, data);
 
         /* FM output control "register" */
         if (port & 2)
         {
           /* PSG output is automatically disabled (resp. enabled) by FM sound unit hardware if FM output is enabled (resp. disabled) */
-          gpgx::g_psg->psg_config(Z80.cycles, core_config.psg_preamp, (data & 0x01) ? 0x00 : 0xff);
+          gpgx::g_psg->psg_config(gpgx::g_z80->GetCycles(), core_config.psg_preamp, (data & 0x01) ? 0x00 : 0xff);
         }
         return;
       }
@@ -717,12 +717,12 @@ unsigned char z80_m3_port_r(unsigned int port)
 
     case 0x40:
     {
-      return ((vdp_hvc_r(Z80.cycles) >> 8) & 0xFF);
+      return ((vdp_hvc_r(gpgx::g_z80->GetCycles()) >> 8) & 0xFF);
     }
 
     case 0x41:
     {
-      return (vdp_hvc_r(Z80.cycles) & 0xFF);
+      return (vdp_hvc_r(gpgx::g_z80->GetCycles()) & 0xFF);
     }
 
     case 0x80:
@@ -732,7 +732,7 @@ unsigned char z80_m3_port_r(unsigned int port)
 
     case 0x81:
     {
-      return vdp_z80_ctrl_r(Z80.cycles);
+      return vdp_z80_ctrl_r(gpgx::g_z80->GetCycles());
     }
 
     default:
@@ -741,7 +741,7 @@ unsigned char z80_m3_port_r(unsigned int port)
       if (!(port & 4) && (core_config.ym2413 & 1))
       {
         /* I/O ports are automatically disabled by FM sound unit hardware */
-        return gpgx::g_fm_synthesizer->Read(Z80.cycles, port);
+        return gpgx::g_fm_synthesizer->Read(gpgx::g_z80->GetCycles(), port);
       }
 
       /* read I/O ports   */
@@ -762,10 +762,10 @@ void z80_sg_port_w(unsigned int port, unsigned char data)
     case 0x40:
     case 0x41:
     {
-      gpgx::g_psg->psg_write(Z80.cycles, data);
+      gpgx::g_psg->psg_write(gpgx::g_z80->GetCycles(), data);
 
       /* Z80 !WAIT input is tied to SN76489AN chip READY pin (held low for 32 clocks after each write access) */
-      Z80.cycles += (32 * 15);
+      gpgx::g_z80->AddCycles(32 * 15);
       return;
     }
 
@@ -800,7 +800,7 @@ unsigned char z80_sg_port_r(unsigned int port)
 
     case 0x81:
     {
-      return vdp_z80_ctrl_r(Z80.cycles);
+      return vdp_z80_ctrl_r(gpgx::g_z80->GetCycles());
     }
 
     case 0xC0:

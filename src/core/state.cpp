@@ -43,7 +43,6 @@
 
 #include "core/core_config.h"
 #include "core/m68k/m68k.h"
-#include "core/z80/z80.h"
 #include "core/io_reg.h"
 #include "core/region_code.h"
 #include "core/system.h"
@@ -63,6 +62,7 @@
 
 #include "gpgx/g_audio_renderer.h"
 #include "gpgx/g_psg.h"
+#include "gpgx/g_z80.h"
 
 int state_load(unsigned char *state)
 {
@@ -173,8 +173,8 @@ int state_load(unsigned char *state)
   }
 
   /* Z80 */ 
-  load_param(&Z80, sizeof(Z80_Regs));
-  Z80.irq_callback = z80_irq_callback;
+  bufferptr += gpgx::g_z80->LoadContext(&state[bufferptr]);
+  gpgx::g_z80->SetIRQCallback(z80_irq_callback);
 
   /* Extra HW */
   if (system_hw == SYSTEM_MCD)
@@ -272,7 +272,7 @@ int state_save(unsigned char *state)
   }
 
   /* Z80 */ 
-  save_param(&Z80, sizeof(Z80_Regs));
+  bufferptr += gpgx::g_z80->SaveContext(&state[bufferptr]);
 
   /* External HW */
   if (system_hw == SYSTEM_MCD)

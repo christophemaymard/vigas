@@ -65,7 +65,10 @@
 #include "core/cart_hw/sram.h"
 #include "core/state.h"
 
+#include "gpgx/cpu/z80/z80.h"
+
 #include "gpgx/g_audio_renderer.h"
+#include "gpgx/g_z80.h"
 
 #define SOUND_FREQUENCY 48000
 #define SOUND_SAMPLES_SIZE  2048
@@ -735,6 +738,9 @@ int main (int argc, char **argv)
     return 1;
   }
 
+  // 
+  gpgx::g_z80 = new gpgx::cpu::z80::Z80();
+
   /* set default config */
   error_init();
   set_config_defaults();
@@ -966,6 +972,12 @@ int main (int argc, char **argv)
   sdl_sound_close();
   sdl_sync_close();
   SDL_Quit();
+
+  // 
+  if (gpgx::g_z80) {
+    delete gpgx::g_z80;
+    gpgx::g_z80 = nullptr;
+  }
 
   return 0;
 }

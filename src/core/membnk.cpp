@@ -40,7 +40,6 @@
 #include "core/membnk.h"
 
 #include "core/core_config.h"
-#include "core/z80/z80.h"
 #include "core/ext.h" // For cart.
 #include "core/zstate.h"
 #include "core/genesis.h"
@@ -48,6 +47,7 @@
 #include "core/io_ctrl.h"
 
 #include "gpgx/g_psg.h"
+#include "gpgx/g_z80.h"
 
 /*
   Handlers for access to unused addresses and those which make the
@@ -57,7 +57,7 @@
 unsigned int zbank_unused_r(unsigned int address)
 {
 #ifdef LOGERROR
-  error("Z80 bank unused read %06X (%x)\n", address, Z80.pc.d);
+  error("Z80 bank unused read %06X (%x)\n", address, gpgx::g_z80->GetPCDRegister());
 #endif
   return 0xFF;
 }
@@ -65,18 +65,18 @@ unsigned int zbank_unused_r(unsigned int address)
 void zbank_unused_w(unsigned int address, unsigned int data)
 {
 #ifdef LOGERROR
-  error("Z80 bank unused write %06X = %02X (%x)\n", address, data, Z80.pc.d);
+  error("Z80 bank unused write %06X = %02X (%x)\n", address, data, gpgx::g_z80->GetPCDRegister());
 #endif
 }
 
 unsigned int zbank_lockup_r(unsigned int address)
 {
 #ifdef LOGERROR
-  error("Z80 bank lockup read %06X (%x)\n", address, Z80.pc.d);
+  error("Z80 bank lockup read %06X (%x)\n", address, gpgx::g_z80->GetPCDRegister());
 #endif
   if (!core_config.force_dtack)
   {
-    Z80.cycles = 0xFFFFFFFF;
+    gpgx::g_z80->SetCycles(0xFFFFFFFF);
     zstate = 0;
   }
   return 0xFF;
@@ -85,11 +85,11 @@ unsigned int zbank_lockup_r(unsigned int address)
 void zbank_lockup_w(unsigned int address, unsigned int data)
 {
 #ifdef LOGERROR
-  error("Z80 bank lockup write %06X = %02X (%x)\n", address, data, Z80.pc.d);
+  error("Z80 bank lockup write %06X = %02X (%x)\n", address, data, gpgx::g_z80->GetPCDRegister());
 #endif
   if (!core_config.force_dtack)
   {
-    Z80.cycles = 0xFFFFFFFF;
+    gpgx::g_z80->SetCycles(0xFFFFFFFF);
     zstate = 0;
   }
 }
@@ -177,7 +177,7 @@ void zbank_write_ctrl_io(unsigned int address, unsigned int data)
     {
       if (!(address & 1))
       {
-        gen_zbusreq_w(data & 1, Z80.cycles);
+        gen_zbusreq_w(data & 1, gpgx::g_z80->GetCycles());
         return;
       }
       zbank_unused_w(address, data);
@@ -188,7 +188,7 @@ void zbank_write_ctrl_io(unsigned int address, unsigned int data)
     {
       if (!(address & 1))
       {
-        gen_zreset_w(data & 1, Z80.cycles);
+        gen_zreset_w(data & 1, gpgx::g_z80->GetCycles());
         return;
       }
       zbank_unused_w(address, data);
@@ -248,24 +248,24 @@ unsigned int zbank_read_vdp(unsigned int address)
       
     case 0x04:    /* CTRL */
     {
-      return (((vdp_68k_ctrl_r(Z80.cycles) >> 8) & 3) | 0xFC);
+      return (((vdp_68k_ctrl_r(gpgx::g_z80->GetCycles()) >> 8) & 3) | 0xFC);
     }
 
     case 0x05:    /* CTRL */
     {
-      return (vdp_68k_ctrl_r(Z80.cycles) & 0xFF);
+      return (vdp_68k_ctrl_r(gpgx::g_z80->GetCycles()) & 0xFF);
     }
       
     case 0x08:    /* HVC */
     case 0x0C:
     {
-      return (vdp_hvc_r(Z80.cycles) >> 8);
+      return (vdp_hvc_r(gpgx::g_z80->GetCycles()) >> 8);
     }
 
     case 0x09:    /* HVC */
     case 0x0D:
     {
-      return (vdp_hvc_r(Z80.cycles) & 0xFF);
+      return (vdp_hvc_r(gpgx::g_z80->GetCycles()) & 0xFF);
     }
 
     case 0x18:    /* Unused */
@@ -304,7 +304,7 @@ void zbank_write_vdp(unsigned int address, unsigned int data)
     {
       if (address & 1)
       {
-        gpgx::g_psg->psg_write(Z80.cycles, data);
+        gpgx::g_psg->psg_write(gpgx::g_z80->GetCycles(), data);
         return;
       }
       zbank_unused_w(address, data);
