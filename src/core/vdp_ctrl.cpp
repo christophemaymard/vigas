@@ -59,6 +59,7 @@
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/ext.h" // For cart and scd.
+#include "core/vram.h"
 #include "core/work_ram.h"
 #include "core/zstate.h"
 #include "core/vdp_render.h"
@@ -94,7 +95,6 @@
 
 /* VDP context */
 u8 ALIGNED_(4) sat[0x400];     /* Internal copy of sprite attribute table */
-u8 ALIGNED_(4) vram[0x10000];  /* Video RAM (64K x 8-bit) */
 u8 ALIGNED_(4) cram[0x80];     /* On-chip color RAM (64 x 9-bit) */
 u8 ALIGNED_(4) vsram[0x80];    /* On-chip vertical scroll RAM (40 x 11-bit) */
 u8 reg[0x20];                  /* Internal VDP registers (23 x 8-bit) */

@@ -53,6 +53,7 @@
 #include "core/bitmap.h"
 #include "core/system_hardware.h"
 #include "core/vdp_ctrl.h"
+#include "core/vram.h"
 
 #ifndef HAVE_NO_SPRITE_LIMIT
 #define MAX_SPRITES_PER_LINE 20

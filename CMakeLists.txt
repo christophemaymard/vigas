@@ -133,6 +133,7 @@ add_executable(vigas
     inc/core/types.h
     inc/core/vdp_ctrl.h
     inc/core/vdp_render.h
+    inc/core/vram.h
     inc/core/work_ram.h
     inc/core/zbank.h
     inc/core/zbank_memory_map.h
@@ -245,6 +246,7 @@ add_executable(vigas
     src/core/system_hardware.cpp
     src/core/vdp_ctrl.cpp
     src/core/vdp_render.cpp
+    src/core/vram.cpp
     src/core/work_ram.cpp
     src/core/zbank.cpp
     src/core/zbank_memory_map.cpp
