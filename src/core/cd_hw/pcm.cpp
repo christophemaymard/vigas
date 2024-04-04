@@ -44,6 +44,7 @@
 #include "xee/mem/memory.h"
 
 #ifdef LOG_PCM
+#include "osd.h" // For error().
 #include "core/m68k/m68k.h"
 #include "core/vdp_ctrl.h"
 #endif

@@ -48,6 +48,10 @@
 #include "gpgx/g_psg.h"
 #include "gpgx/g_z80.h"
 
+#ifdef LOGERROR
+#include "osd.h" // For error().
+#endif
+
 #include "core/core_config.h"
 #include "core/m68k/m68k.h"
 #include "core/io_reg.h"

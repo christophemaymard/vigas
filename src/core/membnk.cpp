@@ -39,6 +39,10 @@
 
 #include "core/membnk.h"
 
+#ifdef LOGERROR
+#include "osd.h" // For error().
+#endif
+
 #include "core/core_config.h"
 #include "core/ext.h" // For cart.
 #include "core/zstate.h"

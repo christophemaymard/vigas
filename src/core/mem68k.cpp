@@ -41,6 +41,10 @@
 
 #include "xee/fnd/data_type.h"
 
+#if defined(LOGERROR) || defined(LOG_SCD)
+#include "osd.h" // For error().
+#endif
+
 #include "gpgx/g_fm_synthesizer.h"
 
 #include "core/core_config.h"

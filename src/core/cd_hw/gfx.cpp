@@ -43,7 +43,7 @@
 #include "xee/mem/memory.h"
 
 #ifdef LOG_SCD
-#include "osd.h"
+#include "osd.h" // For error().
 #endif
 
 #include "core/m68k/m68k.h"

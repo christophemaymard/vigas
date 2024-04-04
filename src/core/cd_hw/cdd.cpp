@@ -44,6 +44,10 @@
 #include "xee/fnd/data_type.h"
 #include "xee/mem/memory.h"
 
+#if defined(LOG_CDD) || defined(LOGERROR)
+#include "osd.h" // For error().
+#endif
+
 #include "core/core_config.h"
 #include "core/macros.h"
 #include "core/m68k/m68k.h"

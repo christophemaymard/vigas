@@ -46,6 +46,10 @@
 
 #include "gpgx/cpu/z80/z80_line_state.h"
 
+#if defined(LOGVDP) || defined(LOGERROR)
+#include "osd.h" // For error().
+#endif
+
 #include "core/core_config.h"
 #include "core/macros.h"
 #include "core/m68k/m68k.h"

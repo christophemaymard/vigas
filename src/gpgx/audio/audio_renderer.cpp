@@ -40,6 +40,10 @@
 
 #include "xee/mem/memory.h"
 
+#ifdef LOGSOUND
+#include "osd.h" // For error().
+#endif
+
 #include "core/core_config.h"
 #include "core/io_reg.h"
 #include "core/snd.h"
