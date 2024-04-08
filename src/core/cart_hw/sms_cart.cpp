@@ -50,7 +50,8 @@
 #include "core/region_code.h"
 #include "core/rominfo.h"
 #include "core/system_bios.h"
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/ext.h" // For cart.
 #include "core/work_ram.h"
 #include "core/input_hw/input.h"

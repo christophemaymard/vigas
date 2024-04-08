@@ -42,7 +42,8 @@
 #include "xee/mem/memory.h"
 
 #include "core/m68k/m68k.h"
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/system_timing.h"
 #include "core/ext.h" // For scd, cart, cdd and SCYCLES_PER_LINE.
 #include "core/zbank_memory_map.h"

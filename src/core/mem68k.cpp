@@ -52,7 +52,8 @@
 #include "core/m68k/m68k.h"
 #include "core/pico_current.h"
 #include "core/region_code.h"
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/system_timing.h"
 #include "core/ext.h" // For cart, scd, cdc, gfx and SCYCLES_PER_LINE.
 #include "core/zbank_memory_map.h"

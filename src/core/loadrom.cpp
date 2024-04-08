@@ -52,7 +52,8 @@
 #include "core/romtype.h"
 #include "core/system_bios.h"
 #include "core/system_clock.h"
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/ext.h" // For cart, scd, cdc and cdd.
 #include "core/vdp_ctrl.h"
 #include "core/input_hw/input.h"

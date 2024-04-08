@@ -1,8 +1,5 @@
 /***************************************************************************************
- *  Genesis Plus
- *  Virtual System emulation
- *
- *  Support for 16-bit & 8-bit hardware modes
+ *  Genesis Plus GX
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2024  Eke-Eke (Genesis Plus GX)
@@ -39,31 +36,11 @@
  *
  ****************************************************************************************/
 
-#ifndef __CORE_SYSTEM_HARDWARE_H__
-#define __CORE_SYSTEM_HARDWARE_H__
-
-#include "xee/fnd/data_type.h"
+#include "core/system_hw.h"
 
 //==============================================================================
 
 //------------------------------------------------------------------------------
-// Supported hardware models.
 
-#define SYSTEM_SG           0x01
-#define SYSTEM_SGII         0x02
-#define SYSTEM_SGII_RAM_EXT 0x03
-#define SYSTEM_MARKIII      0x10
-#define SYSTEM_SMS          0x20
-#define SYSTEM_SMS2         0x21
-#define SYSTEM_GG           0x40
-#define SYSTEM_GGMS         0x41
-#define SYSTEM_MD           0x80
-#define SYSTEM_PBC          0x81
-#define SYSTEM_PICO         0x82
-#define SYSTEM_MCD          0x84
+u8 system_hw;
 
-//------------------------------------------------------------------------------
-
-extern u8 system_hw;
-
-#endif // #ifndef __CORE_SYSTEM_HARDWARE_H__

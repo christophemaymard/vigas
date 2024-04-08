@@ -48,7 +48,8 @@
 #include "core/audio_subsystem.h"
 #include "core/core_config.h"
 #include "core/system_cycle.h"
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/system_timing.h"
 #include "core/ext.h" // For cart and scd.
 #include "core/viewport.h"

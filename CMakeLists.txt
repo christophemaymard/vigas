@@ -129,7 +129,8 @@ add_executable(vigas
     inc/core/system_bios.h
     inc/core/system_clock.h
     inc/core/system_cycle.h
-    inc/core/system_hardware.h
+    inc/core/system_hw.h
+    inc/core/system_model.h
     inc/core/system_timing.h
     inc/core/types.h
     inc/core/vdp_ctrl.h
@@ -250,7 +251,7 @@ add_executable(vigas
     src/core/system_bios.cpp
     src/core/system_clock.cpp
     src/core/system_cycle.cpp
-    src/core/system_hardware.cpp
+    src/core/system_hw.cpp
     src/core/vdp_ctrl.cpp
     src/core/vdp_render.cpp
     src/core/viewport.cpp

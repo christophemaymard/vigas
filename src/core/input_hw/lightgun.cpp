@@ -45,7 +45,8 @@
 
 #include "core/m68k/m68k.h"
 #include "core/io_reg.h"
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/system_timing.h"
 #include "core/vdp_ctrl.h"
 #include "core/viewport.h"

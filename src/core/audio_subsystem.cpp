@@ -50,7 +50,8 @@
 #include "core/snd.h"
 #include "core/system_clock.h"
 #include "core/system_cycle.h"
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/system_timing.h"
 #include "core/vdp_ctrl.h"
 

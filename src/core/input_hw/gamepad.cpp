@@ -43,7 +43,8 @@
 #include "xee/fnd/data_type.h"
 
 #include "core/m68k/m68k.h"
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/input_hw/input.h"
 
 #include "gpgx/g_z80.h"

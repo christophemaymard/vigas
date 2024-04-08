@@ -57,7 +57,8 @@
 #include "core/snd.h"
 #include "core/system.h"
 #include "core/system_bios.h"
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/viewport.h"
 #include "core/ext.h" // For scd.
 #include "core/genesis.h" // For gen_reset().

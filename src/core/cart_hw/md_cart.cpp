@@ -55,7 +55,8 @@
 #include "core/boot_rom.h"
 #include "core/rominfo.h"
 #include "core/snd.h"
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/ext.h" // For cart and cdd.
 #include "core/zbank_memory_map.h"
 #include "core/cd_hw/scd.h"

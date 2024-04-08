@@ -42,7 +42,8 @@
 #include "core/core_config.h"
 #include "core/rominfo.h"
 #include "core/romtype.h"
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/ext.h" // For cart.
 #include "core/cart_hw/special_hw_md.h"
 #include "core/cart_hw/special_hw_sms.h"

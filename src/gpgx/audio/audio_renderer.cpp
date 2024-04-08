@@ -49,7 +49,8 @@
 #include "core/snd.h"
 #include "core/state.h"
 #include "core/system_cycle.h" // 
-#include "core/system_hardware.h"
+#include "core/system_hw.h"
+#include "core/system_model.h"
 #include "core/cd_hw/cdd.h"
 #include "core/cd_hw/pcm.h"
 
