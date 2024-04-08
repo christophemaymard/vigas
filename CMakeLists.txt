@@ -209,7 +209,11 @@ add_executable(vigas
 
     inc/gpgx/ppu/vdp/bg_pattern_cache_updater.h
     inc/gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h
+    inc/gpgx/ppu/vdp/m4_satb_parser.h
     inc/gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h
+    inc/gpgx/ppu/vdp/m5_satb_parser.h
+    inc/gpgx/ppu/vdp/satb_parser.h
+    inc/gpgx/ppu/vdp/tms_satb_parser.h
 
     inc/gpgx/vgs/vdp_irq_handler_z80.h
     
@@ -305,7 +309,10 @@ add_executable(vigas
     src/gpgx/ic/ym3438/ym3438.cpp
 
     src/gpgx/ppu/vdp/m4_bg_pattern_cache_updater.cpp
+    src/gpgx/ppu/vdp/m4_satb_parser.cpp
     src/gpgx/ppu/vdp/m5_bg_pattern_cache_updater.cpp
+    src/gpgx/ppu/vdp/m5_satb_parser.cpp
+    src/gpgx/ppu/vdp/tms_satb_parser.cpp
 
     src/gpgx/vgs/vdp_irq_handler_z80.cpp
 )

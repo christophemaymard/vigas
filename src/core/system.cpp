@@ -338,7 +338,7 @@ void system_frame_gen(int do_skip)
   /* parse first line of sprites */
   if (reg[1] & 0x40)
   {
-    parse_satb(-1);
+    g_satb_parser->ParseSpriteAttributeTable(-1);
   }
 
   /* update 6-Buttons & Lightguns */
@@ -673,7 +673,7 @@ void system_frame_scd(int do_skip)
   /* parse first line of sprites */
   if (reg[1] & 0x40)
   {
-    parse_satb(-1);
+    g_satb_parser->ParseSpriteAttributeTable(-1);
   }
 
   /* update 6-Buttons & Lightguns */
@@ -995,7 +995,7 @@ void system_frame_sms(int do_skip)
         }
         
         /* Sprites pre-processing occurs even when display is disabled */
-        parse_satb(line - lines_per_frame);
+        g_satb_parser->ParseSpriteAttributeTable(line - lines_per_frame);
       }
 
       blank_line(line, -viewport.x, viewport.w + 2*viewport.x);
@@ -1071,7 +1071,7 @@ void system_frame_sms(int do_skip)
     /* parse first line of sprites */
     if (reg[1] & 0x40)
     {
-      parse_satb(-1);
+      g_satb_parser->ParseSpriteAttributeTable(-1);
     }
   }
 
@@ -1079,7 +1079,7 @@ void system_frame_sms(int do_skip)
   else
   {    
     /* Sprites pre-processing occurs even when display is disabled */
-    parse_satb(-1);
+    g_satb_parser->ParseSpriteAttributeTable(-1);
   }
 
   /* update 6-Buttons & Lightguns */

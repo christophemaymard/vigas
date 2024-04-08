@@ -59,13 +59,13 @@
 #include "core/vdp/object_info_t.h"
 
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m4_satb_parser.h"
 #include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m5_satb_parser.h"
+#include "gpgx/ppu/vdp/tms_satb_parser.h"
 
 #ifndef HAVE_NO_SPRITE_LIMIT
 #define MAX_SPRITES_PER_LINE 20
-#define TMS_MAX_SPRITES_PER_LINE 4
-#define MODE4_MAX_SPRITES_PER_LINE 8
-#define MODE5_MAX_SPRITES_PER_LINE (viewport.w >> 4)
 #define MODE5_MAX_SPRITE_PIXELS max_sprite_pixels
 #endif
 
@@ -607,7 +607,11 @@ u16 spr_col;
 /* Function pointers */
 void (*render_bg)(int line);
 void (*render_obj)(int line);
-void (*parse_satb)(int line);
+
+gpgx::ppu::vdp::ISpriteAttributeTableParser* g_satb_parser = nullptr;
+gpgx::ppu::vdp::TmsSpriteAttributeTableParser* g_satb_parser_tms = nullptr;
+gpgx::ppu::vdp::M4SpriteAttributeTableParser* g_satb_parser_m4 = nullptr;
+gpgx::ppu::vdp::M5SpriteAttributeTableParser* g_satb_parser_m5 = nullptr;
 
 gpgx::ppu::vdp::IBackgroundPatternCacheUpdater* g_bg_pattern_cache_updater = nullptr;
 gpgx::ppu::vdp::M4BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m4 = nullptr;
@@ -4244,276 +4248,6 @@ void render_obj_m5_im2_ste(int line)
   merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[4], viewport.w);
 }
 
-
-/*--------------------------------------------------------------------------*/
-/* Sprites Parsing functions                                                */
-/*--------------------------------------------------------------------------*/
-
-void parse_satb_tms(int line)
-{
-  int i = 0;
-
-  /* Sprite counter (4 max. per line) */
-  int count = 0;
-
-  /* no sprites in Text modes */
-  if (!(reg[1] & 0x10))
-  {
-    /* Y position */
-    int ypos;
-
-    /* Sprite list for next line */
-    object_info_t *object_info = obj_info[(line + 1) & 1];
-
-    /* Pointer to sprite attribute table */
-    u8 *st = &vram[(reg[5] << 7) & 0x3F80];
-
-    /* Sprite height (8 pixels by default) */
-    int height = 8;
-
-    /* Adjust height for 16x16 sprites */
-    height <<= ((reg[1] & 0x02) >> 1);
-
-    /* Adjust height for zoomed sprites */
-    height <<= (reg[1] & 0x01);
-
-    /* Parse Sprite Table (32 entries) */
-    do
-    {
-      /* Sprite Y position */
-      ypos = st[i << 2];
-
-      /* Check end of sprite list marker */
-      if (ypos == 0xD0)
-      {
-        break;
-      }
-
-      /* Wrap Y coordinate for sprites > 256-32 */
-      if (ypos >= 224)
-      {
-        ypos -= 256;
-      }
-
-      /* Y range */
-      ypos = line - ypos;
-
-      /* Sprite is visible on this line ? */
-      if ((ypos >= 0) && (ypos < height))
-      {
-        /* Sprite overflow */
-        if (count == TMS_MAX_SPRITES_PER_LINE)
-        {
-          /* Flag is set only during active area */
-          if (line < viewport.h)
-          {
-            spr_ovr = 0x40;
-          }
-          break;
-        }
-
-        /* Adjust Y range back for zoomed sprites */
-        ypos >>= (reg[1] & 0x01);
-
-        /* Store sprite attributes for later processing */
-        object_info->ypos = ypos;
-        object_info->xpos = st[(i << 2) + 1];
-        object_info->attr = st[(i << 2) + 2];
-        object_info->size = st[(i << 2) + 3];
-
-        /* Increment Sprite count */
-        ++count;
-
-        /* Next sprite entry */
-        object_info++;
-      }
-    }
-    while (++i < 32);
-  }
-
-  /* Update sprite count for next line */
-  object_count[(line + 1) & 1] = count;
-
-  /* Insert number of last sprite entry processed */
-  status = (status & 0xE0) | (i & 0x1F);
-}
-
-void parse_satb_m4(int line)
-{
-  int i = 0;
-  u8 *st;
-
-  /* Sprite counter (8 max. per line) */
-  int count = 0;
-
-  /* Y position */
-  int ypos;
-
-  /* Sprite list for next line */
-  object_info_t *object_info = obj_info[(line + 1) & 1];
-
-  /* Sprite height (8x8 or 8x16) */
-  int height = 8 + ((reg[1] & 0x02) << 2);
-
-  /* Sprite attribute table address mask */
-  u16 st_mask = ~0x3F80 ^ (reg[5] << 7);
-
-  /* Unused bits used as a mask on 315-5124 VDP only */
-  if (system_hw > SYSTEM_SMS)
-  {
-    st_mask |= 0x80;
-  }
-
-  /* Pointer to sprite attribute table */
-  st = &vram[st_mask & 0x3F00];
-
-  /* Parse Sprite Table (64 entries) */
-  do
-  {
-    /* Sprite Y position */
-    ypos = st[i];
-
-    /* Check end of sprite list marker (no effect in extended modes) */
-    if ((ypos == 208) && (viewport.h == 192))
-    {
-      break;
-    }
-
-    /* Wrap Y coordinate (NB: this is likely not 100% accurate and needs to be verified on real hardware) */
-    if (ypos > (viewport.h + 16))
-    {
-      ypos -= 256;
-    }
-
-    /* Y range */
-    ypos = line - ypos;
-
-    /* Adjust Y range for zoomed sprites (not working on Mega Drive VDP) */
-    if (system_hw < SYSTEM_MD)
-    {
-      ypos >>= (reg[1] & 0x01);
-    }
-
-    /* Check if sprite is visible on this line */
-    if ((ypos >= 0) && (ypos < height))
-    {
-      /* Sprite overflow */
-      if (count == MODE4_MAX_SPRITES_PER_LINE)
-      {
-        /* Flag is set only during active area */
-        if ((line >= 0) && (line < viewport.h))
-        {
-          spr_ovr = 0x40;
-        }
-        break;
-      }
-
-      /* Store sprite attributes for later processing */
-      object_info->ypos = ypos;
-      object_info->xpos = st[(0x80 + (i << 1)) & st_mask];
-      object_info->attr = st[(0x81 + (i << 1)) & st_mask];
-
-      /* Increment Sprite count */
-      ++count;
-
-      /* Next sprite entry */
-      object_info++;
-    }
-  }
-  while (++i < 64);
-
-  /* Update sprite count for next line */
-  object_count[(line + 1) & 1] = count;
-}
-
-void parse_satb_m5(int line)
-{
-  /* Y position */
-  int ypos;
-
-  /* Sprite height (8,16,24,32 pixels)*/
-  int height;
-
-  /* Sprite size data */
-  int size;
-
-  /* Sprite link data */
-  int link = 0;
-
-  /* Sprite counter */
-  int count = 0;
-
-  /* max. number of rendered sprites (16 or 20 sprites per line by default) */
-  int max = MODE5_MAX_SPRITES_PER_LINE;
-
-  /* max. number of parsed sprites (64 or 80 sprites per line by default) */
-  int total = max_sprite_pixels >> 2;
-
-  /* Pointer to sprite attribute table */
-  u16 *p = (u16 *) &vram[satb];
-
-  /* Pointer to internal RAM */
-  u16 *q = (u16 *) &sat[0];
-
-  /* Sprite list for next line */
-  object_info_t *object_info = obj_info[(line + 1) & 1];
-
-  /* Adjust line offset */
-  line += 0x81;
-
-  do
-  {
-    /* Read Y position from internal SAT cache */
-    ypos = (q[link] >> im2_flag) & 0x1FF;
-
-    /* Check if sprite Y position has been reached */
-    if (line >= ypos)
-    {
-      /* Read sprite size from internal SAT cache */
-      size = q[link + 1] >> 8;
-
-      /* Sprite height */
-      height = 8 + ((size & 3) << 3);
-
-      /* Y range */
-      ypos = line - ypos;
-
-      /* Check if sprite is visible on current line */
-      if (ypos < height)
-      {
-        /* Sprite overflow */
-        if (count == max)
-        {
-          status |= 0x40;
-          break;
-        }
-
-        /* Update sprite list (only name, attribute & xpos are parsed from VRAM) */
-        object_info->attr  = p[link + 2];
-        object_info->xpos  = p[link + 3] & 0x1ff;
-        object_info->ypos  = ypos;
-        object_info->size  = size & 0x0f;
-
-        /* Increment Sprite count */
-        ++count;
-
-        /* Next sprite entry */
-        object_info++;
-      }
-    }
-
-    /* Read link data from internal SAT cache */
-    link = (q[link + 1] & 0x7F) << 2;
-
-    /* Stop parsing if link data points to first entry (#0) or after the last entry (#64 in H32 mode, #80 in H40 mode) */
-    if ((link == 0) || (link >= viewport.w)) break;
-  }
-  while (--total);
-
-  /* Update sprite count for next line (line value already incremented) */
-  object_count[line & 1] = count;
-}
-
 /*--------------------------------------------------------------------------*/
 /* Window & Plane A clipping update function (Mode 5)                       */
 /*--------------------------------------------------------------------------*/
@@ -4597,6 +4331,47 @@ void render_init(void)
   /* Make bitplane to pixel look-up table (Mode 4) */
   make_bp_lut();
 
+  // Initialize parser of sprite attribute table (Mode TMS).
+  if (!g_satb_parser_tms) {
+    g_satb_parser_tms = new gpgx::ppu::vdp::TmsSpriteAttributeTableParser(
+      &viewport, 
+      vram, 
+      obj_info, 
+      object_count, 
+      reg, 
+      &spr_ovr, 
+      &status
+    );
+  }
+
+  // Initialize parser of sprite attribute table (Mode 4).
+  if (!g_satb_parser_m4) {
+    g_satb_parser_m4 = new gpgx::ppu::vdp::M4SpriteAttributeTableParser(
+      &viewport, 
+      vram, 
+      obj_info, 
+      object_count, 
+      reg, 
+      &system_hw, 
+      &spr_ovr
+    );
+  }
+
+  // Initialize parser of sprite attribute table (Mode 5).
+  if (!g_satb_parser_m5) {
+    g_satb_parser_m5 = new gpgx::ppu::vdp::M5SpriteAttributeTableParser(
+      &viewport, 
+      vram, 
+      obj_info, 
+      object_count, 
+      sat, 
+      &satb, 
+      &im2_flag, 
+      &max_sprite_pixels, 
+      &status
+    );
+  }
+
   // Initialize updater of background pattern cache (Mode 4).
   if (!g_bg_pattern_cache_updater_m4) {
     g_bg_pattern_cache_updater_m4 = new gpgx::ppu::vdp::M4BackgroundPatternCacheUpdater(
@@ -4672,7 +4447,7 @@ void render_line(int line)
     /* Parse sprites for next line */
     if (line < (viewport.h - 1))
     {
-      parse_satb(line);
+      g_satb_parser->ParseSpriteAttributeTable(line);
     }
 
     /* Horizontal borders */
@@ -4692,7 +4467,7 @@ void render_line(int line)
       spr_ovr = 0;
 
       /* Sprites are still parsed when display is disabled */
-      parse_satb(line);
+      g_satb_parser->ParseSpriteAttributeTable(line);
     }
 
     /* Blanked line */

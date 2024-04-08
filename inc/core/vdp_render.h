@@ -47,7 +47,11 @@
 
 #include "gpgx/ppu/vdp/bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m4_satb_parser.h"
 #include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m5_satb_parser.h"
+#include "gpgx/ppu/vdp/satb_parser.h"
+#include "gpgx/ppu/vdp/tms_satb_parser.h"
 
 /* 3:3:2 RGB */
 #if defined(USE_8BPP_RENDERING)
@@ -134,16 +138,27 @@ extern void render_obj_m5(int line);
 extern void render_obj_m5_ste(int line);
 extern void render_obj_m5_im2(int line);
 extern void render_obj_m5_im2_ste(int line);
-extern void parse_satb_tms(int line);
-extern void parse_satb_m4(int line);
-extern void parse_satb_m5(int line);
 extern void color_update_m4(int index, unsigned int data);
 extern void color_update_m5(int index, unsigned int data);
 
 /* Function pointers */
 extern void (*render_bg)(int line);
 extern void (*render_obj)(int line);
-extern void (*parse_satb)(int line);
+
+//------------------------------------------------------------------------------
+// Sprite attribute table parsing.
+
+/// Parser of sprite attribute table.
+extern gpgx::ppu::vdp::ISpriteAttributeTableParser* g_satb_parser;
+
+/// Parser of sprite attribute table in mode TMS.
+extern gpgx::ppu::vdp::TmsSpriteAttributeTableParser* g_satb_parser_tms;
+
+/// Parser of sprite attribute table in mode 4.
+extern gpgx::ppu::vdp::M4SpriteAttributeTableParser* g_satb_parser_m4;
+
+/// Parser of sprite attribute table in mode 5.
+extern gpgx::ppu::vdp::M5SpriteAttributeTableParser* g_satb_parser_m5;
 
 //------------------------------------------------------------------------------
 // Background pattern cache updating.

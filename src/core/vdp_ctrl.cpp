@@ -391,14 +391,14 @@ void vdp_reset(void)
     /* Mode 0 */
     render_bg = render_bg_m0;
     render_obj = render_obj_tms;
-    parse_satb = parse_satb_tms;
+    g_satb_parser = g_satb_parser_tms;
   }
   else
   {
     /* Mode 4 */
     render_bg = render_bg_m4;
     render_obj = render_obj_m4;
-    parse_satb = parse_satb_m4;
+    g_satb_parser = g_satb_parser_m4;
   }
 
   /* default 68k bus interface (Mega Drive VDP only) */
@@ -464,7 +464,7 @@ void vdp_reset(void)
     /* Mode 4 */
     render_bg = render_bg_m4;
     render_obj = render_obj_m4;
-    parse_satb = parse_satb_m4;
+    g_satb_parser = g_satb_parser_m4;
   }
 
   /* Mega Drive specific */
@@ -1124,7 +1124,7 @@ void vdp_sms_ctrl_w(unsigned int data)
           if (mode & 0x04)
           {
             /* Mode 4 sprites */
-            parse_satb = parse_satb_m4;
+            g_satb_parser = g_satb_parser_m4;
             render_obj = render_obj_m4;
 
             /* force BG cache update*/
@@ -1133,7 +1133,7 @@ void vdp_sms_ctrl_w(unsigned int data)
           else
           {
             /* TMS-mode sprites */
-            parse_satb = parse_satb_tms;
+            g_satb_parser = g_satb_parser_tms;
             render_obj = render_obj_tms;
 
             /* BG cache is not used */
@@ -1761,7 +1761,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
           if (d & 0x04)
           {
             /* Mode 5 rendering */
-            parse_satb = parse_satb_m5;
+            g_satb_parser = g_satb_parser_m5;
             g_bg_pattern_cache_updater = g_bg_pattern_cache_updater_m5;
             if (im2_flag)
             {
@@ -1803,7 +1803,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
           else
           {
             /* Mode 4 rendering */
-            parse_satb = parse_satb_m4;
+            g_satb_parser = g_satb_parser_m4;
             g_bg_pattern_cache_updater = g_bg_pattern_cache_updater_m4;
             render_bg = render_bg_m4;
             render_obj = render_obj_m4;
