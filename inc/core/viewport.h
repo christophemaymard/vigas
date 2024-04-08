@@ -1,8 +1,5 @@
 /***************************************************************************************
- *  Genesis Plus
- *  Virtual System emulation
- *
- *  Support for 16-bit & 8-bit hardware modes
+ *  Genesis Plus GX
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2024  Eke-Eke (Genesis Plus GX)
@@ -39,35 +36,16 @@
  *
  ****************************************************************************************/
 
-#ifndef __CORE_BITMAP_H__
-#define __CORE_BITMAP_H__
+#ifndef __CORE_VIEWPORT_H__
+#define __CORE_VIEWPORT_H__
 
-#include "xee/fnd/data_type.h"
+#include "core/viewport_t.h"
 
 //==============================================================================
 
 //------------------------------------------------------------------------------
 
-typedef struct
-{
-  u8* data;      /* Bitmap data */
-  int width;        /* Bitmap width */
-  int height;       /* Bitmap height */
-  int pitch;        /* Bitmap pitch */
-  struct
-  {
-    int x;          /* X offset of viewport within bitmap */
-    int y;          /* Y offset of viewport within bitmap */
-    int w;          /* Width of viewport */
-    int h;          /* Height of viewport */
-    int ow;         /* Previous width of viewport */
-    int oh;         /* Previous height of viewport */
-    int changed;    /* 1= Viewport width or height have changed */
-  } viewport;
-} t_bitmap;
+extern viewport_t viewport;
 
-//------------------------------------------------------------------------------
+#endif // #ifndef __CORE_VIEWPORT_H__
 
-extern t_bitmap bitmap;
-
-#endif // #ifndef __CORE_BITMAP_H__

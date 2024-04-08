@@ -1,8 +1,5 @@
 /***************************************************************************************
- *  Genesis Plus
- *  Virtual System emulation
- *
- *  Support for 16-bit & 8-bit hardware modes
+ *  Genesis Plus GX
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2024  Eke-Eke (Genesis Plus GX)
@@ -39,10 +36,22 @@
  *
  ****************************************************************************************/
 
-#include "core/bitmap.h"
+#ifndef __CORE_FRAMEBUFFER_T_H__
+#define __CORE_FRAMEBUFFER_T_H__
+
+#include "xee/fnd/data_type.h"
 
 //==============================================================================
 
 //------------------------------------------------------------------------------
 
-t_bitmap bitmap;
+struct framebuffer_t
+{
+  u8* data;   // Bitmap dat.
+  s32 width;  // Bitmap width.
+  s32 height; // Bitmap height.
+  s32 pitch;  // Bitmap pitch.
+};
+
+#endif // #ifndef __CORE_FRAMEBUFFER_T_H__
+

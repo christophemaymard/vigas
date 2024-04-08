@@ -44,11 +44,11 @@
 #include "xee/fnd/data_type.h"
 
 #include "core/m68k/m68k.h"
-#include "core/bitmap.h"
 #include "core/io_reg.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/vdp_ctrl.h"
+#include "core/viewport.h"
 #include "core/input_hw/input.h"
 
 #include "gpgx/g_z80.h"
@@ -107,8 +107,8 @@ static struct
 
 void lightgun_reset(int port)
 {
-  input.analog[port][0] = bitmap.viewport.w / 2;
-  input.analog[port][1] = bitmap.viewport.h / 2;
+  input.analog[port][0] = viewport.w / 2;
+  input.analog[port][1] = viewport.h / 2;
   lightgun.State = 0x40;
   lightgun.Port = 4;
 }
@@ -122,7 +122,7 @@ void lightgun_refresh(int port)
     int y = input.analog[port][1] + input.y_offset;
 
     /* check if active line falls within current gun Y position */
-    if ((y == v_counter) && (y < bitmap.viewport.h))
+    if ((y == v_counter) && (y < viewport.h))
     {
       /* HL enabled ? */
       if (io_reg[5] & 0x80)

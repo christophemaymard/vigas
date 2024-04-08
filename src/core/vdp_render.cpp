@@ -49,10 +49,11 @@
 #include "xee/mem/memory.h"
 
 #include "core/core_config.h"
+#include "core/framebuffer.h"
 #include "core/macros.h"
-#include "core/bitmap.h"
 #include "core/system_hardware.h"
 #include "core/vdp_ctrl.h"
+#include "core/viewport.h"
 #include "core/vram.h"
 
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
@@ -62,7 +63,7 @@
 #define MAX_SPRITES_PER_LINE 20
 #define TMS_MAX_SPRITES_PER_LINE 4
 #define MODE4_MAX_SPRITES_PER_LINE 8
-#define MODE5_MAX_SPRITES_PER_LINE (bitmap.viewport.w >> 4)
+#define MODE5_MAX_SPRITES_PER_LINE (viewport.w >> 4)
 #define MODE5_MAX_SPRITE_PIXELS max_sprite_pixels
 #endif
 
@@ -1443,7 +1444,7 @@ void render_bg_m4(int line)
   }
 
   /* Test for extended modes (Master System II & Game gear VDP only) */
-  if (bitmap.viewport.h > 192)
+  if (viewport.h > 192)
   {
     /* Vertical scroll mask */
     v_line = v_line % 256;
@@ -1480,7 +1481,7 @@ void render_bg_m4(int line)
     if((column == 24) && (reg[0] & 0x80))
     {
       /* Clear Pattern name table start address */
-      if (bitmap.viewport.h > 192)
+      if (viewport.h > 192)
       {
         nt = (u16 *)&vram[(0x3700 & nt_mask) + ((line >> 3) << 6)];
       }
@@ -1538,7 +1539,7 @@ void render_bg_m5(int line)
 
   /* Plane B width */
   int start = 0;
-  int end = bitmap.viewport.w >> 4;
+  int end = viewport.w >> 4;
 
   /* Plane B scroll */
 #ifdef LSB_FIRST
@@ -1668,7 +1669,7 @@ void render_bg_m5(int line)
   }
 
   /* Merge background layers */
-  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[(reg[12] & 0x08) >> 2], bitmap.viewport.w);
+  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[(reg[12] & 0x08) >> 2], viewport.w);
 }
 
 void render_bg_m5_vs(int line)
@@ -1691,7 +1692,7 @@ void render_bg_m5_vs(int line)
 
   /* Plane B width */
   int start = 0;
-  int end = bitmap.viewport.w >> 4;
+  int end = viewport.w >> 4;
 
   /* Plane B horizontal scroll */
 #ifdef LSB_FIRST
@@ -1858,7 +1859,7 @@ void render_bg_m5_vs(int line)
   }
 
   /* Merge background layers */
-  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[(reg[12] & 0x08) >> 2], bitmap.viewport.w);
+  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[(reg[12] & 0x08) >> 2], viewport.w);
 }
 
 /* Enhanced function that allows each cell to be vscrolled individually, instead of being limited to 2-cell */
@@ -1885,7 +1886,7 @@ void render_bg_m5_vs_enhanced(int line)
 
   /* Plane B width */
   int start = 0;
-  int end = bitmap.viewport.w >> 4;
+  int end = viewport.w >> 4;
 
   /* Plane B horizontal scroll */
 #ifdef LSB_FIRST
@@ -2147,7 +2148,7 @@ void render_bg_m5_vs_enhanced(int line)
   }
 
   /* Merge background layers */
-  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[(reg[12] & 0x08) >> 2], bitmap.viewport.w);
+  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[(reg[12] & 0x08) >> 2], viewport.w);
 }
 
 void render_bg_m5_im2(int line)
@@ -2169,7 +2170,7 @@ void render_bg_m5_im2(int line)
 
   /* Plane B width */
   int start = 0;
-  int end = bitmap.viewport.w >> 4;
+  int end = viewport.w >> 4;
 
   /* Plane B scroll */
 #ifdef LSB_FIRST
@@ -2299,7 +2300,7 @@ void render_bg_m5_im2(int line)
   }
 
   /* Merge background layers */
-  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[(reg[12] & 0x08) >> 2], bitmap.viewport.w);
+  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[(reg[12] & 0x08) >> 2], viewport.w);
 }
 
 void render_bg_m5_im2_vs(int line)
@@ -2323,7 +2324,7 @@ void render_bg_m5_im2_vs(int line)
 
   /* Plane B width */
   int start = 0;
-  int end = bitmap.viewport.w >> 4;
+  int end = viewport.w >> 4;
 
   /* Plane B horizontal scroll */
 #ifdef LSB_FIRST
@@ -2490,7 +2491,7 @@ void render_bg_m5_im2_vs(int line)
   }
 
   /* Merge background layers */
-  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[(reg[12] & 0x08) >> 2], bitmap.viewport.w);
+  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[(reg[12] & 0x08) >> 2], viewport.w);
 }
 
 #else
@@ -2510,7 +2511,7 @@ void render_bg_m5(int line)
   u32 pf_shift     = playfield_shift;
 
   /* Number of columns to draw */
-  int width = bitmap.viewport.w >> 4;
+  int width = viewport.w >> 4;
 
   /* Layer priority table */
   u8 *table = lut[(reg[12] & 8) >> 2];
@@ -2668,7 +2669,7 @@ void render_bg_m5_vs(int line)
   u32 *vs          = (u32 *)&vsram[0];
 
   /* Number of columns to draw */
-  int width = bitmap.viewport.w >> 4;
+  int width = viewport.w >> 4;
 
   /* Layer priority table */
   u8 *table = lut[(reg[12] & 8) >> 2];
@@ -2865,7 +2866,7 @@ void render_bg_m5_vs_enhanced(int line)
   u32 *vs          = (u32 *)&vsram[0];
 
   /* Number of columns to draw */
-  int width = bitmap.viewport.w >> 4;
+  int width = viewport.w >> 4;
 
   /* Layer priority table */
   u8 *table = lut[(reg[12] & 8) >> 2];
@@ -3201,7 +3202,7 @@ void render_bg_m5_im2(int line)
   u32 pf_shift     = playfield_shift;
 
   /* Number of columns to draw */
-  int width = bitmap.viewport.w >> 4;
+  int width = viewport.w >> 4;
 
   /* Layer priority table */
   u8 *table = lut[(reg[12] & 8) >> 2];
@@ -3360,7 +3361,7 @@ void render_bg_m5_im2_vs(int line)
   u32 *vs          = (u32 *)&vsram[0];
 
   /* Number of columns to draw */
-  int width = bitmap.viewport.w >> 4;
+  int width = viewport.w >> 4;
 
   /* Layer priority table */
   u8 *table = lut[(reg[12] & 8) >> 2];
@@ -3660,16 +3661,16 @@ void render_obj_tms(int line)
   }
 
   /* handle Game Gear reduced screen (160x144) */
-  if ((system_hw == SYSTEM_GG) && !core_config.gg_extra && (v_counter < bitmap.viewport.h))
+  if ((system_hw == SYSTEM_GG) && !core_config.gg_extra && (v_counter < viewport.h))
   {
-    int line = v_counter - (bitmap.viewport.h - 144) / 2;
+    int line = v_counter - (viewport.h - 144) / 2;
     if ((line < 0) || (line >= 144))
     {
       xee::mem::Memset(&linebuf[0][0x20], 0x40, 256);
     }
     else
     {
-      if (bitmap.viewport.x > 0)
+      if (viewport.x > 0)
       {
         xee::mem::Memset(&linebuf[0][0x20], 0x40, 48);
         xee::mem::Memset(&linebuf[0][0x20+48+160], 0x40, 48);
@@ -3775,16 +3776,16 @@ void render_obj_m4(int line)
   }
 
   /* handle Game Gear reduced screen (160x144) */
-  if ((system_hw == SYSTEM_GG) && !core_config.gg_extra && (v_counter < bitmap.viewport.h))
+  if ((system_hw == SYSTEM_GG) && !core_config.gg_extra && (v_counter < viewport.h))
   {
-    int line = v_counter - (bitmap.viewport.h - 144) / 2;
+    int line = v_counter - (viewport.h - 144) / 2;
     if ((line < 0) || (line >= 144))
     {
       xee::mem::Memset(&linebuf[0][0x20], 0x40, 256);
     }
     else
     {
-      if (bitmap.viewport.x > 0)
+      if (viewport.x > 0)
       {
         xee::mem::Memset(&linebuf[0][0x20], 0x40, 48);
         xee::mem::Memset(&linebuf[0][0x20+48+160], 0x40, 48);
@@ -3840,7 +3841,7 @@ void render_obj_m5(int line)
     pixelcount += width;
 
     /* Is sprite across visible area ? */
-    if (((xpos + width) > 0) && (xpos < bitmap.viewport.w) && !masked)
+    if (((xpos + width) > 0) && (xpos < viewport.w) && !masked)
     {
       /* Sprite attributes */
       attr = object_info->attr;
@@ -3889,7 +3890,7 @@ void render_obj_m5(int line)
     if (pixelcount >= max_pixels)
     {
       /* Sprite masking is effective on next line if max pixel width is reached */
-      spr_ovr = (pixelcount >= bitmap.viewport.w);
+      spr_ovr = (pixelcount >= viewport.w);
 
       /* Stop sprite rendering */
       return;
@@ -3920,7 +3921,7 @@ void render_obj_m5_ste(int line)
   int count = object_count[line];
 
   /* Clear sprite line buffer */
-  xee::mem::Memset(&linebuf[1][0], 0, bitmap.viewport.w + 0x40);
+  xee::mem::Memset(&linebuf[1][0], 0, viewport.w + 0x40);
 
   /* Draw sprites in front-to-back order */
   while (count--)
@@ -3953,7 +3954,7 @@ void render_obj_m5_ste(int line)
     pixelcount += width;
 
     /* Is sprite across visible area ? */
-    if (((xpos + width) > 0) && (xpos < bitmap.viewport.w) && !masked)
+    if (((xpos + width) > 0) && (xpos < viewport.w) && !masked)
     {
       /* Sprite attributes */
       attr = object_info->attr;
@@ -4001,10 +4002,10 @@ void render_obj_m5_ste(int line)
     if (pixelcount >= max_pixels)
     {
       /* Sprite masking is effective on next line if max pixel width is reached */
-      spr_ovr = (pixelcount >= bitmap.viewport.w);
+      spr_ovr = (pixelcount >= viewport.w);
 
       /* Merge background & sprite layers */
-      merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[4], bitmap.viewport.w);
+      merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[4], viewport.w);
 
       /* Stop sprite rendering */
       return;
@@ -4018,7 +4019,7 @@ void render_obj_m5_ste(int line)
   spr_ovr = 0;
 
   /* Merge background & sprite layers */
-  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[4], bitmap.viewport.w);
+  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[4], viewport.w);
 }
 
 void render_obj_m5_im2(int line)
@@ -4069,7 +4070,7 @@ void render_obj_m5_im2(int line)
     pixelcount += width;
 
     /* Is sprite across visible area ? */
-    if (((xpos + width) > 0) && (xpos < bitmap.viewport.w) && !masked)
+    if (((xpos + width) > 0) && (xpos < viewport.w) && !masked)
     {
       /* Sprite attributes */
       attr = object_info->attr;
@@ -4117,7 +4118,7 @@ void render_obj_m5_im2(int line)
     if (pixelcount >= max_pixels)
     {
       /* Sprite masking is effective on next line if max pixel width is reached */
-      spr_ovr = (pixelcount >= bitmap.viewport.w);
+      spr_ovr = (pixelcount >= viewport.w);
 
       /* Stop sprite rendering */
       return;
@@ -4149,7 +4150,7 @@ void render_obj_m5_im2_ste(int line)
   int count = object_count[line];
 
   /* Clear sprite line buffer */
-  xee::mem::Memset(&linebuf[1][0], 0, bitmap.viewport.w + 0x40);
+  xee::mem::Memset(&linebuf[1][0], 0, viewport.w + 0x40);
 
   /* Draw sprites in front-to-back order */
   while (count--)
@@ -4182,7 +4183,7 @@ void render_obj_m5_im2_ste(int line)
     pixelcount += width;
 
     /* Is sprite across visible area ? */
-    if (((xpos + width) > 0) && (xpos < bitmap.viewport.w) && !masked)
+    if (((xpos + width) > 0) && (xpos < viewport.w) && !masked)
     {
       /* Sprite attributes */
       attr = object_info->attr;
@@ -4230,10 +4231,10 @@ void render_obj_m5_im2_ste(int line)
     if (pixelcount >= max_pixels)
     {
       /* Sprite masking is effective on next line if max pixel width is reached */
-      spr_ovr = (pixelcount >= bitmap.viewport.w);
+      spr_ovr = (pixelcount >= viewport.w);
 
       /* Merge background & sprite layers */
-      merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[4], bitmap.viewport.w);
+      merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[4], viewport.w);
 
       /* Stop sprite rendering */
       return;
@@ -4247,7 +4248,7 @@ void render_obj_m5_im2_ste(int line)
   spr_ovr = 0;
 
   /* Merge background & sprite layers */
-  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[4], bitmap.viewport.w);
+  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[4], viewport.w);
 }
 
 
@@ -4311,7 +4312,7 @@ void parse_satb_tms(int line)
         if (count == TMS_MAX_SPRITES_PER_LINE)
         {
           /* Flag is set only during active area */
-          if (line < bitmap.viewport.h)
+          if (line < viewport.h)
           {
             spr_ovr = 0x40;
           }
@@ -4380,13 +4381,13 @@ void parse_satb_m4(int line)
     ypos = st[i];
 
     /* Check end of sprite list marker (no effect in extended modes) */
-    if ((ypos == 208) && (bitmap.viewport.h == 192))
+    if ((ypos == 208) && (viewport.h == 192))
     {
       break;
     }
 
     /* Wrap Y coordinate (NB: this is likely not 100% accurate and needs to be verified on real hardware) */
-    if (ypos > (bitmap.viewport.h + 16))
+    if (ypos > (viewport.h + 16))
     {
       ypos -= 256;
     }
@@ -4407,7 +4408,7 @@ void parse_satb_m4(int line)
       if (count == MODE4_MAX_SPRITES_PER_LINE)
       {
         /* Flag is set only during active area */
-        if ((line >= 0) && (line < bitmap.viewport.h))
+        if ((line >= 0) && (line < viewport.h))
         {
           spr_ovr = 0x40;
         }
@@ -4512,7 +4513,7 @@ void parse_satb_m5(int line)
     link = (q[link + 1] & 0x7F) << 2;
 
     /* Stop parsing if link data points to first entry (#0) or after the last entry (#64 in H32 mode, #80 in H40 mode) */
-    if ((link == 0) || (link >= bitmap.viewport.w)) break;
+    if ((link == 0) || (link >= viewport.w)) break;
   }
   while (--total);
 
@@ -4628,7 +4629,7 @@ void render_init(void)
 void render_reset(void)
 {
   /* Clear display bitmap */
-  xee::mem::Memset(bitmap.data, 0, bitmap.pitch * bitmap.height);
+  xee::mem::Memset(framebuffer.data, 0, framebuffer.pitch * framebuffer.height);
 
   /* Clear line buffers */
   xee::mem::Memset(linebuf, 0, sizeof(linebuf));
@@ -4676,16 +4677,16 @@ void render_line(int line)
     }
 
     /* Parse sprites for next line */
-    if (line < (bitmap.viewport.h - 1))
+    if (line < (viewport.h - 1))
     {
       parse_satb(line);
     }
 
     /* Horizontal borders */
-    if (bitmap.viewport.x > 0)
+    if (viewport.x > 0)
     {
-      xee::mem::Memset(&linebuf[0][0x20 - bitmap.viewport.x], 0x40, bitmap.viewport.x);
-      xee::mem::Memset(&linebuf[0][0x20 + bitmap.viewport.w], 0x40, bitmap.viewport.x);
+      xee::mem::Memset(&linebuf[0][0x20 - viewport.x], 0x40, viewport.x);
+      xee::mem::Memset(&linebuf[0][0x20 + viewport.w], 0x40, viewport.x);
     }
   }
   else
@@ -4702,7 +4703,7 @@ void render_line(int line)
     }
 
     /* Blanked line */
-    xee::mem::Memset(&linebuf[0][0x20 - bitmap.viewport.x], 0x40, bitmap.viewport.w + 2*bitmap.viewport.x);
+    xee::mem::Memset(&linebuf[0][0x20 - viewport.x], 0x40, viewport.w + 2*viewport.x);
   }
 
   /* Pixel color remapping */
@@ -4718,13 +4719,13 @@ void blank_line(int line, int offset, int width)
 void remap_line(int line)
 {
   /* Line width */
-  int width = bitmap.viewport.w + 2*bitmap.viewport.x;
+  int width = viewport.w + 2*viewport.x;
 
   /* Pixel line buffer */
-  u8 *src = &linebuf[0][0x20 - bitmap.viewport.x];
+  u8 *src = &linebuf[0][0x20 - viewport.x];
 
   /* Adjust line offset in framebuffer */
-  line = (line + bitmap.viewport.y) % lines_per_frame;
+  line = (line + viewport.y) % lines_per_frame;
 
   /* Take care of Game Gear reduced screen when overscan is disabled */
   if (line < 0) return;
@@ -4740,7 +4741,7 @@ void remap_line(int line)
     CUSTOM_BLITTER(line, width, pixel, src)
 #else
     /* Convert VDP pixel data to output pixel format */
-    PIXEL_OUT_T *dst = ((PIXEL_OUT_T *)&bitmap.data[(line * bitmap.pitch)]);
+    PIXEL_OUT_T *dst = ((PIXEL_OUT_T *)&framebuffer.data[(line * framebuffer.pitch)]);
     if (core_config.lcd)
     {
       do

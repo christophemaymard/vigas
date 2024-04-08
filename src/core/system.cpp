@@ -46,12 +46,12 @@
 #include "osd.h" // For osd_input_update();
 #include "core/m68k/m68k.h"
 #include "core/audio_subsystem.h"
-#include "core/bitmap.h"
 #include "core/core_config.h"
 #include "core/system_cycle.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/ext.h" // For cart and scd.
+#include "core/viewport.h"
 #include "core/work_ram.h"
 #include "core/zstate.h"
 #include "core/genesis.h" // For gen_init() and gen_reset().
@@ -109,7 +109,7 @@ void system_frame_gen(int do_skip)
   fifo_cycles[3] = 0;
 
   /* check if display setings have changed during previous frame */
-  if (bitmap.viewport.changed & 2)
+  if (viewport.changed & 2)
   {
     /* interlaced modes */
     int old_interlaced = interlaced;
@@ -124,7 +124,7 @@ void system_frame_gen(int do_skip)
       odd_frame = interlaced;
 
       /* video mode has changed */
-      bitmap.viewport.changed = 5;
+      viewport.changed = 5;
 
       /* update rendering mode */
       if (reg[1] & 0x04)
@@ -144,7 +144,7 @@ void system_frame_gen(int do_skip)
     else
     {
       /* clear flag */
-      bitmap.viewport.changed &= ~2;
+      viewport.changed &= ~2;
     }
 
     /* active screen height */
@@ -154,38 +154,38 @@ void system_frame_gen(int do_skip)
       if (reg[1] & 0x08)
       {
         /* 240 active lines */
-        bitmap.viewport.h = 240;
-        bitmap.viewport.y = (core_config.overscan & 1) * 24 * vdp_pal;
+        viewport.h = 240;
+        viewport.y = (core_config.overscan & 1) * 24 * vdp_pal;
       }
       else
       {
         /* 224 active lines */
-        bitmap.viewport.h = 224;
-        bitmap.viewport.y = (core_config.overscan & 1) * (8 + (24 * vdp_pal));
+        viewport.h = 224;
+        viewport.y = (core_config.overscan & 1) * (8 + (24 * vdp_pal));
       }
     }
     else
     {
       /* Mode 4 (192 active lines) */
-      bitmap.viewport.h = 192;
-      bitmap.viewport.y = (core_config.overscan & 1) * 24 * (vdp_pal + 1);
+      viewport.h = 192;
+      viewport.y = (core_config.overscan & 1) * 24 * (vdp_pal + 1);
     }
 
     /* active screen width */
-    bitmap.viewport.w = 256 + ((reg[12] & 0x01) << 6);
+    viewport.w = 256 + ((reg[12] & 0x01) << 6);
 
     /* check viewport changes */
-    if (bitmap.viewport.h != bitmap.viewport.oh)
+    if (viewport.h != viewport.oh)
     {
-      bitmap.viewport.oh = bitmap.viewport.h;
-      bitmap.viewport.changed |= 1;
+      viewport.oh = viewport.h;
+      viewport.changed |= 1;
     }
   }
 
   /* first line of overscan */
-  if (bitmap.viewport.y)
+  if (viewport.y)
   {
-    blank_line(bitmap.viewport.h, -bitmap.viewport.x, bitmap.viewport.w + 2*bitmap.viewport.x);
+    blank_line(viewport.h, -viewport.x, viewport.w + 2*viewport.x);
   }
   
   /* clear DMA Busy, FIFO FULL & field flags */
@@ -227,10 +227,10 @@ void system_frame_gen(int do_skip)
   osd_input_update();
 
   /* VDP always starts after VBLANK so VINT cannot occur on first frame after a VDP reset (verified on real hardware) */
-  if (v_counter != bitmap.viewport.h)
+  if (v_counter != viewport.h)
   {
     /* reinitialize VCounter */
-    v_counter = bitmap.viewport.h;
+    v_counter = viewport.h;
 
     /* delay between VBLANK flag & Vertical Interrupt (Dracula, OutRunners, VR Troopers) */
     m68k_run(vint_cycle);
@@ -274,11 +274,11 @@ void system_frame_gen(int do_skip)
   mcycles_vdp = MCYCLES_PER_LINE;
 
   /* initialize line count */
-  line = bitmap.viewport.h + 1; 
+  line = viewport.h + 1; 
 
   /* initialize overscan area */
-  start = lines_per_frame - bitmap.viewport.y;
-  end = bitmap.viewport.h + bitmap.viewport.y;
+  start = lines_per_frame - viewport.y;
+  end = viewport.h + viewport.y;
 
   /* Vertical Blanking */
   do
@@ -289,7 +289,7 @@ void system_frame_gen(int do_skip)
     /* render overscan */
     if ((line < end) || (line >= start))
     {
-      blank_line(line, -bitmap.viewport.x, bitmap.viewport.w + 2*bitmap.viewport.x);
+      blank_line(line, -viewport.x, viewport.w + 2*viewport.x);
     }
 
     /* update 6-Buttons & Lightguns */
@@ -317,9 +317,9 @@ void system_frame_gen(int do_skip)
   v_counter = line;
 
   /* last line of overscan */
-  if (bitmap.viewport.y)
+  if (viewport.y)
   {
-    blank_line(line, -bitmap.viewport.x, bitmap.viewport.w + 2*bitmap.viewport.x);
+    blank_line(line, -viewport.x, viewport.w + 2*viewport.x);
   }
 
   /* reload H-Int counter */
@@ -419,13 +419,13 @@ void system_frame_gen(int do_skip)
     /* update VDP cycle count */
     mcycles_vdp += MCYCLES_PER_LINE;
   }
-  while (++line < bitmap.viewport.h);
+  while (++line < viewport.h);
 
   /* check viewport changes */
-  if (bitmap.viewport.w != bitmap.viewport.ow)
+  if (viewport.w != viewport.ow)
   {
-    bitmap.viewport.ow = bitmap.viewport.w;
-    bitmap.viewport.changed |= 1;
+    viewport.ow = viewport.w;
+    viewport.changed |= 1;
   }
 
   /* adjust timings for next frame */
@@ -452,7 +452,7 @@ void system_frame_scd(int do_skip)
   fifo_cycles[3] = 0;
 
   /* check if display setings have changed during previous frame */
-  if (bitmap.viewport.changed & 2)
+  if (viewport.changed & 2)
   {
     /* interlaced modes */
     int old_interlaced = interlaced;
@@ -467,7 +467,7 @@ void system_frame_scd(int do_skip)
       odd_frame = interlaced;
 
       /* video mode has changed */
-      bitmap.viewport.changed = 5;
+      viewport.changed = 5;
 
       /* update rendering mode */
       if (reg[1] & 0x04)
@@ -487,7 +487,7 @@ void system_frame_scd(int do_skip)
     else
     {
       /* clear flag */
-      bitmap.viewport.changed &= ~2;
+      viewport.changed &= ~2;
     }
 
     /* active screen height */
@@ -497,38 +497,38 @@ void system_frame_scd(int do_skip)
       if (reg[1] & 0x08)
       {
         /* 240 active lines */
-        bitmap.viewport.h = 240;
-        bitmap.viewport.y = (core_config.overscan & 1) * 24 * vdp_pal;
+        viewport.h = 240;
+        viewport.y = (core_config.overscan & 1) * 24 * vdp_pal;
       }
       else
       {
         /* 224 active lines */
-        bitmap.viewport.h = 224;
-        bitmap.viewport.y = (core_config.overscan & 1) * (8 + (24 * vdp_pal));
+        viewport.h = 224;
+        viewport.y = (core_config.overscan & 1) * (8 + (24 * vdp_pal));
       }
     }
     else
     {
       /* Mode 4 (192 active lines) */
-      bitmap.viewport.h = 192;
-      bitmap.viewport.y = (core_config.overscan & 1) * 24 * (vdp_pal + 1);
+      viewport.h = 192;
+      viewport.y = (core_config.overscan & 1) * 24 * (vdp_pal + 1);
     }
 
     /* active screen width */
-    bitmap.viewport.w = 256 + ((reg[12] & 0x01) << 6);
+    viewport.w = 256 + ((reg[12] & 0x01) << 6);
 
     /* check viewport changes */
-    if (bitmap.viewport.h != bitmap.viewport.oh)
+    if (viewport.h != viewport.oh)
     {
-      bitmap.viewport.oh = bitmap.viewport.h;
-      bitmap.viewport.changed |= 1;
+      viewport.oh = viewport.h;
+      viewport.changed |= 1;
     }
   }
 
   /* first line of overscan */
-  if (bitmap.viewport.y)
+  if (viewport.y)
   {
-    blank_line(bitmap.viewport.h, -bitmap.viewport.x, bitmap.viewport.w + 2*bitmap.viewport.x);
+    blank_line(viewport.h, -viewport.x, viewport.w + 2*viewport.x);
   }
   
   /* clear DMA Busy, FIFO FULL & field flags */
@@ -570,10 +570,10 @@ void system_frame_scd(int do_skip)
   osd_input_update();
 
   /* VDP always starts after VBLANK so VINT cannot occur on first frame after a VDP reset (verified on real hardware) */
-  if (v_counter != bitmap.viewport.h)
+  if (v_counter != viewport.h)
   {
     /* reinitialize VCounter */
-    v_counter = bitmap.viewport.h;
+    v_counter = viewport.h;
 
     /* delay between VBLANK flag & Vertical Interrupt (Dracula, OutRunners, VR Troopers) */
     m68k_run(vint_cycle);
@@ -613,11 +613,11 @@ void system_frame_scd(int do_skip)
   mcycles_vdp = MCYCLES_PER_LINE;
 
   /* initialize line count */
-  line = bitmap.viewport.h + 1; 
+  line = viewport.h + 1; 
 
   /* initialize overscan area */
-  start = lines_per_frame - bitmap.viewport.y;
-  end = bitmap.viewport.h + bitmap.viewport.y;
+  start = lines_per_frame - viewport.y;
+  end = viewport.h + viewport.y;
 
   /* Vertical Blanking */
   do
@@ -628,7 +628,7 @@ void system_frame_scd(int do_skip)
     /* render overscan */
     if ((line < end) || (line >= start))
     {
-      blank_line(line, -bitmap.viewport.x, bitmap.viewport.w + 2*bitmap.viewport.x);
+      blank_line(line, -viewport.x, viewport.w + 2*viewport.x);
     }
 
     /* update 6-Buttons & Lightguns */
@@ -652,9 +652,9 @@ void system_frame_scd(int do_skip)
   v_counter = line;
 
   /* last line of overscan */
-  if (bitmap.viewport.y)
+  if (viewport.y)
   {
-    blank_line(line, -bitmap.viewport.x, bitmap.viewport.w + 2*bitmap.viewport.x);
+    blank_line(line, -viewport.x, viewport.w + 2*viewport.x);
   }
 
   /* reload H-Int counter */
@@ -746,13 +746,13 @@ void system_frame_scd(int do_skip)
     /* update VDP cycle count */
     mcycles_vdp += MCYCLES_PER_LINE;
   }
-  while (++line < bitmap.viewport.h);
+  while (++line < viewport.h);
 
   /* check viewport changes */
-  if (bitmap.viewport.w != bitmap.viewport.ow)
+  if (viewport.w != viewport.ow)
   {
-    bitmap.viewport.ow = bitmap.viewport.w;
-    bitmap.viewport.changed |= 1;
+    viewport.ow = viewport.w;
+    viewport.changed |= 1;
   }
   
   /* adjust timings for next frame */
@@ -779,9 +779,9 @@ void system_frame_sms(int do_skip)
   fifo_cycles[3] = 0;
 
   /* check if display settings has changed during previous frame */
-  if (bitmap.viewport.changed & 2)
+  if (viewport.changed & 2)
   {
-    bitmap.viewport.changed &= ~2;
+    viewport.changed &= ~2;
 
     if (system_hw & SYSTEM_MD)
     {
@@ -798,7 +798,7 @@ void system_frame_sms(int do_skip)
         odd_frame = interlaced;
 
         /* video mode has changed */
-        bitmap.viewport.changed = 5;
+        viewport.changed = 5;
 
         /* update rendering mode */
         if (reg[1] & 0x04)
@@ -823,20 +823,20 @@ void system_frame_sms(int do_skip)
         if (reg[1] & 0x08)
         {
           /* 240 active lines */
-          bitmap.viewport.h = 240;
-          bitmap.viewport.y = (core_config.overscan & 1) * 24 * vdp_pal;
+          viewport.h = 240;
+          viewport.y = (core_config.overscan & 1) * 24 * vdp_pal;
         }
         else
         {
           /* 224 active lines */
-          bitmap.viewport.h = 224;
-          bitmap.viewport.y = (core_config.overscan & 1) * (8 + (24 * vdp_pal));
+          viewport.h = 224;
+          viewport.y = (core_config.overscan & 1) * (8 + (24 * vdp_pal));
         }
       }
       else
       {
-        bitmap.viewport.h = 192;
-        bitmap.viewport.y = (core_config.overscan & 1) * 24 * (vdp_pal + 1);
+        viewport.h = 192;
+        viewport.y = (core_config.overscan & 1) * 24 * (vdp_pal + 1);
       }
     }
     else
@@ -847,54 +847,54 @@ void system_frame_sms(int do_skip)
       /* update active height */
       if (mode == 0x0E)
       {
-        bitmap.viewport.h = 240;
+        viewport.h = 240;
       }
       else if (mode == 0x16)
       {
-        bitmap.viewport.h = 224;
+        viewport.h = 224;
       }
       else
       {
-        bitmap.viewport.h = 192;
+        viewport.h = 192;
       }
 
       /* update vertical overscan */
       if (core_config.overscan & 1)
       {
-        bitmap.viewport.y = (240 + 48*vdp_pal - bitmap.viewport.h) >> 1;
+        viewport.y = (240 + 48*vdp_pal - viewport.h) >> 1;
       }
       else
       {
         if ((system_hw == SYSTEM_GG) && !core_config.gg_extra)
         {
           /* Display area reduced to 160x144 */
-          bitmap.viewport.y = (144 - bitmap.viewport.h) / 2;
+          viewport.y = (144 - viewport.h) / 2;
         }
         else
         {
-          bitmap.viewport.y = 0;
+          viewport.y = 0;
         }
       }
     }
 
     /* active screen width */
-    bitmap.viewport.w = 256 + ((reg[12] & 0x01) << 6);
+    viewport.w = 256 + ((reg[12] & 0x01) << 6);
 
     /* check viewport changes */
-    if (bitmap.viewport.h != bitmap.viewport.oh)
+    if (viewport.h != viewport.oh)
     {
-      bitmap.viewport.oh = bitmap.viewport.h;
-      bitmap.viewport.changed |= 1;
+      viewport.oh = viewport.h;
+      viewport.changed |= 1;
     }
   }
 
   /* initialize VCounter */
-  v_counter = bitmap.viewport.h;
+  v_counter = viewport.h;
 
   /* first line of overscan */
-  if (bitmap.viewport.y > 0)
+  if (viewport.y > 0)
   {
-    blank_line(v_counter, -bitmap.viewport.x, bitmap.viewport.w + 2*bitmap.viewport.x);
+    blank_line(v_counter, -viewport.x, viewport.w + 2*viewport.x);
   }
 
   /* Mega Drive VDP specific */
@@ -952,7 +952,7 @@ void system_frame_sms(int do_skip)
   gpgx::g_z80->Run(MCYCLES_PER_LINE);
 
   /* make sure VINT flag was not read (then cleared) by last instruction */
-  if (v_counter == bitmap.viewport.h)
+  if (v_counter == viewport.h)
   {
     /* Set VINT flag */
     status |= 0x80;
@@ -969,11 +969,11 @@ void system_frame_sms(int do_skip)
   mcycles_vdp = MCYCLES_PER_LINE;
 
   /* initialize line count */
-  line = bitmap.viewport.h + 1;
+  line = viewport.h + 1;
 
   /* initialize overscan area */
-  start = lines_per_frame - bitmap.viewport.y;
-  end   = bitmap.viewport.h + bitmap.viewport.y;
+  start = lines_per_frame - viewport.y;
+  end   = viewport.h + viewport.y;
 
   /* Vertical Blanking */
   do
@@ -997,7 +997,7 @@ void system_frame_sms(int do_skip)
         parse_satb(line - lines_per_frame);
       }
 
-      blank_line(line, -bitmap.viewport.x, bitmap.viewport.w + 2*bitmap.viewport.x);
+      blank_line(line, -viewport.x, viewport.w + 2*viewport.x);
     }
 
     /* update 6-Buttons & Lightguns */
@@ -1015,7 +1015,7 @@ void system_frame_sms(int do_skip)
   v_counter = line;
 
   /* last line of overscan */
-  if (bitmap.viewport.y > 0)
+  if (viewport.y > 0)
   {
     /* Master System & Game Gear VDP specific */
     if (system_hw < SYSTEM_MD)
@@ -1027,7 +1027,7 @@ void system_frame_sms(int do_skip)
       }
     }
 
-    blank_line(line, -bitmap.viewport.x, bitmap.viewport.w + 2*bitmap.viewport.x);
+    blank_line(line, -viewport.x, viewport.w + 2*viewport.x);
   }
 
   /* reload H-Int counter */
@@ -1156,13 +1156,13 @@ void system_frame_sms(int do_skip)
     /* update VDP cycle count */
     mcycles_vdp += MCYCLES_PER_LINE;
   }
-  while (++line < bitmap.viewport.h);
+  while (++line < viewport.h);
 
   /* check viewport changes */
-  if (bitmap.viewport.w != bitmap.viewport.ow)
+  if (viewport.w != viewport.ow)
   {
-    bitmap.viewport.ow = bitmap.viewport.w;
-    bitmap.viewport.changed |= 1;
+    viewport.ow = viewport.w;
+    viewport.changed |= 1;
   }
 
   /* adjust timings for next frame */

@@ -49,7 +49,7 @@
 #include "core/audio_subsystem.h"
 #include "core/boot_rom.h"
 #include "core/core_config.h"
-#include "core/bitmap.h"
+#include "core/framebuffer.h"
 #include "core/io_reg.h"
 #include "core/pico_current.h"
 #include "core/region_code.h"
@@ -58,6 +58,7 @@
 #include "core/system.h"
 #include "core/system_bios.h"
 #include "core/system_hardware.h"
+#include "core/viewport.h"
 #include "core/ext.h" // For scd.
 #include "core/genesis.h" // For gen_reset().
 #include "core/vdp_ctrl.h"
@@ -235,13 +236,13 @@ static void sdl_video_update()
   }
 
   /* viewport size changed */
-  if(bitmap.viewport.changed & 1)
+  if(viewport.changed & 1)
   {
-    bitmap.viewport.changed &= ~1;
+    viewport.changed &= ~1;
 
     /* source bitmap */
-    sdl_video.srect.w = bitmap.viewport.w+2*bitmap.viewport.x;
-    sdl_video.srect.h = bitmap.viewport.h+2*bitmap.viewport.y;
+    sdl_video.srect.w = viewport.w+2*viewport.x;
+    sdl_video.srect.h = viewport.h+2*viewport.y;
     sdl_video.srect.x = 0;
     sdl_video.srect.y = 0;
     if (sdl_video.srect.w > sdl_video.surf_screen->w)
@@ -360,7 +361,7 @@ static int sdl_control_update(SDL_Keycode keystate)
         fullscreen = (fullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
         SDL_SetWindowFullscreen(sdl_video.window, fullscreen);
         sdl_video.surf_screen  = SDL_GetWindowSurface(sdl_video.window);
-        bitmap.viewport.changed = 1;
+        viewport.changed = 1;
         break;
       }
 
@@ -456,7 +457,7 @@ static int sdl_control_update(SDL_Keycode keystate)
           }
 
           /* reinitialize VC max value */
-          switch (bitmap.viewport.h)
+          switch (viewport.h)
           {
             case 192:
               vc_max = vc_table[0][vdp_pal];
@@ -483,13 +484,13 @@ static int sdl_control_update(SDL_Keycode keystate)
         core_config.overscan =  (core_config.overscan + 1) & 3;
         if ((system_hw == SYSTEM_GG) && !core_config.gg_extra)
         {
-          bitmap.viewport.x = (core_config.overscan & 2) ? 14 : -48;
+          viewport.x = (core_config.overscan & 2) ? 14 : -48;
         }
         else
         {
-          bitmap.viewport.x = (core_config.overscan & 2) * 7;
+          viewport.x = (core_config.overscan & 2) * 7;
         }
-        bitmap.viewport.changed = 3;
+        viewport.changed = 3;
         break;
       }
 
@@ -531,10 +532,10 @@ int sdl_input_update(void)
       int state = SDL_GetMouseState(&x,&y);
 
       /* X axis */
-      input.analog[joynum][0] =  x - (sdl_video.surf_screen->w-bitmap.viewport.w)/2;
+      input.analog[joynum][0] =  x - (sdl_video.surf_screen->w-viewport.w)/2;
 
       /* Y axis */
-      input.analog[joynum][1] =  y - (sdl_video.surf_screen->h-bitmap.viewport.h)/2;
+      input.analog[joynum][1] =  y - (sdl_video.surf_screen->h-viewport.h)/2;
 
       /* TRIGGER, B, C (Menacer only), START (Menacer & Justifier only) */
       if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= INPUT_A;
@@ -787,21 +788,21 @@ int main (int argc, char **argv)
 
   /* initialize Genesis virtual system */
   SDL_LockSurface(sdl_video.surf_bitmap);
-  xee::mem::Memset(&bitmap, 0, sizeof(t_bitmap));
-  bitmap.width        = 720;
-  bitmap.height       = 576;
+  xee::mem::Memset(&framebuffer, 0, sizeof(framebuffer));
+  framebuffer.width        = 720;
+  framebuffer.height       = 576;
 #if defined(USE_8BPP_RENDERING)
-  bitmap.pitch        = (bitmap.width * 1);
+  framebuffer.pitch        = (framebuffer.width * 1);
 #elif defined(USE_15BPP_RENDERING)
-  bitmap.pitch        = (bitmap.width * 2);
+  framebuffer.pitch        = (framebuffer.width * 2);
 #elif defined(USE_16BPP_RENDERING)
-  bitmap.pitch        = (bitmap.width * 2);
+  framebuffer.pitch        = (framebuffer.width * 2);
 #elif defined(USE_32BPP_RENDERING)
-  bitmap.pitch        = (bitmap.width * 4);
+  framebuffer.pitch        = (framebuffer.width * 4);
 #endif
-  bitmap.data         = (u8*)sdl_video.surf_bitmap->pixels;
+  framebuffer.data         = (u8*)sdl_video.surf_bitmap->pixels;
   SDL_UnlockSurface(sdl_video.surf_bitmap);
-  bitmap.viewport.changed = 3;
+  viewport.changed = 3;
 
   /* Load game file */
   if(!load_rom(argv[1]))

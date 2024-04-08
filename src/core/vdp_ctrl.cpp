@@ -53,12 +53,12 @@
 #include "core/core_config.h"
 #include "core/macros.h"
 #include "core/m68k/m68k.h"
-#include "core/bitmap.h"
 #include "core/system_bios.h"
 #include "core/system_cycle.h"
 #include "core/system_hardware.h"
 #include "core/system_timing.h"
 #include "core/ext.h" // For cart and scd.
+#include "core/viewport.h"
 #include "core/vram.h"
 #include "core/work_ram.h"
 #include "core/zstate.h"
@@ -345,16 +345,16 @@ void vdp_reset(void)
   }
 
   /* default display area */
-  bitmap.viewport.w   = 256;
-  bitmap.viewport.h   = 192;
-  bitmap.viewport.ow  = 256;
-  bitmap.viewport.oh  = 192;
+  viewport.w   = 256;
+  viewport.h   = 192;
+  viewport.ow  = 256;
+  viewport.oh  = 192;
 
   /* default HVC */
   hvc_latch = 0x10000;
   hctab = cycle2hc32;
   vc_max = vc_table[0][vdp_pal];
-  v_counter = bitmap.viewport.h;
+  v_counter = viewport.h;
   h_counter = 0xff;
 
   /* default sprite pixel width */
@@ -374,13 +374,13 @@ void vdp_reset(void)
   if ((system_hw == SYSTEM_GG) && !core_config.gg_extra)
   {
     /* Display area reduced to 160x144 if overscan is disabled */
-    bitmap.viewport.x = (core_config.overscan & 2) ? 14 : -48;
-    bitmap.viewport.y = (core_config.overscan & 1) ? (24 * (vdp_pal + 1)) : -24;
+    viewport.x = (core_config.overscan & 2) ? 14 : -48;
+    viewport.y = (core_config.overscan & 1) ? (24 * (vdp_pal + 1)) : -24;
   }
   else
   {
-    bitmap.viewport.x = (core_config.overscan & 2) * 7;
-    bitmap.viewport.y = (core_config.overscan & 1) * 24 * (vdp_pal + 1);
+    viewport.x = (core_config.overscan & 2) * 7;
+    viewport.y = (core_config.overscan & 1) * 24 * (vdp_pal + 1);
   }
 
   /* default rendering mode */
@@ -671,7 +671,7 @@ void vdp_dma_update(unsigned int cycles)
     /* NOTE: DMA timings can not change during VBLANK because active display width cannot be modified. */
     /* Indeed, writing VDP registers during DMA is either impossible (when doing DMA from 68k bus, CPU */
     /* is locked) or will abort DMA operation (in case of DMA Fill or Copy). */
-    dma_cycles = ((lines_per_frame - bitmap.viewport.h - 1) * MCYCLES_PER_LINE) - cycles;
+    dma_cycles = ((lines_per_frame - viewport.h - 1) * MCYCLES_PER_LINE) - cycles;
   }
   else
   {
@@ -1106,9 +1106,9 @@ void vdp_sms_ctrl_w(unsigned int data)
           }
 
           /* viewport changes should be applied on next frame */
-          if (height != bitmap.viewport.h)
+          if (height != viewport.h)
           {
-            bitmap.viewport.changed |= 2;
+            viewport.changed |= 2;
           }
         }
 
@@ -1267,7 +1267,7 @@ unsigned int vdp_68k_ctrl_r(unsigned int cycles)
 
   /* Cycle-accurate VINT flag (Ex-Mutants, Tyrant / Mega-Lo-Mania, Marvel Land, Pacman 2 - New Adventures / Pac-Jr minigame) */
   /* this allows VINT flag to be read just before vertical interrupt is being triggered */
-  if ((v_counter == bitmap.viewport.h) && (cycles >= vint_cycle))
+  if ((v_counter == viewport.h) && (cycles >= vint_cycle))
   {
     /* check Z80 interrupt state to assure VINT has not already been triggered (and flag cleared) */
     if (gpgx::g_z80->GetIRQLine() != gpgx::cpu::z80::LineState::kAssertLine)
@@ -1307,7 +1307,7 @@ unsigned int vdp_z80_ctrl_r(unsigned int cycles)
   if ((cycles - mcycles_vdp) >= MCYCLES_PER_LINE)
   {
     /* check vertical position */
-    if (v_counter == bitmap.viewport.h)
+    if (v_counter == viewport.h)
     {
       /* update VCounter to indicate VINT flag has been cleared & VINT should not be triggered */
       v_counter++;
@@ -1321,7 +1321,7 @@ unsigned int vdp_z80_ctrl_r(unsigned int cycles)
       int line = (v_counter + 1) % lines_per_frame;
     
       /* check if we are within active display range */
-      if ((line < bitmap.viewport.h) && !(work_ram[0x1ffb] & cart.special & HW_3D_GLASSES))
+      if ((line < viewport.h) && !(work_ram[0x1ffb] & cart.special & HW_3D_GLASSES))
       {
         /* update VCounter to indicate next line has already been rendered */
         v_counter = line;
@@ -1658,7 +1658,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
       }
 
       /* Display status (modified during active display) */
-      if ((r & 0x40) && (v_counter < bitmap.viewport.h))
+      if ((r & 0x40) && (v_counter < viewport.h))
       {
         /* Cycle offset vs HBLANK */
         int offset = cycles - mcycles_vdp;
@@ -1699,7 +1699,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
           }
 
           /* Line is partially blanked (Nigel Mansell's World Championship Racing , Ren & Stimpy Show, ...) */
-          if (offset < bitmap.viewport.w)
+          if (offset < viewport.w)
           {
             if (d & 0x40)
             {
@@ -1708,7 +1708,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
             }
             else
             {
-              blank_line(v_counter, offset, bitmap.viewport.w - offset);
+              blank_line(v_counter, offset, viewport.w - offset);
             }
           }
         }
@@ -1742,7 +1742,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
           if (d & 0x04)
           {
             /* Changes should be applied on next frame */
-            bitmap.viewport.changed |= 2;
+            viewport.changed |= 2;
 
             /* Update vertical counter max value */
             vc_max = vc_table[(d >> 2) & 3][vdp_pal];
@@ -1838,7 +1838,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
           vc_max = vc_table[(d >> 2) & 3][vdp_pal];
 
           /* Display height change should be applied on next frame */
-          bitmap.viewport.changed |= 2; 
+          viewport.changed |= 2; 
         }
         else
         {
@@ -1855,7 +1855,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
       ntab = (d << 10) & 0xE000;
 
       /* Plane A Name Table Base changed during HBLANK */
-      if ((v_counter < bitmap.viewport.h) && (reg[1] & 0x40) && (cycles <= (mcycles_vdp + 860)))
+      if ((v_counter < viewport.h) && (reg[1] & 0x40) && (cycles <= (mcycles_vdp + 860)))
       {
         /* render entire line */
         render_line(v_counter);
@@ -1876,7 +1876,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
       }
 
       /* Window Plane Name Table Base changed during HBLANK */
-      if ((v_counter < bitmap.viewport.h) && (reg[1] & 0x40) && (cycles <= (mcycles_vdp + 860)))
+      if ((v_counter < viewport.h) && (reg[1] & 0x40) && (cycles <= (mcycles_vdp + 860)))
       {
         /* render entire line */
         render_line(v_counter);
@@ -1890,7 +1890,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
       ntbb = (d << 13) & 0xE000;
 
       /* Plane B Name Table Base changed during HBLANK (Adventures of Batman & Robin) */
-      if ((v_counter < bitmap.viewport.h) && (reg[1] & 0x40) && (cycles <= (mcycles_vdp + 860)))
+      if ((v_counter < viewport.h) && (reg[1] & 0x40) && (cycles <= (mcycles_vdp + 860)))
       {
         /* render entire line */
         render_line(v_counter);
@@ -1931,7 +1931,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
         }
 
         /* Backdrop color modified during HBLANK (Road Rash 1,2,3)*/
-        if ((v_counter < bitmap.viewport.h) && (cycles <= (mcycles_vdp + 860)))
+        if ((v_counter < viewport.h) && (cycles <= (mcycles_vdp + 860)))
         {
           /* remap entire line */
           remap_line(v_counter);
@@ -1956,7 +1956,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
         int line = (v_counter + 1) % lines_per_frame;
 
         /* check if we are within active display range */
-        if ((line < bitmap.viewport.h) && !(work_ram[0x1ffb] & cart.special & HW_3D_GLASSES))
+        if ((line < viewport.h) && !(work_ram[0x1ffb] & cart.special & HW_3D_GLASSES))
         {
           /* update VCounter to indicate next line has already been rendered */
           v_counter = line;
@@ -2021,7 +2021,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
       if (r & 0x06)
       {
         /* changes should be applied on next frame */
-        bitmap.viewport.changed |= 2;
+        viewport.changed |= 2;
       }
 
       /* Active display width */
@@ -2083,15 +2083,15 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
         }
 
         /* Active screen width modified during VBLANK will be applied on upcoming frame */
-        if (v_counter >= bitmap.viewport.h)
+        if (v_counter >= viewport.h)
         {
-          bitmap.viewport.w = max_sprite_pixels;
+          viewport.w = max_sprite_pixels;
         }
 
         /* Allow active screen width to be modified during first two lines (Bugs Bunny in Double Trouble) */
         else if (v_counter <= 1)
         {
-          bitmap.viewport.w = max_sprite_pixels;
+          viewport.w = max_sprite_pixels;
 
           /* Redraw lines */
           render_line(0);
@@ -2106,7 +2106,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
           /* should be applied on next frame since backend rendered framebuffer width is fixed */
           /* and can not be modified mid-frame. This is not 100% accurate but games generally  */
           /* do this when the screen is blanked so it is likely unnoticeable. */
-          bitmap.viewport.changed |= 2;
+          viewport.changed |= 2;
         }
       }
       break;
@@ -2232,7 +2232,7 @@ static void vdp_bus_w(unsigned int data)
         }
 
         /* CRAM modified during HBLANK (Striker, Zero the Kamikaze, Yuu Yuu Hakusho, etc) */
-        if ((v_counter < bitmap.viewport.h) && (m68k.cycles <= (mcycles_vdp + 860)) && ((reg[1] & 0x40) || (index == border)))
+        if ((v_counter < viewport.h) && (m68k.cycles <= (mcycles_vdp + 860)) && ((reg[1] & 0x40) || (index == border)))
         {
           /* Remap current line */
           remap_line(v_counter);
@@ -2258,7 +2258,7 @@ static void vdp_bus_w(unsigned int data)
       if (reg[11] & 0x04)
       {
         /* VSRAM writes during HBLANK (Adventures of Batman & Robin) */
-        if ((v_counter < bitmap.viewport.h) && (reg[1] & 0x40) && (m68k.cycles <= (mcycles_vdp + 860)))
+        if ((v_counter < viewport.h) && (reg[1] & 0x40) && (m68k.cycles <= (mcycles_vdp + 860)))
         {
           /* Redraw entire line */
           render_line(v_counter);
@@ -2831,7 +2831,7 @@ static void vdp_z80_data_w_ms(unsigned int data)
       int line = (v_counter + 1) % lines_per_frame;
 
       /* check if we are within active display range */
-      if ((line < bitmap.viewport.h) && !(work_ram[0x1ffb] & cart.special & HW_3D_GLASSES))
+      if ((line < viewport.h) && !(work_ram[0x1ffb] & cart.special & HW_3D_GLASSES))
       {
         /* update VCounter to indicate next line has already been rendered */
         v_counter = line;
@@ -2907,7 +2907,7 @@ static void vdp_z80_data_w_gg(unsigned int data)
       int line = (v_counter + 1) % lines_per_frame;
 
       /* check if we are within active display range */
-      if ((line < bitmap.viewport.h) && !(work_ram[0x1ffb] & cart.special & HW_3D_GLASSES))
+      if ((line < viewport.h) && !(work_ram[0x1ffb] & cart.special & HW_3D_GLASSES))
       {
         /* update VCounter to indicate next line has already been rendered */
         v_counter = line;

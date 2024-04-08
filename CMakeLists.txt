@@ -103,12 +103,13 @@ add_executable(vigas
     inc/build/cmd_sdl2/main.h
     inc/build/cmd_sdl2/osd.h
     inc/core/audio_subsystem.h
-    inc/core/bitmap.h
     inc/core/boot_rom.h
     inc/core/core_config.h
     inc/core/core_config_t.h
     inc/core/ext.h
     inc/core/external_t.h
+    inc/core/framebuffer.h
+    inc/core/framebuffer_t.h
     inc/core/genesis.h
     inc/core/hvc.h
     inc/core/io_ctrl.h
@@ -133,6 +134,8 @@ add_executable(vigas
     inc/core/types.h
     inc/core/vdp_ctrl.h
     inc/core/vdp_render.h
+    inc/core/viewport.h
+    inc/core/viewport_t.h
     inc/core/vram.h
     inc/core/work_ram.h
     inc/core/zbank.h
@@ -226,10 +229,10 @@ add_executable(vigas
     src/core/cd_hw/pcm.cpp
     src/core/cd_hw/scd.cpp
     src/core/audio_subsystem.cpp
-    src/core/bitmap.cpp
     src/core/boot_rom.cpp
     src/core/core_config.cpp
     src/core/ext.cpp
+    src/core/framebuffer.cpp
     src/core/genesis.cpp
     src/core/io_ctrl.cpp
     src/core/io_reg.cpp
@@ -250,6 +253,7 @@ add_executable(vigas
     src/core/system_hardware.cpp
     src/core/vdp_ctrl.cpp
     src/core/vdp_render.cpp
+    src/core/viewport.cpp
     src/core/vram.cpp
     src/core/work_ram.cpp
     src/core/zbank.cpp
