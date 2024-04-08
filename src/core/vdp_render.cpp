@@ -56,6 +56,7 @@
 #include "core/vdp_ctrl.h"
 #include "core/viewport.h"
 #include "core/vram.h"
+#include "core/vdp/object_info_t.h"
 
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
@@ -594,15 +595,6 @@ static u8 linebuf[2][0x200];
 
 /* Sprite limit flag */
 static u8 spr_ovr;
-
-/* Sprite parsing lists */
-typedef struct
-{
-  u16 ypos;
-  u16 xpos;
-  u16 attr;
-  u16 size;
-} object_info_t;
 
 static object_info_t obj_info[2][MAX_SPRITES_PER_LINE];
 

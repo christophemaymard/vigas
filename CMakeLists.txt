@@ -165,6 +165,7 @@ add_executable(vigas
     inc/core/m68k/m68kops.h
     inc/core/m68k/s68kconf.h
     inc/core/m68k/s68ki_cycles.h
+    inc/core/vdp/object_info_t.h
     inc/core/cart_hw/svp/ssp16.h
     inc/core/cart_hw/svp/svp.h
     inc/core/cart_hw/areplay.h
