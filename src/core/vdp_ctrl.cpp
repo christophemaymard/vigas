@@ -384,7 +384,7 @@ void vdp_reset(void)
   }
 
   /* default rendering mode */
-  update_bg_pattern_cache = update_bg_pattern_cache_m4;
+  g_bg_pattern_cache_updater = g_bg_pattern_cache_updater_m4;
   if (system_hw < SYSTEM_MD)
   {
     /* Mode 0 */
@@ -1761,7 +1761,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
           {
             /* Mode 5 rendering */
             parse_satb = parse_satb_m5;
-            update_bg_pattern_cache = update_bg_pattern_cache_m5;
+            g_bg_pattern_cache_updater = g_bg_pattern_cache_updater_m5;
             if (im2_flag)
             {
               render_bg = (reg[11] & 0x04) ? render_bg_m5_im2_vs : render_bg_m5_im2;
@@ -1803,7 +1803,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
           {
             /* Mode 4 rendering */
             parse_satb = parse_satb_m4;
-            update_bg_pattern_cache = update_bg_pattern_cache_m4;
+            g_bg_pattern_cache_updater = g_bg_pattern_cache_updater_m4;
             render_bg = render_bg_m4;
             render_obj = render_obj_m4;
 

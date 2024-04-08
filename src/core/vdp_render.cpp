@@ -55,6 +55,9 @@
 #include "core/vdp_ctrl.h"
 #include "core/vram.h"
 
+#include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
+
 #ifndef HAVE_NO_SPRITE_LIMIT
 #define MAX_SPRITES_PER_LINE 20
 #define TMS_MAX_SPRITES_PER_LINE 4
@@ -611,7 +614,10 @@ u16 spr_col;
 void (*render_bg)(int line);
 void (*render_obj)(int line);
 void (*parse_satb)(int line);
-void (*update_bg_pattern_cache)(int index);
+
+gpgx::ppu::vdp::IBackgroundPatternCacheUpdater* g_bg_pattern_cache_updater = nullptr;
+gpgx::ppu::vdp::M4BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m4 = nullptr;
+gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m5 = nullptr;
 
 
 /*--------------------------------------------------------------------------*/
@@ -4514,125 +4520,6 @@ void parse_satb_m5(int line)
   object_count[line & 1] = count;
 }
 
-
-/*--------------------------------------------------------------------------*/
-/* Pattern cache update function                                            */
-/*--------------------------------------------------------------------------*/
-
-void update_bg_pattern_cache_m4(int index)
-{
-  int i;
-  u8 x, y, c;
-  u8 *dst;
-  u16 name, bp01, bp23;
-  u32 bp;
-
-  for(i = 0; i < index; i++)
-  {
-    /* Get modified pattern name index */
-    name = bg_name_list[i];
-
-    /* Pattern cache base address */
-    dst = &bg_pattern_cache[name << 6];
-
-    /* Check modified lines */
-    for(y = 0; y < 8; y++)
-    {
-      if(bg_name_dirty[name] & (1 << y))
-      {
-        /* Byteplane data */
-        bp01 = *(u16 *)&vram[(name << 5) | (y << 2) | (0)];
-        bp23 = *(u16 *)&vram[(name << 5) | (y << 2) | (2)];
-
-        /* Convert to pixel line data (4 bytes = 8 pixels)*/
-        /* (msb) p7p6 p5p4 p3p2 p1p0 (lsb) */
-        bp = (bp_lut[bp01] >> 2) | (bp_lut[bp23]);
-
-        /* Update cached line (8 pixels = 8 bytes) */
-        for(x = 0; x < 8; x++)
-        {
-          /* Extract pixel data */
-          c = bp & 0x0F;
-
-          /* Pattern cache data (one pattern = 8 bytes) */
-          /* byte0 <-> p0 p1 p2 p3 p4 p5 p6 p7 <-> byte7 (hflip = 0) */
-          /* byte0 <-> p7 p6 p5 p4 p3 p2 p1 p0 <-> byte7 (hflip = 1) */
-          dst[0x00000 | (y << 3) | (x)] = (c);            /* vflip=0 & hflip=0 */
-          dst[0x08000 | (y << 3) | (x ^ 7)] = (c);        /* vflip=0 & hflip=1 */
-          dst[0x10000 | ((y ^ 7) << 3) | (x)] = (c);      /* vflip=1 & hflip=0 */
-          dst[0x18000 | ((y ^ 7) << 3) | (x ^ 7)] = (c);  /* vflip=1 & hflip=1 */
-
-          /* Next pixel */
-          bp = bp >> 4;
-        }
-      }
-    }
-
-    /* Clear modified pattern flag */
-    bg_name_dirty[name] = 0;
-  }
-}
-
-void update_bg_pattern_cache_m5(int index)
-{
-  int i;
-  u8 x, y, c;
-  u8 *dst;
-  u16 name;
-  u32 bp;
-
-  for(i = 0; i < index; i++)
-  {
-    /* Get modified pattern name index */
-    name = bg_name_list[i];
-
-    /* Pattern cache base address */
-    dst = &bg_pattern_cache[name << 6];
-
-    /* Check modified lines */
-    for(y = 0; y < 8; y ++)
-    {
-      if(bg_name_dirty[name] & (1 << y))
-      {
-        /* Byteplane data (one pattern = 4 bytes) */
-        /* LIT_ENDIAN: byte0 (lsb) p2p3 p0p1 p6p7 p4p5 (msb) byte3 */
-        /* BIG_ENDIAN: byte0 (msb) p0p1 p2p3 p4p5 p6p7 (lsb) byte3 */
-        bp = *(u32 *)&vram[(name << 5) | (y << 2)];
-
-        /* Update cached line (8 pixels = 8 bytes) */
-        for(x = 0; x < 8; x ++)
-        {
-          /* Extract pixel data */
-          c = bp & 0x0F;
-
-          /* Pattern cache data (one pattern = 8 bytes) */
-          /* byte0 <-> p0 p1 p2 p3 p4 p5 p6 p7 <-> byte7 (hflip = 0) */
-          /* byte0 <-> p7 p6 p5 p4 p3 p2 p1 p0 <-> byte7 (hflip = 1) */
-#ifdef LSB_FIRST
-          /* Byteplane data = (msb) p4p5 p6p7 p0p1 p2p3 (lsb) */
-          dst[0x00000 | (y << 3) | (x ^ 3)] = (c);        /* vflip=0, hflip=0 */
-          dst[0x20000 | (y << 3) | (x ^ 4)] = (c);        /* vflip=0, hflip=1 */
-          dst[0x40000 | ((y ^ 7) << 3) | (x ^ 3)] = (c);  /* vflip=1, hflip=0 */
-          dst[0x60000 | ((y ^ 7) << 3) | (x ^ 4)] = (c);  /* vflip=1, hflip=1 */
-#else
-          /* Byteplane data = (msb) p0p1 p2p3 p4p5 p6p7 (lsb) */
-          dst[0x00000 | (y << 3) | (x ^ 7)] = (c);        /* vflip=0, hflip=0 */
-          dst[0x20000 | (y << 3) | (x)] = (c);            /* vflip=0, hflip=1 */
-          dst[0x40000 | ((y ^ 7) << 3) | (x ^ 7)] = (c);  /* vflip=1, hflip=0 */
-          dst[0x60000 | ((y ^ 7) << 3) | (x)] = (c);      /* vflip=1, hflip=1 */
-#endif
-          /* Next pixel */
-          bp = bp >> 4;
-        }
-      }
-    }
-
-    /* Clear modified pattern flag */
-    bg_name_dirty[name] = 0;
-  }
-}
-
-
 /*--------------------------------------------------------------------------*/
 /* Window & Plane A clipping update function (Mode 5)                       */
 /*--------------------------------------------------------------------------*/
@@ -4715,6 +4602,27 @@ void render_init(void)
 
   /* Make bitplane to pixel look-up table (Mode 4) */
   make_bp_lut();
+
+  // Initialize updater of background pattern cache (Mode 4).
+  if (!g_bg_pattern_cache_updater_m4) {
+    g_bg_pattern_cache_updater_m4 = new gpgx::ppu::vdp::M4BackgroundPatternCacheUpdater(
+      bg_pattern_cache,
+      bg_name_list,
+      bg_name_dirty,
+      vram,
+      bp_lut
+    );
+  }
+
+  // Initialize updater of background pattern cache (Mode 5).
+  if (!g_bg_pattern_cache_updater_m5) {
+    g_bg_pattern_cache_updater_m5 = new gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater(
+      bg_pattern_cache,
+      bg_name_list,
+      bg_name_dirty,
+      vram
+    );
+  }
 }
 
 void render_reset(void)
@@ -4748,7 +4656,7 @@ void render_line(int line)
     /* Update pattern cache */
     if (bg_list_index)
     {
-      update_bg_pattern_cache(bg_list_index);
+      g_bg_pattern_cache_updater->UpdateBackgroundPatternCache(bg_list_index);
       bg_list_index = 0;
     }
 

@@ -45,6 +45,10 @@
 
 #include "xee/fnd/data_type.h"
 
+#include "gpgx/ppu/vdp/bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
+
 /* 3:3:2 RGB */
 #if defined(USE_8BPP_RENDERING)
 #define PIXEL(r,g,b) (((r) << 5) | ((g) << 2) | (b))
@@ -133,8 +137,6 @@ extern void render_obj_m5_im2_ste(int line);
 extern void parse_satb_tms(int line);
 extern void parse_satb_m4(int line);
 extern void parse_satb_m5(int line);
-extern void update_bg_pattern_cache_m4(int index);
-extern void update_bg_pattern_cache_m5(int index);
 extern void color_update_m4(int index, unsigned int data);
 extern void color_update_m5(int index, unsigned int data);
 
@@ -142,6 +144,17 @@ extern void color_update_m5(int index, unsigned int data);
 extern void (*render_bg)(int line);
 extern void (*render_obj)(int line);
 extern void (*parse_satb)(int line);
-extern void (*update_bg_pattern_cache)(int index);
+
+//------------------------------------------------------------------------------
+// Background pattern cache updating.
+
+/// Updater of background pattern cache.
+extern gpgx::ppu::vdp::IBackgroundPatternCacheUpdater* g_bg_pattern_cache_updater;
+
+/// Updater of background pattern cache in mode 4.
+extern gpgx::ppu::vdp::M4BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m4;
+
+/// Updater of background pattern cache in mode 5.
+extern gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m5;
 
 #endif /* _RENDER_H_ */

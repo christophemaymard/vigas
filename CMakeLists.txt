@@ -202,6 +202,10 @@ add_executable(vigas
     inc/gpgx/ic/ym3438/ym3438.h
     inc/gpgx/ic/ym3438/ym3438_mode.h
 
+    inc/gpgx/ppu/vdp/bg_pattern_cache_updater.h
+    inc/gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h
+    inc/gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h
+
     inc/gpgx/vgs/vdp_irq_handler_z80.h
     
     src/build/cmd_sdl2/config.cpp
@@ -293,6 +297,9 @@ add_executable(vigas
     src/gpgx/ic/ym2413/ym2413.cpp
     src/gpgx/ic/ym2612/ym2612.cpp
     src/gpgx/ic/ym3438/ym3438.cpp
+
+    src/gpgx/ppu/vdp/m4_bg_pattern_cache_updater.cpp
+    src/gpgx/ppu/vdp/m5_bg_pattern_cache_updater.cpp
 
     src/gpgx/vgs/vdp_irq_handler_z80.cpp
 )
