@@ -212,6 +212,7 @@ add_executable(vigas
     inc/gpgx/ppu/vdp/m4_satb_parser.h
     inc/gpgx/ppu/vdp/m4_sprite_layer_renderer.h
     inc/gpgx/ppu/vdp/m4_sprite_tile_drawer.h
+    inc/gpgx/ppu/vdp/m4_zoomed_sprite_tile_drawer.h
     inc/gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h
     inc/gpgx/ppu/vdp/m5_im2_sprite_layer_renderer.h
     inc/gpgx/ppu/vdp/m5_im2_ste_sprite_layer_renderer.h
@@ -322,6 +323,7 @@ add_executable(vigas
     src/gpgx/ppu/vdp/m4_satb_parser.cpp
     src/gpgx/ppu/vdp/m4_sprite_layer_renderer.cpp
     src/gpgx/ppu/vdp/m4_sprite_tile_drawer.cpp
+    src/gpgx/ppu/vdp/m4_zoomed_sprite_tile_drawer.cpp
     src/gpgx/ppu/vdp/m5_bg_pattern_cache_updater.cpp
     src/gpgx/ppu/vdp/m5_im2_sprite_layer_renderer.cpp
     src/gpgx/ppu/vdp/m5_im2_ste_sprite_layer_renderer.cpp
