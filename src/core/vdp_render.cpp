@@ -61,6 +61,7 @@
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m4_satb_parser.h"
 #include "gpgx/ppu/vdp/m4_sprite_layer_renderer.h"
+#include "gpgx/ppu/vdp/m4_sprite_tile_drawer.h"
 #include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m5_im2_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_im2_ste_sprite_layer_renderer.h"
@@ -448,22 +449,6 @@ static XEE_INLINE void WRITE_LONG(void *address, u32 data)
     } \
   }
 
-#define DRAW_SPRITE_TILE_ACCURATE(WIDTH,ATTR,TABLE)  \
-  for (i=0;i<WIDTH;i++) \
-  { \
-    temp = *src++; \
-    if (temp & 0x0f) \
-    { \
-      temp |= (lb[i] << 8); \
-      lb[i] = TABLE[temp | ATTR]; \
-      if ((temp & 0x8000) && !(status & 0x20)) \
-      { \
-        spr_col = (v_counter << 8) | ((xpos + i + 13) >> 1); \
-        status |= 0x20; \
-      } \
-    } \
-  }
-
 #define DRAW_SPRITE_TILE_ACCURATE_2X(WIDTH,ATTR,TABLE)  \
   for (i=0;i<WIDTH;i+=2) \
   { \
@@ -612,6 +597,8 @@ u16 spr_col;
 
 /* Function pointers */
 void (*render_bg)(int line);
+
+static gpgx::ppu::vdp::M4SpriteTileDrawer* gs_sprite_tile_drawer_m4 = nullptr;
 
 gpgx::ppu::vdp::ISpriteLayerRenderer* g_sprite_layer_renderer = nullptr;
 gpgx::ppu::vdp::TmsSpriteLayerRenderer* g_sprite_layer_renderer_tms = nullptr;
@@ -3645,7 +3632,7 @@ void render_obj_m4(int line)
     else
     {
       /* Draw sprite pattern */
-      DRAW_SPRITE_TILE_ACCURATE(end,0,lut[5])
+      gs_sprite_tile_drawer_m4->DrawSpriteTile(end, src, lb, xpos);
     }
 
     /* Next sprite entry */
@@ -4288,6 +4275,16 @@ void render_init(void)
       &core_config, 
       &v_counter, 
       &viewport
+    );
+  }
+
+  // Initialize drawer of normal sprite tile in mode 4.
+  if (!gs_sprite_tile_drawer_m4) {
+    gs_sprite_tile_drawer_m4 = new gpgx::ppu::vdp::M4SpriteTileDrawer(
+      &status, 
+      &v_counter, 
+      &spr_col, 
+      lut[5]
     );
   }
 
