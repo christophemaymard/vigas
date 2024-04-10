@@ -45,6 +45,9 @@
 #include "core/vdp/object_info_t.h"
 #include "core/system_model.h" // For SYSTEM_GG.
 
+#include "gpgx/ppu/vdp/tms_sprite_tile_drawer.h"
+#include "gpgx/ppu/vdp/tms_zoomed_sprite_tile_drawer.h"
+
 namespace gpgx::ppu::vdp {
 
 //==============================================================================
@@ -70,7 +73,6 @@ TmsSpriteLayerRenderer::TmsSpriteLayerRenderer(
   m_spr_ovr(spr_ovr),
   m_status(status),
   m_reg(reg),
-  m_lut(lut),
   m_line_buffer(line_buffer),
   m_vram(vram),
   m_system_hw(system_hw),
@@ -78,6 +80,8 @@ TmsSpriteLayerRenderer::TmsSpriteLayerRenderer(
   m_v_counter(v_counter),
   m_viewport(viewport)
 {
+  m_sprite_tile_drawer = new TmsSpriteTileDrawer(m_status, lut);
+  m_zoomed_sprite_tile_drawer = new TmsZoomedSpriteTileDrawer(m_status, lut);
 }
 
 //------------------------------------------------------------------------------
@@ -159,29 +163,11 @@ void TmsSpriteLayerRenderer::RenderSprites(s32 line)
     pattern[1] = sg[0x10];
 
     if (m_reg[1] & 0x01) {
-      // Zoomed sprites are rendered at half speed.
-      for (x = start; x < end; x += 2) {
-        temp = pattern[(x >> 4) & 1];
-        temp = (temp >> (7 - ((x >> 1) & 7))) & 0x01;
-        temp = temp * color;
-        temp |= (lb[x] << 8);
-        lb[x] = m_lut[temp];
-        *m_status |= ((temp & 0x8000) >> 10);
-        temp &= 0x00FF;
-        temp |= (lb[x + 1] << 8);
-        lb[x + 1] = m_lut[temp];
-        *m_status |= ((temp & 0x8000) >> 10);
-      }
+      // Zoomed sprites.
+      m_zoomed_sprite_tile_drawer->DrawSpriteTile(start, end, pattern, lb, color);
     } else {
       // Normal sprites.
-      for (x = start; x < end; x++) {
-        temp = pattern[(x >> 3) & 1];
-        temp = (temp >> (7 - (x & 7))) & 0x01;
-        temp = temp * color;
-        temp |= (lb[x] << 8);
-        lb[x] = m_lut[temp];
-        *m_status |= ((temp & 0x8000) >> 10);
-      }
+      m_sprite_tile_drawer->DrawSpriteTile(start, end, pattern, lb, color);
     }
 
     // Next sprite entry.

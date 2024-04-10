@@ -221,6 +221,8 @@ add_executable(vigas
     inc/gpgx/ppu/vdp/sprite_layer_renderer.h
     inc/gpgx/ppu/vdp/tms_satb_parser.h
     inc/gpgx/ppu/vdp/tms_sprite_layer_renderer.h
+    inc/gpgx/ppu/vdp/tms_sprite_tile_drawer.h
+    inc/gpgx/ppu/vdp/tms_zoomed_sprite_tile_drawer.h
 
     inc/gpgx/vgs/vdp_irq_handler_z80.h
     
@@ -326,6 +328,8 @@ add_executable(vigas
     src/gpgx/ppu/vdp/m5_ste_sprite_layer_renderer.cpp
     src/gpgx/ppu/vdp/tms_satb_parser.cpp
     src/gpgx/ppu/vdp/tms_sprite_layer_renderer.cpp
+    src/gpgx/ppu/vdp/tms_sprite_tile_drawer.cpp
+    src/gpgx/ppu/vdp/tms_zoomed_sprite_tile_drawer.cpp
 
     src/gpgx/vgs/vdp_irq_handler_z80.cpp
 )

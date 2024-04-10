@@ -38,69 +38,42 @@
  *
  ****************************************************************************************/
 
-#ifndef __GPGX_PPU_VDP_TMS_SPRITE_LAYER_RENDERER_H__
-#define __GPGX_PPU_VDP_TMS_SPRITE_LAYER_RENDERER_H__
-
-#include "xee/fnd/data_type.h"
-
-#include "core/vdp/object_info_t.h"
-#include "core/core_config_t.h"
-#include "core/viewport_t.h"
-
-#include "gpgx/ppu/vdp/sprite_layer_renderer.h"
-#include "gpgx/ppu/vdp/tms_sprite_tile_drawer.h"
 #include "gpgx/ppu/vdp/tms_zoomed_sprite_tile_drawer.h"
 
 namespace gpgx::ppu::vdp {
 
 //==============================================================================
+// TmsZoomedSpriteTileDrawer
 
 //------------------------------------------------------------------------------
 
-/// Renderer of sprite layer in mode TMS.
-class TmsSpriteLayerRenderer : public ISpriteLayerRenderer
+TmsZoomedSpriteTileDrawer::TmsZoomedSpriteTileDrawer(u16* status, u8* lut) : 
+  m_status(status),
+  m_lut(lut)
 {
-public:
-  TmsSpriteLayerRenderer(
-    object_info_t (&obj_info)[2][20],
-    u8* object_count,
-    u8* spr_ovr,
-    u16* status,
-    u8* reg,
-    u8* lut,
-    u8* line_buffer,
-    u8* vram,
-    u8* system_hw,
-    core_config_t* core_config,
-    u16* v_counter,
-    viewport_t* viewport
-  );
+}
 
-  // Implementation of ISpriteLayerRenderer.
+//------------------------------------------------------------------------------
 
-  void RenderSprites(s32 line);
+void TmsZoomedSpriteTileDrawer::DrawSpriteTile(s32 start, s32 width, u8* src, u8* line_buffer, u8 color)
+{
+  u16 temp = 0;
 
-private:
-  object_info_t (&m_obj_info)[2][20];
-  u8* m_object_count; /// Sprite counter.
-  u8* m_spr_ovr; /// Sprite limit flag.
+  // Zoomed sprites are rendered at half speed.
+  for (s32 x = start; x < width; x += 2) {
+    temp = src[(x >> 4) & 1];
+    temp = (temp >> (7 - ((x >> 1) & 7))) & 0x01;
+    temp = temp * color;
+    temp |= (line_buffer[x] << 8);
+    line_buffer[x] = m_lut[temp];
+    *m_status |= ((temp & 0x8000) >> 10);
 
-  u16* m_status; /// VDP status flags.
-  u8* m_reg; /// Internal VDP registers (23 x 8-bit).
-
-  u8* m_line_buffer; /// Line buffer.
-  u8* m_vram; /// Video RAM (64K x 8-bit).
-
-  u8* m_system_hw;
-  core_config_t* m_core_config;
-  u16* m_v_counter; /// Vertical counter.
-  viewport_t* m_viewport;
-
-  TmsSpriteTileDrawer* m_sprite_tile_drawer;
-  TmsZoomedSpriteTileDrawer* m_zoomed_sprite_tile_drawer;
-};
+    temp &= 0x00FF;
+    temp |= (line_buffer[x + 1] << 8);
+    line_buffer[x + 1] = m_lut[temp];
+    *m_status |= ((temp & 0x8000) >> 10);
+  }
+}
 
 } // namespace gpgx::ppu::vdp
-
-#endif // #ifndef __GPGX_PPU_VDP_TMS_SPRITE_LAYER_RENDERER_H__
 
