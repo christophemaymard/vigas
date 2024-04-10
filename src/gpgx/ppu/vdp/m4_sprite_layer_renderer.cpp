@@ -40,7 +40,13 @@
 
 #include "gpgx/ppu/vdp/m4_sprite_layer_renderer.h"
 
-#include "core/vdp_render.h"
+#include "xee/mem/memory.h"
+
+#include "core/vdp/object_info_t.h"
+#include "core/system_model.h"
+
+#include "gpgx/ppu/vdp/m4_sprite_tile_drawer.h"
+#include "gpgx/ppu/vdp/m4_zoomed_sprite_tile_drawer.h"
 
 namespace gpgx::ppu::vdp {
 
@@ -49,9 +55,148 @@ namespace gpgx::ppu::vdp {
 
 //------------------------------------------------------------------------------
 
+M4SpriteLayerRenderer::M4SpriteLayerRenderer(
+  object_info_t (&obj_info)[2][20],
+  u8* object_count,
+  u16* status,
+  u8* reg,
+  u16* spr_col,
+  u8* spr_ovr,
+  u16* v_counter,
+  u8* pattern_cache,
+  u8* lut,
+  u8* line_buffer,
+  u8* system_hw,
+  core_config_t* config,
+  viewport_t* viewport) : 
+  m_obj_info(obj_info),
+  m_object_count(object_count),
+  m_status(status),
+  m_reg(reg),
+  m_spr_col(spr_col),
+  m_spr_ovr(spr_ovr),
+  m_v_counter(v_counter),
+  m_pattern_cache(pattern_cache),
+  m_line_buffer(line_buffer),
+  m_system_hw(system_hw),
+  m_config(config),
+  m_viewport(viewport)
+{
+  m_sprite_tile_drawer = new M4SpriteTileDrawer(
+    m_status, 
+    m_v_counter, 
+    m_spr_col, 
+    lut
+  );
+  m_zoomed_sprite_tile_drawer = new M4ZoomedSpriteTileDrawer(
+    m_status,
+    m_v_counter,
+    m_spr_col,
+    lut
+  );
+}
+
+//------------------------------------------------------------------------------
+
 void M4SpriteLayerRenderer::RenderSprites(s32 line)
 {
-  render_obj_m4(line);
+  s32 i = 0;
+  s32 xpos = 0;
+  s32 end = 0;
+  u8* src = nullptr;
+  u8* lb = nullptr;
+  u16 temp = 0;
+
+  // Sprite list for current line.
+  object_info_t* object_info = m_obj_info[line];
+  s32 count = m_object_count[line];
+
+  // Default sprite width.
+  s32 width = 8;
+
+  // Sprite Generator address mask (LSB is masked for 8x16 sprites).
+  u16 sg_mask = (~0x1C0 ^ (m_reg[6] << 6)) & (~((m_reg[1] & 0x02) >> 1));
+
+  // Zoomed sprites (not working on Genesis VDP).
+  if (*m_system_hw < SYSTEM_MD) {
+    width <<= (m_reg[1] & 0x01);
+  }
+
+  // Unused bits used as a mask on 315-5124 VDP only.
+  if (*m_system_hw > SYSTEM_SMS) {
+    sg_mask |= 0xC0;
+  }
+
+  // Latch SOVR flag from previous line to VDP status.
+  *m_status |= *m_spr_ovr;
+
+  // Clear SOVR flag for current line.
+  *m_spr_ovr = 0;
+
+  // Draw sprites in front-to-back order.
+  while (count--) {
+    // Sprite pattern index.
+    temp = (object_info->attr | 0x100) & sg_mask;
+
+    // Pointer to pattern cache line.
+    src = (u8*)&m_pattern_cache[(temp << 6) | (object_info->ypos << 3)];
+
+    // Sprite X position.
+    xpos = object_info->xpos;
+
+    // X position shift.
+    xpos -= (m_reg[0] & 0x08);
+
+    if (xpos < 0) {
+      // Clip sprites on left edge.
+      src = src - xpos;
+      end = xpos + width;
+      xpos = 0;
+    } else if ((xpos + width) > 256) {
+      // Clip sprites on right edge.
+      end = 256 - xpos;
+    } else {
+      // Sprite maximal width.
+      end = width;
+    }
+
+    // Pointer to line buffer.
+    lb = &m_line_buffer[0x20 + xpos];
+
+    if (width > 8) {
+      // Draw sprite pattern (zoomed sprites are rendered at half speed).
+      m_zoomed_sprite_tile_drawer->DrawSpriteTile(end, src, lb, xpos);
+
+      // 315-5124 VDP specific.
+      if (*m_system_hw < SYSTEM_SMS2) {
+        // only 4 first sprites can be zoomed.
+        if (count == (m_object_count[line] - 4)) {
+          // Set default width for remaining sprites.
+          width = 8;
+        }
+      }
+    } else {
+      // Draw sprite pattern.
+      m_sprite_tile_drawer->DrawSpriteTile(end, src, lb, xpos);
+    }
+
+    // Next sprite entry.
+    object_info++;
+  }
+
+  // handle Game Gear reduced screen (160x144).
+  if ((*m_system_hw == SYSTEM_GG) && !m_config->gg_extra && (*m_v_counter < m_viewport->h)) {
+    s32 line = *m_v_counter - (m_viewport->h - 144) / 2;
+
+    if ((line < 0) || (line >= 144)) {
+      xee::mem::Memset(&m_line_buffer[0x20], 0x40, 256);
+    } else {
+      if (m_viewport->x > 0) {
+        xee::mem::Memset(&m_line_buffer[0x20], 0x40, 48);
+        xee::mem::Memset(&m_line_buffer[0x20 + 48 + 160], 0x40, 48);
+      }
+    }
+  }
 }
 
 } // namespace gpgx::ppu::vdp

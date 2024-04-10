@@ -575,9 +575,6 @@ u16 spr_col;
 /* Function pointers */
 void (*render_bg)(int line);
 
-static gpgx::ppu::vdp::M4SpriteTileDrawer* gs_sprite_tile_drawer_m4 = nullptr;
-static gpgx::ppu::vdp::M4ZoomedSpriteTileDrawer* gs_zoomed_sprite_tile_drawer_m4 = nullptr;
-
 gpgx::ppu::vdp::ISpriteLayerRenderer* g_sprite_layer_renderer = nullptr;
 gpgx::ppu::vdp::TmsSpriteLayerRenderer* g_sprite_layer_renderer_tms = nullptr;
 gpgx::ppu::vdp::M4SpriteLayerRenderer* g_sprite_layer_renderer_m4 = nullptr;
@@ -3521,121 +3518,6 @@ void render_bg_m5_im2_vs(int line)
 /* Sprite layer rendering functions                                         */
 /*--------------------------------------------------------------------------*/
 
-void render_obj_m4(int line)
-{
-  int i, xpos, end;
-  u8 *src, *lb;
-  u16 temp;
-
-  /* Sprite list for current line */
-  object_info_t *object_info = obj_info[line];
-  int count = object_count[line];
-
-  /* Default sprite width */
-  int width = 8;
-
-  /* Sprite Generator address mask (LSB is masked for 8x16 sprites) */
-  u16 sg_mask = (~0x1C0 ^ (reg[6] << 6)) & (~((reg[1] & 0x02) >> 1));
-
-  /* Zoomed sprites (not working on Genesis VDP) */
-  if (system_hw < SYSTEM_MD)
-  {
-    width <<= (reg[1] & 0x01);
-  }
-
-  /* Unused bits used as a mask on 315-5124 VDP only */
-  if (system_hw > SYSTEM_SMS)
-  {
-    sg_mask |= 0xC0;
-  }
-
-  /* Latch SOVR flag from previous line to VDP status */
-  status |= spr_ovr;
-
-  /* Clear SOVR flag for current line */
-  spr_ovr = 0;
-
-  /* Draw sprites in front-to-back order */
-  while (count--)
-  {
-    /* Sprite pattern index */
-    temp = (object_info->attr | 0x100) & sg_mask;
-
-    /* Pointer to pattern cache line */
-    src = (u8 *)&bg_pattern_cache[(temp << 6) | (object_info->ypos << 3)];
-
-    /* Sprite X position */
-    xpos = object_info->xpos;
-
-    /* X position shift */
-    xpos -= (reg[0] & 0x08);
-
-    if (xpos < 0)
-    {
-      /* Clip sprites on left edge */
-      src = src - xpos;
-      end = xpos + width;
-      xpos = 0;
-    }
-    else if ((xpos + width) > 256)
-    {
-      /* Clip sprites on right edge */
-      end = 256 - xpos;
-    }
-    else
-    {
-      /* Sprite maximal width */
-      end = width;
-    }
-
-    /* Pointer to line buffer */
-    lb = &linebuf[0][0x20 + xpos];
-
-    if (width > 8)
-    {
-      /* Draw sprite pattern (zoomed sprites are rendered at half speed) */
-      gs_zoomed_sprite_tile_drawer_m4->DrawSpriteTile(end, src, lb, xpos);
-
-      /* 315-5124 VDP specific */
-      if (system_hw < SYSTEM_SMS2)
-      {
-        /* only 4 first sprites can be zoomed */
-        if (count == (object_count[line] - 4))
-        {
-          /* Set default width for remaining sprites */
-          width = 8;
-        }
-      }
-    }
-    else
-    {
-      /* Draw sprite pattern */
-      gs_sprite_tile_drawer_m4->DrawSpriteTile(end, src, lb, xpos);
-    }
-
-    /* Next sprite entry */
-    object_info++;
-  }
-
-  /* handle Game Gear reduced screen (160x144) */
-  if ((system_hw == SYSTEM_GG) && !core_config.gg_extra && (v_counter < viewport.h))
-  {
-    int line = v_counter - (viewport.h - 144) / 2;
-    if ((line < 0) || (line >= 144))
-    {
-      xee::mem::Memset(&linebuf[0][0x20], 0x40, 256);
-    }
-    else
-    {
-      if (viewport.x > 0)
-      {
-        xee::mem::Memset(&linebuf[0][0x20], 0x40, 48);
-        xee::mem::Memset(&linebuf[0][0x20+48+160], 0x40, 48);
-      }
-    }
-  }
-}
-
 void render_obj_m5(int line)
 {
   int i, column;
@@ -4256,29 +4138,23 @@ void render_init(void)
     );
   }
 
-  // Initialize drawer of normal sprite tile in mode 4.
-  if (!gs_sprite_tile_drawer_m4) {
-    gs_sprite_tile_drawer_m4 = new gpgx::ppu::vdp::M4SpriteTileDrawer(
-      &status, 
-      &v_counter, 
-      &spr_col, 
-      lut[5]
-    );
-  }
-
-  // Initialize drawer of zoomed sprite tile in mode 4.
-  if (!gs_zoomed_sprite_tile_drawer_m4) {
-    gs_zoomed_sprite_tile_drawer_m4 = new gpgx::ppu::vdp::M4ZoomedSpriteTileDrawer(
-      &status, 
-      &v_counter, 
-      &spr_col, 
-      lut[5]
-    );
-  }
-
   // Initialize renderer of sprite layer in mode 4.
   if (!g_sprite_layer_renderer_m4) {
-    g_sprite_layer_renderer_m4 = new gpgx::ppu::vdp::M4SpriteLayerRenderer();
+    g_sprite_layer_renderer_m4 = new gpgx::ppu::vdp::M4SpriteLayerRenderer(
+      obj_info,
+      object_count,
+      &status, 
+      reg, 
+      &spr_col, 
+      &spr_ovr, 
+      &v_counter, 
+      bg_pattern_cache, 
+      lut[5], 
+      linebuf[0], 
+      &system_hw, 
+      &core_config, 
+      &viewport
+    );
   }
 
   // Initialize renderer of sprite layer in mode 5.

@@ -41,6 +41,14 @@
 #ifndef __GPGX_PPU_VDP_M4_SPRITE_LAYER_RENDERER_H__
 #define __GPGX_PPU_VDP_M4_SPRITE_LAYER_RENDERER_H__
 
+#include "xee/fnd/data_type.h"
+
+#include "core/vdp/object_info_t.h"
+#include "core/core_config_t.h"
+#include "core/viewport_t.h"
+
+#include "gpgx/ppu/vdp/m4_sprite_tile_drawer.h"
+#include "gpgx/ppu/vdp/m4_zoomed_sprite_tile_drawer.h"
 #include "gpgx/ppu/vdp/sprite_layer_renderer.h"
 
 namespace gpgx::ppu::vdp {
@@ -53,9 +61,45 @@ namespace gpgx::ppu::vdp {
 class M4SpriteLayerRenderer : public ISpriteLayerRenderer
 {
 public:
+  M4SpriteLayerRenderer(
+    object_info_t (&obj_info)[2][20], 
+    u8* object_count,
+    u16* status,
+    u8* reg,
+    u16* spr_col,
+    u8* spr_ovr,
+    u16* v_counter,
+    u8* pattern_cache,
+    u8* lut,
+    u8* line_buffer,
+    u8* system_hw,
+    core_config_t* config,
+    viewport_t* viewport
+  );
+
   // Implementation of ISpriteLayerRenderer.
 
   void RenderSprites(s32 line);
+
+private:
+  object_info_t (&m_obj_info)[2][20];
+  u8* m_object_count; /// Sprite counter.
+
+  u16* m_status; /// VDP status flags.
+  u8* m_reg; /// Internal VDP registers (23 x 8-bit).
+  u16* m_spr_col; /// Sprite collision info.
+  u8* m_spr_ovr; /// Sprite limit flag.
+  u16* m_v_counter; /// Vertical counter.
+
+  u8* m_pattern_cache; /// Cached and flipped patterns.
+  u8* m_line_buffer; /// Line buffer.
+
+  u8* m_system_hw;
+  core_config_t* m_config;
+  viewport_t* m_viewport;
+
+  M4SpriteTileDrawer* m_sprite_tile_drawer;
+  M4ZoomedSpriteTileDrawer* m_zoomed_sprite_tile_drawer;
 };
 
 } // namespace gpgx::ppu::vdp
