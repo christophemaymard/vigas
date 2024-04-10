@@ -3556,139 +3556,6 @@ void render_bg_m5_im2_vs(int line)
 /* Sprite layer rendering functions                                         */
 /*--------------------------------------------------------------------------*/
 
-void render_obj_tms(int line)
-{
-  int x, start, end;
-  u8 *lb, *sg;
-  u8 color, pattern[2];
-  u16 temp;
-
-  /* Sprite list for current line */
-  object_info_t *object_info = obj_info[line];
-  int count = object_count[line];
-
-  /* Default sprite width (8 pixels) */
-  int width = 8;
-
-  /* Adjust width for 16x16 sprites */
-  width <<= ((reg[1] & 0x02) >> 1);
-
-  /* Adjust width for zoomed sprites */
-  width <<= (reg[1] & 0x01);
-
-  /* Latch SOVR flag from previous line to VDP status */
-  status |= spr_ovr;
-
-  /* Clear SOVR flag for current line */
-  spr_ovr = 0;
-
-  /* Draw sprites in front-to-back order */
-  while (count--)
-  {
-    /* Sprite X position */
-    start = object_info->xpos;
-
-    /* Sprite Color + Early Clock bit */
-    color = object_info->size;
-
-    /* X position shift (32 pixels) */
-    start -= ((color & 0x80) >> 2);
-
-    /* Pointer to line buffer */
-    lb = &linebuf[0][0x20 + start];
-
-    if ((start + width) > 256)
-    {
-      /* Clip sprites on right edge */
-      end = 256 - start;
-      start = 0;
-    }
-    else
-    {
-      end = width;
-
-      if (start < 0)
-      {
-        /* Clip sprites on left edge */
-        start = 0 - start;
-      }
-      else
-      {
-        start = 0;
-      }
-    }
-
-    /* Sprite Color (0-15) */
-    color &= 0x0F;
-
-    /* Sprite Pattern Name */
-    temp = object_info->attr;
-
-    /* Mask two LSB for 16x16 sprites */
-    temp &= ~((reg[1] & 0x02) >> 0);
-    temp &= ~((reg[1] & 0x02) >> 1);
-
-    /* Pointer to sprite generator table */
-    sg = (u8 *)&vram[((reg[6] << 11) & 0x3800) | (temp << 3) | object_info->ypos];
-
-    /* Sprite Pattern data (2 x 8 pixels) */
-    pattern[0] = sg[0x00];
-    pattern[1] = sg[0x10];
-
-    if (reg[1] & 0x01)
-    {
-      /* Zoomed sprites are rendered at half speed */
-      for (x=start; x<end; x+=2)
-      {
-        temp = pattern[(x >> 4) & 1];
-        temp = (temp >> (7 - ((x >> 1) & 7))) & 0x01;
-        temp = temp * color;
-        temp |= (lb[x] << 8);
-        lb[x] = lut[5][temp];
-        status |= ((temp & 0x8000) >> 10);
-        temp &= 0x00FF;
-        temp |= (lb[x+1] << 8);
-        lb[x+1] = lut[5][temp];
-        status |= ((temp & 0x8000) >> 10);
-      }
-    }
-    else
-    {
-      /* Normal sprites */
-      for (x=start; x<end; x++)
-      {
-        temp = pattern[(x >> 3) & 1];
-        temp = (temp >> (7 - (x & 7))) & 0x01;
-        temp = temp * color;
-        temp |= (lb[x] << 8);
-        lb[x] = lut[5][temp];
-        status |= ((temp & 0x8000) >> 10);
-      }
-    }
-
-    /* Next sprite entry */
-    object_info++;
-  }
-
-  /* handle Game Gear reduced screen (160x144) */
-  if ((system_hw == SYSTEM_GG) && !core_config.gg_extra && (v_counter < viewport.h))
-  {
-    int line = v_counter - (viewport.h - 144) / 2;
-    if ((line < 0) || (line >= 144))
-    {
-      xee::mem::Memset(&linebuf[0][0x20], 0x40, 256);
-    }
-    else
-    {
-      if (viewport.x > 0)
-      {
-        xee::mem::Memset(&linebuf[0][0x20], 0x40, 48);
-        xee::mem::Memset(&linebuf[0][0x20+48+160], 0x40, 48);
-      }
-    }
-  }
-}
-
 void render_obj_m4(int line)
 {
   int i, xpos, end;
@@ -4408,7 +4275,20 @@ void render_init(void)
 
   // Initialize renderer of sprite layer in mode TMS.
   if (!g_sprite_layer_renderer_tms) {
-    g_sprite_layer_renderer_tms = new gpgx::ppu::vdp::TmsSpriteLayerRenderer();
+    g_sprite_layer_renderer_tms = new gpgx::ppu::vdp::TmsSpriteLayerRenderer(
+      obj_info, 
+      object_count, 
+      &spr_ovr, 
+      &status, 
+      reg, 
+      lut[5], 
+      linebuf[0], 
+      vram, 
+      &system_hw, 
+      &core_config, 
+      &v_counter, 
+      &viewport
+    );
   }
 
   // Initialize renderer of sprite layer in mode 4.

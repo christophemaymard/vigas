@@ -41,6 +41,12 @@
 #ifndef __GPGX_PPU_VDP_TMS_SPRITE_LAYER_RENDERER_H__
 #define __GPGX_PPU_VDP_TMS_SPRITE_LAYER_RENDERER_H__
 
+#include "xee/fnd/data_type.h"
+
+#include "core/vdp/object_info_t.h"
+#include "core/core_config_t.h"
+#include "core/viewport_t.h"
+
 #include "gpgx/ppu/vdp/sprite_layer_renderer.h"
 
 namespace gpgx::ppu::vdp {
@@ -53,9 +59,41 @@ namespace gpgx::ppu::vdp {
 class TmsSpriteLayerRenderer : public ISpriteLayerRenderer
 {
 public:
+  TmsSpriteLayerRenderer(
+    object_info_t (&obj_info)[2][20],
+    u8* object_count,
+    u8* spr_ovr,
+    u16* status,
+    u8* reg,
+    u8* lut,
+    u8* line_buffer,
+    u8* vram,
+    u8* system_hw,
+    core_config_t* core_config,
+    u16* v_counter,
+    viewport_t* viewport
+  );
+
   // Implementation of ISpriteLayerRenderer.
 
   void RenderSprites(s32 line);
+
+private:
+  object_info_t (&m_obj_info)[2][20];
+  u8* m_object_count; /// Sprite counter.
+  u8* m_spr_ovr; /// Sprite limit flag.
+
+  u16* m_status; /// VDP status flags.
+  u8* m_reg; /// Internal VDP registers (23 x 8-bit).
+
+  u8* m_lut; /// Layer priority pixel look-up table.
+  u8* m_line_buffer; /// Line buffer.
+  u8* m_vram; /// Video RAM (64K x 8-bit).
+
+  u8* m_system_hw;
+  core_config_t* m_core_config;
+  u16* m_v_counter; /// Vertical counter.
+  viewport_t* m_viewport;
 };
 
 } // namespace gpgx::ppu::vdp
