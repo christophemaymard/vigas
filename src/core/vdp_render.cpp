@@ -60,9 +60,15 @@
 
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m4_satb_parser.h"
+#include "gpgx/ppu/vdp/m4_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m5_im2_sprite_layer_renderer.h"
+#include "gpgx/ppu/vdp/m5_im2_ste_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_satb_parser.h"
+#include "gpgx/ppu/vdp/m5_sprite_layer_renderer.h"
+#include "gpgx/ppu/vdp/m5_ste_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/tms_satb_parser.h"
+#include "gpgx/ppu/vdp/tms_sprite_layer_renderer.h"
 
 #ifndef HAVE_NO_SPRITE_LIMIT
 #define MAX_SPRITES_PER_LINE 20
@@ -606,7 +612,14 @@ u16 spr_col;
 
 /* Function pointers */
 void (*render_bg)(int line);
-void (*render_obj)(int line);
+
+gpgx::ppu::vdp::ISpriteLayerRenderer* g_sprite_layer_renderer = nullptr;
+gpgx::ppu::vdp::TmsSpriteLayerRenderer* g_sprite_layer_renderer_tms = nullptr;
+gpgx::ppu::vdp::M4SpriteLayerRenderer* g_sprite_layer_renderer_m4 = nullptr;
+gpgx::ppu::vdp::M5SpriteLayerRenderer* g_sprite_layer_renderer_m5 = nullptr;
+gpgx::ppu::vdp::M5SteSpriteLayerRenderer* g_sprite_layer_renderer_m5_ste = nullptr;
+gpgx::ppu::vdp::M5Im2SpriteLayerRenderer* g_sprite_layer_renderer_m5_im2 = nullptr;
+gpgx::ppu::vdp::M5Im2SteSpriteLayerRenderer* g_sprite_layer_renderer_m5_im2_ste = nullptr;
 
 gpgx::ppu::vdp::ISpriteAttributeTableParser* g_satb_parser = nullptr;
 gpgx::ppu::vdp::TmsSpriteAttributeTableParser* g_satb_parser_tms = nullptr;
@@ -4392,6 +4405,36 @@ void render_init(void)
       vram
     );
   }
+
+  // Initialize renderer of sprite layer in mode TMS.
+  if (!g_sprite_layer_renderer_tms) {
+    g_sprite_layer_renderer_tms = new gpgx::ppu::vdp::TmsSpriteLayerRenderer();
+  }
+
+  // Initialize renderer of sprite layer in mode 4.
+  if (!g_sprite_layer_renderer_m4) {
+    g_sprite_layer_renderer_m4 = new gpgx::ppu::vdp::M4SpriteLayerRenderer();
+  }
+
+  // Initialize renderer of sprite layer in mode 5.
+  if (!g_sprite_layer_renderer_m5) {
+    g_sprite_layer_renderer_m5 = new gpgx::ppu::vdp::M5SpriteLayerRenderer();
+  }
+
+  // Initialize renderer of sprite layer in mode 5 (STE).
+  if (!g_sprite_layer_renderer_m5_ste) {
+    g_sprite_layer_renderer_m5_ste = new gpgx::ppu::vdp::M5SteSpriteLayerRenderer();
+  }
+
+  // Initialize renderer of sprite layer in mode 5 (IM2).
+  if (!g_sprite_layer_renderer_m5_im2) {
+    g_sprite_layer_renderer_m5_im2 = new gpgx::ppu::vdp::M5Im2SpriteLayerRenderer();
+  }
+
+  // Initialize renderer of sprite layer in mode 5 (IM2/STE).
+  if (!g_sprite_layer_renderer_m5_im2_ste) {
+    g_sprite_layer_renderer_m5_im2_ste = new gpgx::ppu::vdp::M5Im2SteSpriteLayerRenderer();
+  }
 }
 
 void render_reset(void)
@@ -4433,7 +4476,7 @@ void render_line(int line)
     render_bg(line);
 
     /* Render sprite layer */
-    render_obj(line & 1);
+    g_sprite_layer_renderer->RenderSprites(line & 1);
 
     /* Left-most column blanking */
     if (reg[0] & 0x20)

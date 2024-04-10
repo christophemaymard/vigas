@@ -133,12 +133,22 @@ void system_frame_gen(int do_skip)
         if (im2_flag)
         {
           render_bg = (reg[11] & 0x04) ? render_bg_m5_im2_vs : render_bg_m5_im2;
-          render_obj = (reg[12] & 0x08) ? render_obj_m5_im2_ste : render_obj_m5_im2;
+
+          if (reg[12] & 0x08) {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5_im2_ste;
+          } else {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5_im2;
+          }
         }
         else
         {
           render_bg = (reg[11] & 0x04) ? render_bg_m5_vs : render_bg_m5;
-          render_obj = (reg[12] & 0x08) ? render_obj_m5_ste : render_obj_m5;
+
+          if (reg[12] & 0x08) {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5_ste;
+          } else {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5;
+          }
         }
       }
     }
@@ -476,12 +486,22 @@ void system_frame_scd(int do_skip)
         if (im2_flag)
         {
           render_bg = (reg[11] & 0x04) ? render_bg_m5_im2_vs : render_bg_m5_im2;
-          render_obj = (reg[12] & 0x08) ? render_obj_m5_im2_ste : render_obj_m5_im2;
+
+          if (reg[12] & 0x08) {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5_im2_ste;
+          } else {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5_im2;
+          }
         }
         else
         {
           render_bg = (reg[11] & 0x04) ? render_bg_m5_vs : render_bg_m5;
-          render_obj = (reg[12] & 0x08) ? render_obj_m5_ste : render_obj_m5;
+
+          if (reg[12] & 0x08) {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5_ste;
+          } else {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5;
+          }
         }
       }
     }
@@ -807,12 +827,22 @@ void system_frame_sms(int do_skip)
           if (im2_flag)
           {
             render_bg = (reg[11] & 0x04) ? render_bg_m5_im2_vs : render_bg_m5_im2;
-            render_obj = (reg[12] & 0x08) ? render_obj_m5_im2_ste : render_obj_m5_im2;
+
+            if (reg[12] & 0x08) {
+              g_sprite_layer_renderer = g_sprite_layer_renderer_m5_im2_ste;
+            } else {
+              g_sprite_layer_renderer = g_sprite_layer_renderer_m5_im2;
+            }
           }
           else
           {
             render_bg = (reg[11] & 0x04) ? render_bg_m5_vs : render_bg_m5;
-            render_obj = (reg[12] & 0x08) ? render_obj_m5_ste : render_obj_m5;
+
+            if (reg[12] & 0x08) {
+              g_sprite_layer_renderer = g_sprite_layer_renderer_m5_ste;
+            } else {
+              g_sprite_layer_renderer = g_sprite_layer_renderer_m5;
+            }
           }
         }
       }
@@ -991,7 +1021,7 @@ void system_frame_sms(int do_skip)
         /* Sprites are still processed during top border */
         if (reg[1] & 0x40)
         {
-          render_obj((line - lines_per_frame) & 1);
+          g_sprite_layer_renderer->RenderSprites((line - lines_per_frame) & 1);
         }
         
         /* Sprites pre-processing occurs even when display is disabled */
@@ -1024,7 +1054,7 @@ void system_frame_sms(int do_skip)
       /* Sprites are still processed during top border */
       if (reg[1] & 0x40)
       {
-        render_obj(1);
+        g_sprite_layer_renderer->RenderSprites(1);
       }
     }
 

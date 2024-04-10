@@ -390,14 +390,14 @@ void vdp_reset(void)
   {
     /* Mode 0 */
     render_bg = render_bg_m0;
-    render_obj = render_obj_tms;
+    g_sprite_layer_renderer = g_sprite_layer_renderer_tms;
     g_satb_parser = g_satb_parser_tms;
   }
   else
   {
     /* Mode 4 */
     render_bg = render_bg_m4;
-    render_obj = render_obj_m4;
+    g_sprite_layer_renderer = g_sprite_layer_renderer_m4;
     g_satb_parser = g_satb_parser_m4;
   }
 
@@ -463,7 +463,7 @@ void vdp_reset(void)
 
     /* Mode 4 */
     render_bg = render_bg_m4;
-    render_obj = render_obj_m4;
+    g_sprite_layer_renderer = g_sprite_layer_renderer_m4;
     g_satb_parser = g_satb_parser_m4;
   }
 
@@ -1125,7 +1125,7 @@ void vdp_sms_ctrl_w(unsigned int data)
           {
             /* Mode 4 sprites */
             g_satb_parser = g_satb_parser_m4;
-            render_obj = render_obj_m4;
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m4;
 
             /* force BG cache update*/
             bg_list_index = 0x200;
@@ -1134,7 +1134,7 @@ void vdp_sms_ctrl_w(unsigned int data)
           {
             /* TMS-mode sprites */
             g_satb_parser = g_satb_parser_tms;
-            render_obj = render_obj_tms;
+            g_sprite_layer_renderer = g_sprite_layer_renderer_tms;
 
             /* BG cache is not used */
             bg_list_index = 0;
@@ -1766,12 +1766,22 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
             if (im2_flag)
             {
               render_bg = (reg[11] & 0x04) ? render_bg_m5_im2_vs : render_bg_m5_im2;
-              render_obj = (reg[12] & 0x08) ? render_obj_m5_im2_ste : render_obj_m5_im2;
+
+              if (reg[12] & 0x08) {
+                g_sprite_layer_renderer = g_sprite_layer_renderer_m5_im2_ste;
+              } else {
+                g_sprite_layer_renderer = g_sprite_layer_renderer_m5_im2;
+              }
             }
             else
             {
               render_bg = (reg[11] & 0x04) ? (core_config.enhanced_vscroll ? render_bg_m5_vs_enhanced : render_bg_m5_vs) : render_bg_m5;
-              render_obj = (reg[12] & 0x08) ? render_obj_m5_ste : render_obj_m5;
+
+              if (reg[12] & 0x08) {
+                g_sprite_layer_renderer = g_sprite_layer_renderer_m5_ste;
+              } else {
+                g_sprite_layer_renderer = g_sprite_layer_renderer_m5;
+              }
             }
 
             /* Reset color palette */
@@ -1806,7 +1816,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
             g_satb_parser = g_satb_parser_m4;
             g_bg_pattern_cache_updater = g_bg_pattern_cache_updater_m4;
             render_bg = render_bg_m4;
-            render_obj = render_obj_m4;
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m4;
 
             /* Reset color palette */
             for (i = 0; i < 0x20; i++)
@@ -2010,11 +2020,19 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
         /* Update sprite rendering function */
         if (d & 0x08)
         {
-          render_obj = im2_flag ? render_obj_m5_im2_ste : render_obj_m5_ste;
+          if (im2_flag) {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5_im2_ste;
+          } else {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5_ste;
+          }
         }
         else
         {
-          render_obj = im2_flag ? render_obj_m5_im2 : render_obj_m5;
+          if (im2_flag) {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5_im2;
+          } else {
+            g_sprite_layer_renderer = g_sprite_layer_renderer_m5;
+          }
         }
       }
 

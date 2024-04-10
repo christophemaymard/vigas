@@ -48,10 +48,17 @@
 #include "gpgx/ppu/vdp/bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m4_satb_parser.h"
+#include "gpgx/ppu/vdp/m4_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m5_im2_sprite_layer_renderer.h"
+#include "gpgx/ppu/vdp/m5_im2_ste_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_satb_parser.h"
+#include "gpgx/ppu/vdp/m5_sprite_layer_renderer.h"
+#include "gpgx/ppu/vdp/m5_ste_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/satb_parser.h"
+#include "gpgx/ppu/vdp/sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/tms_satb_parser.h"
+#include "gpgx/ppu/vdp/tms_sprite_layer_renderer.h"
 
 /* 3:3:2 RGB */
 #if defined(USE_8BPP_RENDERING)
@@ -143,7 +150,30 @@ extern void color_update_m5(int index, unsigned int data);
 
 /* Function pointers */
 extern void (*render_bg)(int line);
-extern void (*render_obj)(int line);
+
+//------------------------------------------------------------------------------
+// Sprite layer rendering.
+
+/// Renderer of sprite layer.
+extern gpgx::ppu::vdp::ISpriteLayerRenderer* g_sprite_layer_renderer;
+
+/// Renderer of sprite layer in mode TMS.
+extern gpgx::ppu::vdp::TmsSpriteLayerRenderer* g_sprite_layer_renderer_tms;
+
+/// Renderer of sprite layer in mode 4.
+extern gpgx::ppu::vdp::M4SpriteLayerRenderer* g_sprite_layer_renderer_m4;
+
+/// Renderer of sprite layer in mode 5.
+extern gpgx::ppu::vdp::M5SpriteLayerRenderer* g_sprite_layer_renderer_m5;
+
+/// Renderer of sprite layer in mode 5 (STE).
+extern gpgx::ppu::vdp::M5SteSpriteLayerRenderer* g_sprite_layer_renderer_m5_ste;
+
+/// Renderer of sprite layer in mode 5 (IM2).
+extern gpgx::ppu::vdp::M5Im2SpriteLayerRenderer* g_sprite_layer_renderer_m5_im2;
+
+/// Renderer of sprite layer in mode 5 (IM2/STE).
+extern gpgx::ppu::vdp::M5Im2SteSpriteLayerRenderer* g_sprite_layer_renderer_m5_im2_ste;
 
 //------------------------------------------------------------------------------
 // Sprite attribute table parsing.
