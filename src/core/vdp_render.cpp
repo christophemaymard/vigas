@@ -592,6 +592,70 @@ gpgx::ppu::vdp::IBackgroundPatternCacheUpdater* g_bg_pattern_cache_updater = nul
 gpgx::ppu::vdp::M4BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m4 = nullptr;
 gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m5 = nullptr;
 
+/*--------------------------------------------------------------------------*/
+/*                                                                          */
+/*--------------------------------------------------------------------------*/
+
+/// Initialize sprite layer rendering.
+static void sprite_layer_rendering_init()
+{
+  // Initialize renderer of sprite layer in mode TMS.
+  if (!g_sprite_layer_renderer_tms) {
+    g_sprite_layer_renderer_tms = new gpgx::ppu::vdp::TmsSpriteLayerRenderer(
+      obj_info,
+      object_count,
+      &spr_ovr,
+      &status,
+      reg,
+      lut[5],
+      linebuf[0],
+      vram,
+      &system_hw,
+      &core_config,
+      &v_counter,
+      &viewport
+    );
+  }
+
+  // Initialize renderer of sprite layer in mode 4.
+  if (!g_sprite_layer_renderer_m4) {
+    g_sprite_layer_renderer_m4 = new gpgx::ppu::vdp::M4SpriteLayerRenderer(
+      obj_info,
+      object_count,
+      &status,
+      reg,
+      &spr_col,
+      &spr_ovr,
+      &v_counter,
+      bg_pattern_cache,
+      lut[5],
+      linebuf[0],
+      &system_hw,
+      &core_config,
+      &viewport
+    );
+  }
+
+  // Initialize renderer of sprite layer in mode 5.
+  if (!g_sprite_layer_renderer_m5) {
+    g_sprite_layer_renderer_m5 = new gpgx::ppu::vdp::M5SpriteLayerRenderer();
+  }
+
+  // Initialize renderer of sprite layer in mode 5 (STE).
+  if (!g_sprite_layer_renderer_m5_ste) {
+    g_sprite_layer_renderer_m5_ste = new gpgx::ppu::vdp::M5SteSpriteLayerRenderer();
+  }
+
+  // Initialize renderer of sprite layer in mode 5 (IM2).
+  if (!g_sprite_layer_renderer_m5_im2) {
+    g_sprite_layer_renderer_m5_im2 = new gpgx::ppu::vdp::M5Im2SpriteLayerRenderer();
+  }
+
+  // Initialize renderer of sprite layer in mode 5 (IM2/STE).
+  if (!g_sprite_layer_renderer_m5_im2_ste) {
+    g_sprite_layer_renderer_m5_im2_ste = new gpgx::ppu::vdp::M5Im2SteSpriteLayerRenderer();
+  }
+}
 
 /*--------------------------------------------------------------------------*/
 /* Sprite pattern name offset look-up table function (Mode 5)               */
@@ -4120,62 +4184,8 @@ void render_init(void)
     );
   }
 
-  // Initialize renderer of sprite layer in mode TMS.
-  if (!g_sprite_layer_renderer_tms) {
-    g_sprite_layer_renderer_tms = new gpgx::ppu::vdp::TmsSpriteLayerRenderer(
-      obj_info, 
-      object_count, 
-      &spr_ovr, 
-      &status, 
-      reg, 
-      lut[5], 
-      linebuf[0], 
-      vram, 
-      &system_hw, 
-      &core_config, 
-      &v_counter, 
-      &viewport
-    );
-  }
-
-  // Initialize renderer of sprite layer in mode 4.
-  if (!g_sprite_layer_renderer_m4) {
-    g_sprite_layer_renderer_m4 = new gpgx::ppu::vdp::M4SpriteLayerRenderer(
-      obj_info,
-      object_count,
-      &status, 
-      reg, 
-      &spr_col, 
-      &spr_ovr, 
-      &v_counter, 
-      bg_pattern_cache, 
-      lut[5], 
-      linebuf[0], 
-      &system_hw, 
-      &core_config, 
-      &viewport
-    );
-  }
-
-  // Initialize renderer of sprite layer in mode 5.
-  if (!g_sprite_layer_renderer_m5) {
-    g_sprite_layer_renderer_m5 = new gpgx::ppu::vdp::M5SpriteLayerRenderer();
-  }
-
-  // Initialize renderer of sprite layer in mode 5 (STE).
-  if (!g_sprite_layer_renderer_m5_ste) {
-    g_sprite_layer_renderer_m5_ste = new gpgx::ppu::vdp::M5SteSpriteLayerRenderer();
-  }
-
-  // Initialize renderer of sprite layer in mode 5 (IM2).
-  if (!g_sprite_layer_renderer_m5_im2) {
-    g_sprite_layer_renderer_m5_im2 = new gpgx::ppu::vdp::M5Im2SpriteLayerRenderer();
-  }
-
-  // Initialize renderer of sprite layer in mode 5 (IM2/STE).
-  if (!g_sprite_layer_renderer_m5_im2_ste) {
-    g_sprite_layer_renderer_m5_im2_ste = new gpgx::ppu::vdp::M5Im2SteSpriteLayerRenderer();
-  }
+  // Initialize sprite layer rendering.
+  sprite_layer_rendering_init();
 }
 
 void render_reset(void)
