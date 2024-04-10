@@ -657,6 +657,51 @@ static void sprite_layer_rendering_init()
   }
 }
 
+/// Initialize sprite attribute table parsing.
+static void sprite_attribute_table_parsing_init()
+{
+  // Initialize parser of sprite attribute table (Mode TMS).
+  if (!g_satb_parser_tms) {
+    g_satb_parser_tms = new gpgx::ppu::vdp::TmsSpriteAttributeTableParser(
+      &viewport,
+      vram,
+      obj_info,
+      object_count,
+      reg,
+      &spr_ovr,
+      &status
+    );
+  }
+
+  // Initialize parser of sprite attribute table (Mode 4).
+  if (!g_satb_parser_m4) {
+    g_satb_parser_m4 = new gpgx::ppu::vdp::M4SpriteAttributeTableParser(
+      &viewport,
+      vram,
+      obj_info,
+      object_count,
+      reg,
+      &system_hw,
+      &spr_ovr
+    );
+  }
+
+  // Initialize parser of sprite attribute table (Mode 5).
+  if (!g_satb_parser_m5) {
+    g_satb_parser_m5 = new gpgx::ppu::vdp::M5SpriteAttributeTableParser(
+      &viewport,
+      vram,
+      obj_info,
+      object_count,
+      sat,
+      &satb,
+      &im2_flag,
+      &max_sprite_pixels,
+      &status
+    );
+  }
+}
+
 /*--------------------------------------------------------------------------*/
 /* Sprite pattern name offset look-up table function (Mode 5)               */
 /*--------------------------------------------------------------------------*/
@@ -4122,46 +4167,8 @@ void render_init(void)
   /* Make bitplane to pixel look-up table (Mode 4) */
   make_bp_lut();
 
-  // Initialize parser of sprite attribute table (Mode TMS).
-  if (!g_satb_parser_tms) {
-    g_satb_parser_tms = new gpgx::ppu::vdp::TmsSpriteAttributeTableParser(
-      &viewport, 
-      vram, 
-      obj_info, 
-      object_count, 
-      reg, 
-      &spr_ovr, 
-      &status
-    );
-  }
-
-  // Initialize parser of sprite attribute table (Mode 4).
-  if (!g_satb_parser_m4) {
-    g_satb_parser_m4 = new gpgx::ppu::vdp::M4SpriteAttributeTableParser(
-      &viewport, 
-      vram, 
-      obj_info, 
-      object_count, 
-      reg, 
-      &system_hw, 
-      &spr_ovr
-    );
-  }
-
-  // Initialize parser of sprite attribute table (Mode 5).
-  if (!g_satb_parser_m5) {
-    g_satb_parser_m5 = new gpgx::ppu::vdp::M5SpriteAttributeTableParser(
-      &viewport, 
-      vram, 
-      obj_info, 
-      object_count, 
-      sat, 
-      &satb, 
-      &im2_flag, 
-      &max_sprite_pixels, 
-      &status
-    );
-  }
+  // Initialize sprite attribute table parsing.
+  sprite_attribute_table_parsing_init();
 
   // Initialize updater of background pattern cache (Mode 4).
   if (!g_bg_pattern_cache_updater_m4) {
