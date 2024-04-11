@@ -564,7 +564,6 @@ u16 spr_col;
 /* Function pointers */
 void (*render_bg)(int line);
 
-gpgx::ppu::vdp::M5SpriteTileDrawer* gs_sprite_tile_drawer_m5 = nullptr;
 gpgx::ppu::vdp::M5SpriteTileDrawer* gs_sprite_tile_drawer_m5_ste = nullptr;
 gpgx::ppu::vdp::M5SpriteTileDrawer* gs_sprite_tile_drawer_m5_im2 = nullptr;
 gpgx::ppu::vdp::M5SpriteTileDrawer* gs_sprite_tile_drawer_m5_im2_ste = nullptr;
@@ -593,10 +592,6 @@ gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m5 =
 /// Initialize sprite layer rendering.
 static void sprite_layer_rendering_init()
 {
-  if (!gs_sprite_tile_drawer_m5) {
-    gs_sprite_tile_drawer_m5 = new gpgx::ppu::vdp::M5SpriteTileDrawer(&status, lut[1]);
-  }
-
   if (!gs_sprite_tile_drawer_m5_ste) {
     gs_sprite_tile_drawer_m5_ste = new gpgx::ppu::vdp::M5SpriteTileDrawer(&status, lut[3]);
   }
@@ -648,7 +643,18 @@ static void sprite_layer_rendering_init()
 
   // Initialize renderer of sprite layer in mode 5.
   if (!g_sprite_layer_renderer_m5) {
-    g_sprite_layer_renderer_m5 = new gpgx::ppu::vdp::M5SpriteLayerRenderer();
+    g_sprite_layer_renderer_m5 = new gpgx::ppu::vdp::M5SpriteLayerRenderer(
+      obj_info, 
+      object_count, 
+      &status, 
+      &spr_ovr, 
+      bg_pattern_cache, 
+      linebuf[0], 
+      lut[1], 
+      name_lut, 
+      &max_sprite_pixels, 
+      &viewport
+    );
   }
 
   // Initialize renderer of sprite layer in mode 5 (STE).
@@ -3661,116 +3667,6 @@ void render_bg_m5_im2_vs(int line)
 /*--------------------------------------------------------------------------*/
 /* Sprite layer rendering functions                                         */
 /*--------------------------------------------------------------------------*/
-
-void render_obj_m5(int line)
-{
-  int i, column;
-  int xpos, width;
-  int pixelcount = 0;
-  int masked = 0;
-  int max_pixels = MODE5_MAX_SPRITE_PIXELS;
-
-  u8 *src, *s, *lb;
-  u32 temp, v_line;
-  u32 attr, name, atex;
-
-  /* Sprite list for current line */
-  object_info_t *object_info = obj_info[line];
-  int count = object_count[line];
-
-  /* Draw sprites in front-to-back order */
-  while (count--)
-  {
-    /* Sprite X position */
-    xpos = object_info->xpos;
-
-    /* Sprite masking  */
-    if (xpos)
-    {
-      /* Requires at least one sprite with xpos > 0 */
-      spr_ovr = 1;
-    }
-    else if (spr_ovr)
-    {
-      /* Remaining sprites are not drawn */
-      masked = 1;
-    }
-
-    /* Display area offset */
-    xpos = xpos - 0x80;
-
-    /* Sprite size */
-    temp = object_info->size;
-
-    /* Sprite width */
-    width = 8 + ((temp & 0x0C) << 1);
-
-    /* Update pixel count (off-screen sprites are included) */
-    pixelcount += width;
-
-    /* Is sprite across visible area ? */
-    if (((xpos + width) > 0) && (xpos < viewport.w) && !masked)
-    {
-      /* Sprite attributes */
-      attr = object_info->attr;
-
-      /* Sprite vertical offset */
-      v_line = object_info->ypos;
-
-      /* Sprite priority + palette bits */
-      atex = (attr >> 9) & 0x70;
-
-      /* Pattern name base */
-      name = attr & 0x07FF;
-
-      /* Mask vflip/hflip */
-      attr &= 0x1800;
-
-      /* Pointer into pattern name offset look-up table */
-      s = &name_lut[((attr >> 3) & 0x300) | (temp << 4) | ((v_line & 0x18) >> 1)];
-
-      /* Pointer into line buffer */
-      lb = &linebuf[0][0x20 + xpos];
-
-      /* Max. number of sprite pixels rendered per line */
-      if (pixelcount > max_pixels)
-      {
-        /* Adjust number of pixels to draw */
-        width -= (pixelcount - max_pixels);
-      }
-
-      /* Number of tiles to draw */
-      width = width >> 3;
-
-      /* Pattern row index */
-      v_line = (v_line & 7) << 3;
-
-      /* Draw sprite patterns */
-      for (column = 0; column < width; column++, lb+=8)
-      {
-        temp = attr | ((name + s[column]) & 0x07FF);
-        src = &bg_pattern_cache[(temp << 6) | (v_line)];
-        gs_sprite_tile_drawer_m5->DrawSpriteTile(8, atex, src, lb);
-      }
-    }
-
-    /* Sprite limit */
-    if (pixelcount >= max_pixels)
-    {
-      /* Sprite masking is effective on next line if max pixel width is reached */
-      spr_ovr = (pixelcount >= viewport.w);
-
-      /* Stop sprite rendering */
-      return;
-    }
-
-    /* Next sprite entry */
-    object_info++;
-  }
-
-  /* Clear sprite masking for next line  */
-  spr_ovr = 0;
-}
 
 void render_obj_m5_ste(int line)
 {
