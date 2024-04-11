@@ -702,6 +702,31 @@ static void sprite_attribute_table_parsing_init()
   }
 }
 
+/// Initialize background pattern cache updating.
+static void background_pattern_cache_updating_init()
+{
+  // Initialize updater of background pattern cache (Mode 4).
+  if (!g_bg_pattern_cache_updater_m4) {
+    g_bg_pattern_cache_updater_m4 = new gpgx::ppu::vdp::M4BackgroundPatternCacheUpdater(
+      bg_pattern_cache,
+      bg_name_list,
+      bg_name_dirty,
+      vram,
+      bp_lut
+    );
+  }
+
+  // Initialize updater of background pattern cache (Mode 5).
+  if (!g_bg_pattern_cache_updater_m5) {
+    g_bg_pattern_cache_updater_m5 = new gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater(
+      bg_pattern_cache,
+      bg_name_list,
+      bg_name_dirty,
+      vram
+    );
+  }
+}
+
 /*--------------------------------------------------------------------------*/
 /* Sprite pattern name offset look-up table function (Mode 5)               */
 /*--------------------------------------------------------------------------*/
@@ -4170,26 +4195,8 @@ void render_init(void)
   // Initialize sprite attribute table parsing.
   sprite_attribute_table_parsing_init();
 
-  // Initialize updater of background pattern cache (Mode 4).
-  if (!g_bg_pattern_cache_updater_m4) {
-    g_bg_pattern_cache_updater_m4 = new gpgx::ppu::vdp::M4BackgroundPatternCacheUpdater(
-      bg_pattern_cache,
-      bg_name_list,
-      bg_name_dirty,
-      vram,
-      bp_lut
-    );
-  }
-
-  // Initialize updater of background pattern cache (Mode 5).
-  if (!g_bg_pattern_cache_updater_m5) {
-    g_bg_pattern_cache_updater_m5 = new gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater(
-      bg_pattern_cache,
-      bg_name_list,
-      bg_name_dirty,
-      vram
-    );
-  }
+  // Initialize background pattern cache updating.
+  background_pattern_cache_updating_init();
 
   // Initialize sprite layer rendering.
   sprite_layer_rendering_init();
