@@ -585,6 +585,11 @@ gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m5 =
 /*                                                                          */
 /*--------------------------------------------------------------------------*/
 
+/// Initialize background layer rendering.
+static void background_layer_rendering_init()
+{
+}
+
 /// Initialize sprite layer rendering.
 static void sprite_layer_rendering_init()
 {
@@ -3777,6 +3782,9 @@ void render_init(void)
 
   // Initialize sprite layer rendering.
   sprite_layer_rendering_init();
+
+  // Initialize background layer rendering.
+  background_layer_rendering_init();
 }
 
 void render_reset(void)
