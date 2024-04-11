@@ -58,6 +58,7 @@
 #include "core/vram.h"
 #include "core/vdp/object_info_t.h"
 
+#include "gpgx/ppu/vdp/m4_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m4_satb_parser.h"
 #include "gpgx/ppu/vdp/m4_sprite_layer_renderer.h"
@@ -564,6 +565,8 @@ u16 spr_col;
 /* Function pointers */
 void (*render_bg)(int line);
 
+static gpgx::ppu::vdp::M4BackgroundLayerRenderer* g_bg_layer_renderer_m4 = nullptr;
+
 gpgx::ppu::vdp::ISpriteLayerRenderer* g_sprite_layer_renderer = nullptr;
 gpgx::ppu::vdp::TmsSpriteLayerRenderer* g_sprite_layer_renderer_tms = nullptr;
 gpgx::ppu::vdp::M4SpriteLayerRenderer* g_sprite_layer_renderer_m4 = nullptr;
@@ -588,6 +591,19 @@ gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m5 =
 /// Initialize background layer rendering.
 static void background_layer_rendering_init()
 {
+  // Initialize renderer of background layer in mode 4.
+  if (!g_bg_layer_renderer_m4) {
+    g_bg_layer_renderer_m4 = new gpgx::ppu::vdp::M4BackgroundLayerRenderer(
+      reg,
+      &vscroll,
+      bg_pattern_cache,
+      linebuf[0],
+      atex_table,
+      vram,
+      &system_hw,
+      &viewport
+    );
+  }
 }
 
 /// Initialize sprite layer rendering.
@@ -1567,106 +1583,7 @@ void render_bg_inv(int line)
 /* Mode 4 */
 void render_bg_m4(int line)
 {
-  int column;
-  u16 *nt;
-  u32 attr, atex, *src;
-
-  /* 32 x 8 pixels */
-  int width = 32;
-
-  /* Horizontal scrolling */
-  int index = ((reg[0] & 0x40) && (line < 0x10)) ? 0x100 : reg[0x08];
-  int shift = index & 7;
-
-  /* Background line buffer */
-  u32 *dst = (u32 *)&linebuf[0][0x20 + shift];
-
-  /* Vertical scrolling */
-  int v_line = line + vscroll;
-
-  /* Pattern name table mask */
-  u16 nt_mask = ~0x3C00 ^ (reg[2] << 10);
-
-  /* Unused bits used as a mask on TMS99xx & 315-5124 VDP only */
-  if (system_hw > SYSTEM_SMS)
-  {
-    nt_mask |= 0x400;
-  }
-
-  /* Test for extended modes (Master System II & Game gear VDP only) */
-  if (viewport.h > 192)
-  {
-    /* Vertical scroll mask */
-    v_line = v_line % 256;
-
-    /* Pattern name Table */
-    nt = (u16 *)&vram[(0x3700 & nt_mask) + ((v_line >> 3) << 6)];
-  }
-  else
-  {
-    /* Vertical scroll mask */
-    v_line = v_line % 224;
-
-    /* Pattern name Table */
-    nt = (u16 *)&vram[(0x3800 + ((v_line >> 3) << 6)) & nt_mask];
-  }
-
-  /* Pattern row index */
-  v_line = (v_line & 7) << 3;
-
-  /* Tile column index */
-  index = (0x100 - index) >> 3;
-
-  /* Clip left-most column if required */
-  if (shift)
-  {
-    xee::mem::Memset(&linebuf[0][0x20], 0, shift);
-    index++;
-  }
-
-  /* Draw tiles */
-  for(column = 0; column < width; column++, index++)
-  {
-    /* Stop vertical scrolling for rightmost eight tiles */
-    if((column == 24) && (reg[0] & 0x80))
-    {
-      /* Clear Pattern name table start address */
-      if (viewport.h > 192)
-      {
-        nt = (u16 *)&vram[(0x3700 & nt_mask) + ((line >> 3) << 6)];
-      }
-      else
-      {
-        nt = (u16 *)&vram[(0x3800 + ((line >> 3) << 6)) & nt_mask];
-      }
-
-      /* Clear Pattern row index */
-      v_line = (line & 7) << 3;
-    }
-
-    /* Read name table attribute word */
-    attr = nt[index % width];
-#ifndef LSB_FIRST
-    attr = (((attr & 0xFF) << 8) | ((attr & 0xFF00) >> 8));
-#endif
-
-    /* Expand priority and palette bits */
-    atex = atex_table[(attr >> 11) & 3];
-
-    /* Cached pattern data line (4 bytes = 4 pixels at once) */
-    src = (u32 *)&bg_pattern_cache[((attr & 0x7FF) << 6) | (v_line)];
-
-    /* Copy left & right half, adding the attribute bits in */
-#ifdef ALIGN_LONG
-    WRITE_LONG(dst, src[0] | atex);
-    dst++;
-    WRITE_LONG(dst, src[1] | atex);
-    dst++;
-#else
-    *dst++ = (src[0] | atex);
-    *dst++ = (src[1] | atex);
-#endif
-  }
+  g_bg_layer_renderer_m4->RenderBackground(line);
 }
 
 /* Mode 5 */
