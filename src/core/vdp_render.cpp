@@ -68,6 +68,7 @@
 #include "gpgx/ppu/vdp/m5_im2_ste_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_satb_parser.h"
 #include "gpgx/ppu/vdp/m5_sprite_layer_renderer.h"
+#include "gpgx/ppu/vdp/m5_sprite_tile_drawer.h"
 #include "gpgx/ppu/vdp/m5_ste_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/tms_satb_parser.h"
 #include "gpgx/ppu/vdp/tms_sprite_layer_renderer.h"
@@ -438,18 +439,6 @@ static XEE_INLINE void WRITE_LONG(void *address, u32 data)
 #endif /* ALIGN_LONG */
 #endif /* ALT_RENDERER */
 
-#define DRAW_SPRITE_TILE(WIDTH,ATTR,TABLE)  \
-  for (i=0;i<WIDTH;i++) \
-  { \
-    temp = *src++; \
-    if (temp & 0x0f) \
-    { \
-      temp |= (lb[i] << 8); \
-      lb[i] = TABLE[temp | ATTR]; \
-      status |= ((temp & 0x8000) >> 10); \
-    } \
-  }
-
 
 /* Pixels conversion macro */
 /* 4-bit color channels are either compressed to 2/3-bit or dithered to 5/6/8-bit equivalents */
@@ -575,6 +564,11 @@ u16 spr_col;
 /* Function pointers */
 void (*render_bg)(int line);
 
+gpgx::ppu::vdp::M5SpriteTileDrawer* gs_sprite_tile_drawer_m5 = nullptr;
+gpgx::ppu::vdp::M5SpriteTileDrawer* gs_sprite_tile_drawer_m5_ste = nullptr;
+gpgx::ppu::vdp::M5SpriteTileDrawer* gs_sprite_tile_drawer_m5_im2 = nullptr;
+gpgx::ppu::vdp::M5SpriteTileDrawer* gs_sprite_tile_drawer_m5_im2_ste = nullptr;
+
 gpgx::ppu::vdp::ISpriteLayerRenderer* g_sprite_layer_renderer = nullptr;
 gpgx::ppu::vdp::TmsSpriteLayerRenderer* g_sprite_layer_renderer_tms = nullptr;
 gpgx::ppu::vdp::M4SpriteLayerRenderer* g_sprite_layer_renderer_m4 = nullptr;
@@ -599,6 +593,22 @@ gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m5 =
 /// Initialize sprite layer rendering.
 static void sprite_layer_rendering_init()
 {
+  if (!gs_sprite_tile_drawer_m5) {
+    gs_sprite_tile_drawer_m5 = new gpgx::ppu::vdp::M5SpriteTileDrawer(&status, lut[1]);
+  }
+
+  if (!gs_sprite_tile_drawer_m5_ste) {
+    gs_sprite_tile_drawer_m5_ste = new gpgx::ppu::vdp::M5SpriteTileDrawer(&status, lut[3]);
+  }
+
+  if (!gs_sprite_tile_drawer_m5_im2) {
+    gs_sprite_tile_drawer_m5_im2 = new gpgx::ppu::vdp::M5SpriteTileDrawer(&status, lut[1]);
+  }
+
+  if (!gs_sprite_tile_drawer_m5_im2_ste) {
+    gs_sprite_tile_drawer_m5_im2_ste = new gpgx::ppu::vdp::M5SpriteTileDrawer(&status, lut[3]);
+  }
+
   // Initialize renderer of sprite layer in mode TMS.
   if (!g_sprite_layer_renderer_tms) {
     g_sprite_layer_renderer_tms = new gpgx::ppu::vdp::TmsSpriteLayerRenderer(
@@ -3740,7 +3750,7 @@ void render_obj_m5(int line)
       {
         temp = attr | ((name + s[column]) & 0x07FF);
         src = &bg_pattern_cache[(temp << 6) | (v_line)];
-        DRAW_SPRITE_TILE(8,atex,lut[1])
+        gs_sprite_tile_drawer_m5->DrawSpriteTile(8, atex, src, lb);
       }
     }
 
@@ -3852,7 +3862,7 @@ void render_obj_m5_ste(int line)
       {
         temp = attr | ((name + s[column]) & 0x07FF);
         src = &bg_pattern_cache[(temp << 6) | (v_line)];
-        DRAW_SPRITE_TILE(8,atex,lut[3])
+        gs_sprite_tile_drawer_m5_ste->DrawSpriteTile(8, atex, src, lb);
       }
     }
 
@@ -3968,7 +3978,7 @@ void render_obj_m5_im2(int line)
       {
         temp = attr | (((name + s[column]) & 0x3ff) << 1);
         src = &bg_pattern_cache[((temp << 6) | (v_line)) ^ ((attr & 0x1000) >> 6)];
-        DRAW_SPRITE_TILE(8,atex,lut[1])
+        gs_sprite_tile_drawer_m5_im2->DrawSpriteTile(8, atex, src, lb);
       }
     }
 
@@ -4081,7 +4091,7 @@ void render_obj_m5_im2_ste(int line)
       {
         temp = attr | (((name + s[column]) & 0x3ff) << 1);
         src = &bg_pattern_cache[((temp << 6) | (v_line)) ^ ((attr & 0x1000) >> 6)];
-        DRAW_SPRITE_TILE(8,atex,lut[3])
+        gs_sprite_tile_drawer_m5_im2_ste->DrawSpriteTile(8, atex, src, lb);
       }
     }
 
