@@ -40,7 +40,7 @@
 
 #include "gpgx/ppu/vdp/m5_im2_ste_sprite_layer_renderer.h"
 
-#include "core/vdp_render.h"
+#include "xee/mem/memory.h" // FOr Memset().
 
 namespace gpgx::ppu::vdp {
 
@@ -49,9 +49,161 @@ namespace gpgx::ppu::vdp {
 
 //------------------------------------------------------------------------------
 
+M5Im2SteSpriteLayerRenderer::M5Im2SteSpriteLayerRenderer(
+  object_info_t(&obj_info)[2][20],
+  u8* object_count,
+  u16* status,
+  u8* odd_frame,
+  u8* spr_ovr,
+  u8* pattern_cache,
+  u8* spr_line_buffer,
+  u8* spr_lut,
+  u8* bg_line_buffer,
+  u8* bg_spr_lut,
+  u8* name_lut,
+  u16* max_sprite_pixels,
+  viewport_t* viewport) :
+  m_obj_info(obj_info),
+  m_object_count(object_count),
+  m_odd_frame(odd_frame),
+  m_spr_ovr(spr_ovr),
+  m_pattern_cache(pattern_cache),
+  m_spr_line_buffer(spr_line_buffer),
+  m_bg_line_buffer(bg_line_buffer),
+  m_bg_spr_lut(bg_spr_lut),
+  m_name_lut(name_lut),
+  m_max_sprite_pixels(max_sprite_pixels),
+  m_viewport(viewport)
+{
+  m_sprite_tile_drawer = new gpgx::ppu::vdp::M5SpriteTileDrawer(status, spr_lut);
+}
+
+//------------------------------------------------------------------------------
+
 void M5Im2SteSpriteLayerRenderer::RenderSprites(s32 line)
 {
-  render_obj_m5_im2_ste(line);
+  s32 column = 0;
+  s32 xpos = 0;
+  s32 width = 0;
+  s32 pixelcount = 0;
+  s32 masked = 0;
+  s32 odd = *m_odd_frame;
+  s32 max_pixels = *m_max_sprite_pixels;
+
+  u8* src = nullptr;
+  u8* s = nullptr;
+  u8* lb = nullptr;
+  u32 temp = 0;
+  u32 v_line = 0;
+  u32 attr = 0;
+  u32 name = 0;
+  u32 atex = 0;
+
+  // Sprite list for current line.
+  object_info_t* object_info = m_obj_info[line];
+  s32 count = m_object_count[line];
+
+  // Clear sprite line buffer.
+  xee::mem::Memset(&m_spr_line_buffer[0], 0, m_viewport->w + 0x40);
+
+  // Draw sprites in front-to-back order.
+  while (count--) {
+    // Sprite X position.
+    xpos = object_info->xpos;
+
+    // Sprite masking.
+    if (xpos) {
+      // Requires at least one sprite with xpos > 0.
+      *m_spr_ovr = 1;
+    } else if (*m_spr_ovr) {
+      // Remaining sprites are not drawn.
+      masked = 1;
+    }
+
+    // Display area offset.
+    xpos = xpos - 0x80;
+
+    // Sprite size.
+    temp = object_info->size;
+
+    // Sprite width.
+    width = 8 + ((temp & 0x0C) << 1);
+
+    // Update pixel count (off-screen sprites are included).
+    pixelcount += width;
+
+    // Is sprite across visible area ?
+    if (((xpos + width) > 0) && (xpos < m_viewport->w) && !masked) {
+      // Sprite attributes.
+      attr = object_info->attr;
+
+      // Sprite vertical offset.
+      v_line = object_info->ypos;
+
+      // Sprite priority + palette bits.
+      atex = (attr >> 9) & 0x70;
+
+      // Pattern name base.
+      name = attr & 0x03FF;
+
+      // Mask vflip/hflip.
+      attr &= 0x1800;
+
+      // Pointer into pattern name offset look-up table.
+      s = &m_name_lut[((attr >> 3) & 0x300) | (temp << 4) | ((v_line & 0x18) >> 1)];
+
+      // Pointer into line buffer.
+      lb = &m_spr_line_buffer[0x20 + xpos];
+
+      // Adjust width for sprite limit.
+      if (pixelcount > max_pixels) {
+        width -= (pixelcount - max_pixels);
+      }
+
+      // Number of tiles to draw.
+      width = width >> 3;
+
+      // Pattern row index.
+      v_line = (((v_line & 7) << 1) | odd) << 3;
+
+      // Draw sprite patterns.
+      for (column = 0; column < width; column++, lb += 8) {
+        temp = attr | (((name + s[column]) & 0x3ff) << 1);
+        src = &m_pattern_cache[((temp << 6) | (v_line)) ^ ((attr & 0x1000) >> 6)];
+        m_sprite_tile_drawer->DrawSpriteTile(8, atex, src, lb);
+      }
+    }
+
+    // Sprite limit.
+    if (pixelcount >= max_pixels) {
+      // Sprite masking is effective on next line if max pixel width is reached.
+      *m_spr_ovr = (pixelcount >= m_viewport->w);
+
+      // Merge background & sprite layers.
+      Merge(&m_spr_line_buffer[0x20], &m_bg_line_buffer[0x20], &m_bg_line_buffer[0x20], m_bg_spr_lut, m_viewport->w);
+
+      // Stop sprite rendering.
+      return;
+    }
+
+    // Next sprite entry.
+    object_info++;
+  }
+
+  // Clear sprite masking for next line.
+  *m_spr_ovr = 0;
+
+  // Merge background & sprite layers.
+  Merge(&m_spr_line_buffer[0x20], &m_bg_line_buffer[0x20], &m_bg_line_buffer[0x20], m_bg_spr_lut, m_viewport->w);
+}
+
+//------------------------------------------------------------------------------
+
+void M5Im2SteSpriteLayerRenderer::Merge(u8* srca, u8* srcb, u8* dst, u8* table, s32 width)
+{
+  do {
+    *dst++ = table[(*srcb++ << 8) | (*srca++)];
+  } while (--width);
 }
 
 } // namespace gpgx::ppu::vdp
