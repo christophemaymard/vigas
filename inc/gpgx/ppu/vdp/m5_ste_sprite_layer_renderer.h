@@ -41,6 +41,12 @@
 #ifndef __GPGX_PPU_VDP_M5_STE_SPRITE_LAYER_RENDERER_H__
 #define __GPGX_PPU_VDP_M5_STE_SPRITE_LAYER_RENDERER_H__
 
+#include "xee/fnd/data_type.h"
+
+#include "core/vdp/object_info_t.h"
+#include "core/viewport_t.h"
+
+#include "gpgx/ppu/vdp/m5_sprite_tile_drawer.h"
 #include "gpgx/ppu/vdp/sprite_layer_renderer.h"
 
 namespace gpgx::ppu::vdp {
@@ -53,9 +59,46 @@ namespace gpgx::ppu::vdp {
 class M5SteSpriteLayerRenderer : public ISpriteLayerRenderer
 {
 public:
+  M5SteSpriteLayerRenderer(
+    object_info_t (&obj_info)[2][20], 
+    u8* object_count, 
+    u16* status, 
+    u8* spr_ovr, 
+    u8* pattern_cache, 
+    u8* spr_line_buffer, 
+    u8* spr_lut, 
+    u8* bg_line_buffer, 
+    u8* bg_spr_lut, 
+    u8* name_lut,
+    u16* max_sprite_pixels,
+    viewport_t* viewport
+  );
+
   // Implementation of ISpriteLayerRenderer.
 
   void RenderSprites(s32 line);
+
+private:
+  void Merge(u8* srca, u8* srcb, u8* dst, u8* table, s32 width);
+
+private:
+  object_info_t (&m_obj_info)[2][20];
+  u8* m_object_count; /// Sprite counter.
+
+  u8* m_spr_ovr; /// Sprite limit flag.
+
+  u8* m_pattern_cache; /// Cached and flipped patterns.
+
+  u8* m_spr_line_buffer; /// Sprite line buffer.
+  u8* m_bg_line_buffer; /// Background line buffer.
+
+  u8* m_bg_spr_lut; /// Layer priority pixel look-up table background/sprite.
+  u8* m_name_lut; /// Sprite pattern name offset look-up table (Mode 5).
+  u16* m_max_sprite_pixels; /// Max. sprites pixels per line (parsing & rendering).
+
+  viewport_t* m_viewport;
+
+  M5SpriteTileDrawer* m_sprite_tile_drawer;
 };
 
 } // namespace gpgx::ppu::vdp
