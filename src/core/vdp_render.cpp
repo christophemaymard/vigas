@@ -565,7 +565,6 @@ u16 spr_col;
 void (*render_bg)(int line);
 
 gpgx::ppu::vdp::M5SpriteTileDrawer* gs_sprite_tile_drawer_m5_ste = nullptr;
-gpgx::ppu::vdp::M5SpriteTileDrawer* gs_sprite_tile_drawer_m5_im2 = nullptr;
 gpgx::ppu::vdp::M5SpriteTileDrawer* gs_sprite_tile_drawer_m5_im2_ste = nullptr;
 
 gpgx::ppu::vdp::ISpriteLayerRenderer* g_sprite_layer_renderer = nullptr;
@@ -594,10 +593,6 @@ static void sprite_layer_rendering_init()
 {
   if (!gs_sprite_tile_drawer_m5_ste) {
     gs_sprite_tile_drawer_m5_ste = new gpgx::ppu::vdp::M5SpriteTileDrawer(&status, lut[3]);
-  }
-
-  if (!gs_sprite_tile_drawer_m5_im2) {
-    gs_sprite_tile_drawer_m5_im2 = new gpgx::ppu::vdp::M5SpriteTileDrawer(&status, lut[1]);
   }
 
   if (!gs_sprite_tile_drawer_m5_im2_ste) {
@@ -664,7 +659,19 @@ static void sprite_layer_rendering_init()
 
   // Initialize renderer of sprite layer in mode 5 (IM2).
   if (!g_sprite_layer_renderer_m5_im2) {
-    g_sprite_layer_renderer_m5_im2 = new gpgx::ppu::vdp::M5Im2SpriteLayerRenderer();
+    g_sprite_layer_renderer_m5_im2 = new gpgx::ppu::vdp::M5Im2SpriteLayerRenderer(
+      obj_info, 
+      object_count, 
+      &status, 
+      &odd_frame, 
+      &spr_ovr, 
+      bg_pattern_cache, 
+      linebuf[0], 
+      lut[1], 
+      name_lut, 
+      &max_sprite_pixels, 
+      &viewport
+    );
   }
 
   // Initialize renderer of sprite layer in mode 5 (IM2/STE).
@@ -3784,116 +3791,6 @@ void render_obj_m5_ste(int line)
 
   /* Merge background & sprite layers */
   merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[4], viewport.w);
-}
-
-void render_obj_m5_im2(int line)
-{
-  int i, column;
-  int xpos, width;
-  int pixelcount = 0;
-  int masked = 0;
-  int odd = odd_frame;
-  int max_pixels = MODE5_MAX_SPRITE_PIXELS;
-
-  u8 *src, *s, *lb;
-  u32 temp, v_line;
-  u32 attr, name, atex;
-
-  /* Sprite list for current line */
-  object_info_t *object_info = obj_info[line];
-  int count = object_count[line];
-
-  /* Draw sprites in front-to-back order */
-  while (count--)
-  {
-    /* Sprite X position */
-    xpos = object_info->xpos;
-
-    /* Sprite masking  */
-    if (xpos)
-    {
-      /* Requires at least one sprite with xpos > 0 */
-      spr_ovr = 1;
-    }
-    else if (spr_ovr)
-    {
-      /* Remaining sprites are not drawn */
-      masked = 1;
-    }
-
-    /* Display area offset */
-    xpos = xpos - 0x80;
-
-    /* Sprite size */
-    temp = object_info->size;
-
-    /* Sprite width */
-    width = 8 + ((temp & 0x0C) << 1);
-
-    /* Update pixel count (off-screen sprites are included) */
-    pixelcount += width;
-
-    /* Is sprite across visible area ? */
-    if (((xpos + width) > 0) && (xpos < viewport.w) && !masked)
-    {
-      /* Sprite attributes */
-      attr = object_info->attr;
-
-      /* Sprite y offset */
-      v_line = object_info->ypos;
-
-      /* Sprite priority + palette bits */
-      atex = (attr >> 9) & 0x70;
-
-      /* Pattern name base */
-      name = attr & 0x03FF;
-
-      /* Mask vflip/hflip */
-      attr &= 0x1800;
-
-      /* Pattern name offset lookup table */
-      s = &name_lut[((attr >> 3) & 0x300) | (temp << 4) | ((v_line & 0x18) >> 1)];
-
-      /* Pointer into line buffer */
-      lb = &linebuf[0][0x20 + xpos];
-
-      /* Adjust width for sprite limit */
-      if (pixelcount > max_pixels)
-      {
-        width -= (pixelcount - max_pixels);
-      }
-
-      /* Number of tiles to draw */
-      width = width >> 3;
-
-      /* Pattern row index */
-      v_line = (((v_line & 7) << 1) | odd) << 3;
-
-      /* Render sprite patterns */
-      for(column = 0; column < width; column ++, lb+=8)
-      {
-        temp = attr | (((name + s[column]) & 0x3ff) << 1);
-        src = &bg_pattern_cache[((temp << 6) | (v_line)) ^ ((attr & 0x1000) >> 6)];
-        gs_sprite_tile_drawer_m5_im2->DrawSpriteTile(8, atex, src, lb);
-      }
-    }
-
-    /* Sprite Limit */
-    if (pixelcount >= max_pixels)
-    {
-      /* Sprite masking is effective on next line if max pixel width is reached */
-      spr_ovr = (pixelcount >= viewport.w);
-
-      /* Stop sprite rendering */
-      return;
-    }
-
-    /* Next sprite entry */
-    object_info++;
-  }
-
-  /* Clear sprite masking for next line */
-  spr_ovr = 0;
 }
 
 void render_obj_m5_im2_ste(int line)
