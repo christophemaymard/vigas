@@ -60,7 +60,7 @@ M5SpriteLayerRenderer::M5SpriteLayerRenderer(
   u8* line_buffer,
   u8* lut,
   u8* name_lut,
-  u16* m_max_sprite_pixels,
+  u16* max_sprite_pixels,
   viewport_t* viewport) :
   m_obj_info(obj_info), 
   m_object_count(object_count), 
@@ -68,7 +68,7 @@ M5SpriteLayerRenderer::M5SpriteLayerRenderer(
   m_pattern_cache(pattern_cache), 
   m_line_buffer(line_buffer), 
   m_name_lut(name_lut), 
-  m_max_sprite_pixels(m_max_sprite_pixels), 
+  m_max_sprite_pixels(max_sprite_pixels),
   m_viewport(viewport)
 {
   m_sprite_tile_drawer = new gpgx::ppu::vdp::M5SpriteTileDrawer(status, lut);

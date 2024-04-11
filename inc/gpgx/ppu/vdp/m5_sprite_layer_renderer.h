@@ -68,7 +68,7 @@ public:
     u8* line_buffer, 
     u8* lut, 
     u8* name_lut, 
-    u16* m_max_sprite_pixels, 
+    u16* max_sprite_pixels, 
     viewport_t* viewport
   );
 
