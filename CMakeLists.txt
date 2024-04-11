@@ -207,6 +207,7 @@ add_executable(vigas
     inc/gpgx/ic/ym3438/ym3438.h
     inc/gpgx/ic/ym3438/ym3438_mode.h
 
+    inc/gpgx/ppu/vdp/bg_layer_renderer.h
     inc/gpgx/ppu/vdp/bg_pattern_cache_updater.h
     inc/gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h
     inc/gpgx/ppu/vdp/m4_satb_parser.h
