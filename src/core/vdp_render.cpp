@@ -63,6 +63,7 @@
 #include "gpgx/ppu/vdp/m1x_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m2_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m3_bg_layer_renderer.h"
+#include "gpgx/ppu/vdp/m3x_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m4_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m4_satb_parser.h"
@@ -575,6 +576,7 @@ static gpgx::ppu::vdp::M1BackgroundLayerRenderer* g_bg_layer_renderer_m1 = nullp
 static gpgx::ppu::vdp::M1XBackgroundLayerRenderer* g_bg_layer_renderer_m1x = nullptr;
 static gpgx::ppu::vdp::M2BackgroundLayerRenderer* g_bg_layer_renderer_m2 = nullptr;
 static gpgx::ppu::vdp::M3BackgroundLayerRenderer* g_bg_layer_renderer_m3 = nullptr;
+static gpgx::ppu::vdp::M3XBackgroundLayerRenderer* g_bg_layer_renderer_m3x = nullptr;
 static gpgx::ppu::vdp::M4BackgroundLayerRenderer* g_bg_layer_renderer_m4 = nullptr;
 
 gpgx::ppu::vdp::ISpriteLayerRenderer* g_sprite_layer_renderer = nullptr;
@@ -645,6 +647,16 @@ static void background_layer_rendering_init()
       reg,
       linebuf[0],
       vram
+    );
+  }
+
+  // Initialize renderer of background layer in mode 3X (Multicolor + Extended PG).
+  if (!g_bg_layer_renderer_m3x) {
+    g_bg_layer_renderer_m3x = new gpgx::ppu::vdp::M3XBackgroundLayerRenderer(
+      reg,
+      linebuf[0],
+      vram,
+      &system_hw
     );
   }
 
@@ -1422,39 +1434,7 @@ void render_bg_m3(int line)
 /* Multicolor + extended PG */
 void render_bg_m3x(int line)
 {
-  u8 color;
-  u8 *pg;
-
-  u8 *lb = &linebuf[0][0x20];
-  u8 *nt = &vram[((reg[2] << 10) & 0x3C00) + ((line & 0xF8) << 2)];
-
-  u16 pg_mask = ~0x3800 ^ (reg[4] << 11);
-
-  /* 32 x 8 pixels */
-  int width = 32;
-
-  /* Unused bits used as a mask on TMS99xx & 315-5124 VDP only */
-  if (system_hw > SYSTEM_SMS)
-  {
-    pg_mask |= 0x1800;
-  }
-
-  pg = &vram[((0x2000 + ((line & 0xC0) << 5)) & pg_mask) + ((line >> 2) & 7)];
-
-  do
-  {
-    color = pg[*nt++ << 3];
-
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 0) & 0x0F);
-    *lb++ = 0x10 | ((color >> 0) & 0x0F);
-    *lb++ = 0x10 | ((color >> 0) & 0x0F);
-    *lb++ = 0x10 | ((color >> 0) & 0x0F);
-  }
-  while (--width);
+  g_bg_layer_renderer_m3x->RenderBackground(line);
 }
 
 /* Invalid (2+3/1+2+3) */
