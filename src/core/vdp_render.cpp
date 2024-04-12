@@ -62,6 +62,7 @@
 #include "gpgx/ppu/vdp/m1_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m1x_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m2_bg_layer_renderer.h"
+#include "gpgx/ppu/vdp/m3_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m4_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m4_satb_parser.h"
@@ -573,6 +574,7 @@ static gpgx::ppu::vdp::M0BackgroundLayerRenderer* g_bg_layer_renderer_m0 = nullp
 static gpgx::ppu::vdp::M1BackgroundLayerRenderer* g_bg_layer_renderer_m1 = nullptr;
 static gpgx::ppu::vdp::M1XBackgroundLayerRenderer* g_bg_layer_renderer_m1x = nullptr;
 static gpgx::ppu::vdp::M2BackgroundLayerRenderer* g_bg_layer_renderer_m2 = nullptr;
+static gpgx::ppu::vdp::M3BackgroundLayerRenderer* g_bg_layer_renderer_m3 = nullptr;
 static gpgx::ppu::vdp::M4BackgroundLayerRenderer* g_bg_layer_renderer_m4 = nullptr;
 
 gpgx::ppu::vdp::ISpriteLayerRenderer* g_sprite_layer_renderer = nullptr;
@@ -634,6 +636,15 @@ static void background_layer_rendering_init()
       linebuf[0],
       vram,
       &system_hw
+    );
+  }
+
+  // Initialize renderer of background layer in mode 3 (Multicolor).
+  if (!g_bg_layer_renderer_m3) {
+    g_bg_layer_renderer_m3 = new gpgx::ppu::vdp::M3BackgroundLayerRenderer(
+      reg,
+      linebuf[0],
+      vram
     );
   }
 
@@ -1405,28 +1416,7 @@ void render_bg_m2(int line)
 /* Multicolor */
 void render_bg_m3(int line)
 {
-  u8 color;
-  u8 *lb = &linebuf[0][0x20];
-  u8 *nt = &vram[((reg[2] << 10) & 0x3C00) + ((line & 0xF8) << 2)];
-  u8 *pg = &vram[((reg[4] << 11) & 0x3800) + ((line >> 2) & 7)];
-
-  /* 32 x 8 pixels */
-  int width = 32;
-
-  do
-  {
-    color = pg[*nt++ << 3];
-
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 0) & 0x0F);
-    *lb++ = 0x10 | ((color >> 0) & 0x0F);
-    *lb++ = 0x10 | ((color >> 0) & 0x0F);
-    *lb++ = 0x10 | ((color >> 0) & 0x0F);
-  }
-  while (--width);
+  g_bg_layer_renderer_m3->RenderBackground(line);
 }
 
 /* Multicolor + extended PG */
