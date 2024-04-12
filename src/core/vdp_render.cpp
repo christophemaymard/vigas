@@ -60,6 +60,7 @@
 
 #include "gpgx/ppu/vdp/m0_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m1_bg_layer_renderer.h"
+#include "gpgx/ppu/vdp/m1x_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m2_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m4_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
@@ -570,6 +571,7 @@ void (*render_bg)(int line);
 
 static gpgx::ppu::vdp::M0BackgroundLayerRenderer* g_bg_layer_renderer_m0 = nullptr;
 static gpgx::ppu::vdp::M1BackgroundLayerRenderer* g_bg_layer_renderer_m1 = nullptr;
+static gpgx::ppu::vdp::M1XBackgroundLayerRenderer* g_bg_layer_renderer_m1x = nullptr;
 static gpgx::ppu::vdp::M2BackgroundLayerRenderer* g_bg_layer_renderer_m2 = nullptr;
 static gpgx::ppu::vdp::M4BackgroundLayerRenderer* g_bg_layer_renderer_m4 = nullptr;
 
@@ -612,6 +614,16 @@ static void background_layer_rendering_init()
       reg,
       linebuf[0],
       vram
+    );
+  }
+
+  // Initialize renderer of background layer in mode 1x (Text + Extended PG).
+  if (!g_bg_layer_renderer_m1x) {
+    g_bg_layer_renderer_m1x = new gpgx::ppu::vdp::M1XBackgroundLayerRenderer(
+      reg,
+      linebuf[0],
+      vram,
+      &system_hw
     );
   }
 
@@ -1381,46 +1393,7 @@ void render_bg_m1(int line)
 /* Text + extended PG */
 void render_bg_m1x(int line)
 {
-  u8 pattern;
-  u8 *pg;
-
-  u8 color = reg[7];
-
-  u8 *lb = &linebuf[0][0x20];
-  u8 *nt = &vram[((reg[2] << 10) & 0x3C00) + ((line >> 3) * 40)];
-
-  u16 pg_mask = ~0x3800 ^ (reg[4] << 11);
-
-  /* 40 x 6 pixels */
-  int width = 40;
-
-  /* Unused bits used as a mask on TMS99xx & 315-5124 VDP only */
-  if (system_hw > SYSTEM_SMS)
-  {
-    pg_mask |= 0x1800;
-  }
-
-  pg = &vram[((0x2000 + ((line & 0xC0) << 5)) & pg_mask) + (line & 7)];
-
-  /* Left border (8 pixels) */
-  xee::mem::Memset (lb, 0x40, 8);
-  lb += 8;
-
-  do
-  {
-    pattern = pg[*nt++ << 3];
-
-    *lb++ = 0x10 | ((color >> (((pattern >> 7) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 6) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 5) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 4) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 3) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 2) & 1) << 2)) & 0x0F);
-  }
-  while (--width);
-
-  /* Right borders (8 pixels) */
-  xee::mem::Memset(lb, 0x40, 8);
+  g_bg_layer_renderer_m1x->RenderBackground(line);
 }
 
 /* Graphics II */
