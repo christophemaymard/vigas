@@ -209,6 +209,7 @@ add_executable(vigas
 
     inc/gpgx/ppu/vdp/bg_layer_renderer.h
     inc/gpgx/ppu/vdp/bg_pattern_cache_updater.h
+    inc/gpgx/ppu/vdp/m0_bg_layer_renderer.h
     inc/gpgx/ppu/vdp/m2_bg_layer_renderer.h
     inc/gpgx/ppu/vdp/m4_bg_layer_renderer.h
     inc/gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h
@@ -323,6 +324,7 @@ add_executable(vigas
     src/gpgx/ic/ym2612/ym2612.cpp
     src/gpgx/ic/ym3438/ym3438.cpp
 
+    src/gpgx/ppu/vdp/m0_bg_layer_renderer.cpp
     src/gpgx/ppu/vdp/m2_bg_layer_renderer.cpp
     src/gpgx/ppu/vdp/m4_bg_layer_renderer.cpp
     src/gpgx/ppu/vdp/m4_bg_pattern_cache_updater.cpp

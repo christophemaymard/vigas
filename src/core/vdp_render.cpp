@@ -58,6 +58,7 @@
 #include "core/vram.h"
 #include "core/vdp/object_info_t.h"
 
+#include "gpgx/ppu/vdp/m0_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m2_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m4_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
@@ -566,6 +567,7 @@ u16 spr_col;
 /* Function pointers */
 void (*render_bg)(int line);
 
+static gpgx::ppu::vdp::M0BackgroundLayerRenderer* g_bg_layer_renderer_m0 = nullptr;
 static gpgx::ppu::vdp::M2BackgroundLayerRenderer* g_bg_layer_renderer_m2 = nullptr;
 static gpgx::ppu::vdp::M4BackgroundLayerRenderer* g_bg_layer_renderer_m4 = nullptr;
 
@@ -593,6 +595,15 @@ gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m5 =
 /// Initialize background layer rendering.
 static void background_layer_rendering_init()
 {
+  // Initialize renderer of background layer in mode 0 (Graphics I).
+  if (!g_bg_layer_renderer_m0) {
+    g_bg_layer_renderer_m0 = new gpgx::ppu::vdp::M0BackgroundLayerRenderer(
+      reg,
+      linebuf[0],
+      vram
+    );
+  }
+
   // Initialize renderer of background layer in mode 2 (Graphics II).
   if (!g_bg_layer_renderer_m2) {
     g_bg_layer_renderer_m2 = new gpgx::ppu::vdp::M2BackgroundLayerRenderer(
@@ -1347,32 +1358,7 @@ void color_update_m5(int index, unsigned int data)
 /* Graphics I */
 void render_bg_m0(int line)
 {
-  u8 color, name, pattern;
-
-  u8 *lb = &linebuf[0][0x20];
-  u8 *nt = &vram[((reg[2] << 10) & 0x3C00) + ((line & 0xF8) << 2)];
-  u8 *ct = &vram[((reg[3] <<  6) & 0x3FC0)];
-  u8 *pg = &vram[((reg[4] << 11) & 0x3800) + (line & 7)];
-
-  /* 32 x 8 pixels */
-  int width = 32;
-
-  do
-  {
-    name = *nt++;
-    color = ct[name >> 3];
-    pattern = pg[name << 3];
-
-    *lb++ = 0x10 | ((color >> (((pattern >> 7) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 6) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 5) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 4) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 3) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 2) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 1) & 1) << 2)) & 0x0F);
-    *lb++ = 0x10 | ((color >> (((pattern >> 0) & 1) << 2)) & 0x0F);
-  }
-  while (--width);
+  g_bg_layer_renderer_m0->RenderBackground(line);
 }
 
 /* Text */
