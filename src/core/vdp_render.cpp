@@ -101,52 +101,6 @@
 #define LUT_SIZE    (0x10000)
 
 
-#ifdef ALIGN_LONG
-#undef READ_LONG
-#undef WRITE_LONG
-
-static XEE_INLINE u32 READ_LONG(void *address)
-{
-  if ((u32)address & 3)
-  {
-#ifdef LSB_FIRST  /* little endian version */
-    return ( *((u8 *)address) +
-        (*((u8 *)address+1) << 8)  +
-        (*((u8 *)address+2) << 16) +
-        (*((u8 *)address+3) << 24) );
-#else       /* big endian version */
-    return ( *((u8 *)address+3) +
-        (*((u8 *)address+2) << 8)  +
-        (*((u8 *)address+1) << 16) +
-        (*((u8 *)address)   << 24) );
-#endif  /* LSB_FIRST */
-  }
-  else return *(u32 *)address;
-}
-
-static XEE_INLINE void WRITE_LONG(void *address, u32 data)
-{
-  if ((u32)address & 3)
-  {
-#ifdef LSB_FIRST
-      *((u8 *)address) =  data;
-      *((u8 *)address+1) = (data >> 8);
-      *((u8 *)address+2) = (data >> 16);
-      *((u8 *)address+3) = (data >> 24);
-#else
-      *((u8 *)address+3) =  data;
-      *((u8 *)address+2) = (data >> 8);
-      *((u8 *)address+1) = (data >> 16);
-      *((u8 *)address)   = (data >> 24);
-#endif /* LSB_FIRST */
-    return;
-  }
-  else *(u32 *)address = data;
-}
-
-#endif  /* ALIGN_LONG */
-
-
 /* Draw 2-cell column (8-pixels high) */
 /*
    Pattern cache base address: VHN NNNNNNNN NNYYYxxx
@@ -212,55 +166,6 @@ static XEE_INLINE void WRITE_LONG(void *address, u32 data)
    One pattern = 8 pixels = 8 bytes = two 32-bit writes per pattern
 */
 
-#ifdef ALIGN_LONG
-#ifdef LSB_FIRST
-#define DRAW_COLUMN(ATTR, LINE) \
-  GET_LSB_TILE(ATTR, LINE) \
-  WRITE_LONG(dst, src[0] | atex); \
-  dst++; \
-  WRITE_LONG(dst, src[1] | atex); \
-  dst++; \
-  GET_MSB_TILE(ATTR, LINE) \
-  WRITE_LONG(dst, src[0] | atex); \
-  dst++; \
-  WRITE_LONG(dst, src[1] | atex); \
-  dst++;
-#define DRAW_COLUMN_IM2(ATTR, LINE) \
-  GET_LSB_TILE_IM2(ATTR, LINE) \
-  WRITE_LONG(dst, src[0] | atex); \
-  dst++; \
-  WRITE_LONG(dst, src[1] | atex); \
-  dst++; \
-  GET_MSB_TILE_IM2(ATTR, LINE) \
-  WRITE_LONG(dst, src[0] | atex); \
-  dst++; \
-  WRITE_LONG(dst, src[1] | atex); \
-  dst++;
-#else
-#define DRAW_COLUMN(ATTR, LINE) \
-  GET_MSB_TILE(ATTR, LINE) \
-  WRITE_LONG(dst, src[0] | atex); \
-  dst++; \
-  WRITE_LONG(dst, src[1] | atex); \
-  dst++; \
-  GET_LSB_TILE(ATTR, LINE) \
-  WRITE_LONG(dst, src[0] | atex); \
-  dst++; \
-  WRITE_LONG(dst, src[1] | atex); \
-  dst++;
-#define DRAW_COLUMN_IM2(ATTR, LINE) \
-  GET_MSB_TILE_IM2(ATTR, LINE) \
-  WRITE_LONG(dst, src[0] | atex); \
-  dst++; \
-  WRITE_LONG(dst, src[1] | atex); \
-  dst++; \
-  GET_LSB_TILE_IM2(ATTR, LINE) \
-  WRITE_LONG(dst, src[0] | atex); \
-  dst++; \
-  WRITE_LONG(dst, src[1] | atex); \
-  dst++;
-#endif
-#else /* NOT ALIGNED */
 #ifdef LSB_FIRST
 #define DRAW_COLUMN(ATTR, LINE) \
   GET_LSB_TILE(ATTR, LINE) \
@@ -292,7 +197,6 @@ static XEE_INLINE void WRITE_LONG(void *address, u32 data)
   *dst++ = (src[0] | atex); \
   *dst++ = (src[1] | atex);
 #endif
-#endif /* ALIGN_LONG */
 
 
 /* Pixels conversion macro */
@@ -1747,15 +1651,8 @@ void render_bg_m5_vs_enhanced(int line)
     GET_MSB_TILE(atbuf, v_line)
 #endif
 
-#ifdef ALIGN_LONG
-    WRITE_LONG(dst, src[0] | atex);
-    dst++;
-    WRITE_LONG(dst, src[1] | atex);
-    dst++;
-#else
     *dst++ = (src[0] | atex);
     *dst++ = (src[1] | atex);
-#endif
 
 #ifdef LSB_FIRST
     v_line = (line + v_offset + (vs[column] >> 16)) & pf_row_mask;
@@ -1772,15 +1669,8 @@ void render_bg_m5_vs_enhanced(int line)
 #else
     GET_LSB_TILE(atbuf, v_line)
 #endif
-#ifdef ALIGN_LONG
-    WRITE_LONG(dst, src[0] | atex);
-    dst++;
-    WRITE_LONG(dst, src[1] | atex);
-    dst++;
-#else
     *dst++ = (src[0] | atex);
     *dst++ = (src[1] | atex);
-#endif
   }
 
   if (w == (line >= a))
@@ -1873,15 +1763,8 @@ void render_bg_m5_vs_enhanced(int line)
 #else
       GET_MSB_TILE(atbuf, v_line)
 #endif
-#ifdef ALIGN_LONG
-      WRITE_LONG(dst, src[0] | atex);
-      dst++;
-      WRITE_LONG(dst, src[1] | atex);
-      dst++;
-#else
       *dst++ = (src[0] | atex);
       *dst++ = (src[1] | atex);
-#endif
 
 #ifdef LSB_FIRST
       v_line = (line + v_offset + vs[column]) & pf_row_mask;
@@ -1898,15 +1781,8 @@ void render_bg_m5_vs_enhanced(int line)
 #else
       GET_LSB_TILE(atbuf, v_line)
 #endif
-#ifdef ALIGN_LONG
-      WRITE_LONG(dst, src[0] | atex);
-      dst++;
-      WRITE_LONG(dst, src[1] | atex);
-      dst++;
-#else
       *dst++ = (src[0] | atex);
       *dst++ = (src[1] | atex);
-#endif
     }
 
     /* Window width */

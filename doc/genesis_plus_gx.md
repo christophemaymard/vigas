@@ -6,7 +6,7 @@ Repository on GitHub: https://github.com/ekeeke/Genesis-Plus-GX
 
 | Identifier | Status | Comment |
 | --- | --- | --- |
-| ALIGN_LONG |  |  |
+| ALIGN_LONG | Removed |  |
 | ALIGN_SND |  |  |
 | ALT_RENDERER | Removed |  |
 | BLIP_ASSERT |  |  |
