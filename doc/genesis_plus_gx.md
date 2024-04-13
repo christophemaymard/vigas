@@ -8,7 +8,7 @@ Repository on GitHub: https://github.com/ekeeke/Genesis-Plus-GX
 | --- | --- | --- |
 | ALIGN_LONG |  |  |
 | ALIGN_SND |  |  |
-| ALT_RENDERER |  |  |
+| ALT_RENDERER | Removed |  |
 | BLIP_ASSERT |  |  |
 | BLIP_INVERT |  |  |
 | BLIP_MONO | Removed | The core does not handle the case where BLIP_MONO is defined. |
