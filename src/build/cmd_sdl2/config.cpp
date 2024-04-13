@@ -84,8 +84,6 @@ void set_config_defaults(void)
   core_config.gg_extra = 0;  /* 1 = show extended Game Gear screen (256x192) */
   core_config.render   = 0;  /* 1 = double resolution output (only when interlaced mode 2 is enabled) */
   core_config.lcd      = 0;  /* 0.8 fixed point */
-  core_config.enhanced_vscroll = 0;
-  core_config.enhanced_vscroll_limit = 8;
 
   /* controllers options */
   input.system[0]       = SYSTEM_GAMEPAD;

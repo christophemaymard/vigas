@@ -178,9 +178,6 @@ struct core_config_t
 
   // - 1 = double resolution output (only when interlaced mode 2 is enabled)
   u8 render;
-
-  u8 enhanced_vscroll;
-  u8 enhanced_vscroll_limit;
 };
 
 #endif // #ifndef __CORE_CORE_CONFIG_T_H__
