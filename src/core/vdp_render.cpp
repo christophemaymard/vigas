@@ -58,6 +58,7 @@
 #include "core/vram.h"
 #include "core/vdp/object_info_t.h"
 
+#include "gpgx/ppu/vdp/inv_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m0_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m1_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m1x_bg_layer_renderer.h"
@@ -571,6 +572,7 @@ u16 spr_col;
 /* Function pointers */
 void (*render_bg)(int line);
 
+static gpgx::ppu::vdp::InvalidBackgroundLayerRenderer* g_bg_layer_renderer_inv = nullptr;
 static gpgx::ppu::vdp::M0BackgroundLayerRenderer* g_bg_layer_renderer_m0 = nullptr;
 static gpgx::ppu::vdp::M1BackgroundLayerRenderer* g_bg_layer_renderer_m1 = nullptr;
 static gpgx::ppu::vdp::M1XBackgroundLayerRenderer* g_bg_layer_renderer_m1x = nullptr;
@@ -603,6 +605,14 @@ gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m5 =
 /// Initialize background layer rendering.
 static void background_layer_rendering_init()
 {
+  // Initialize renderer of background layer in invalid mode (1+3 or 1+2+3).
+  if (!g_bg_layer_renderer_inv) {
+    g_bg_layer_renderer_inv = new gpgx::ppu::vdp::InvalidBackgroundLayerRenderer(
+      reg,
+      linebuf[0]
+    );
+  }
+
   // Initialize renderer of background layer in mode 0 (Graphics I).
   if (!g_bg_layer_renderer_m0) {
     g_bg_layer_renderer_m0 = new gpgx::ppu::vdp::M0BackgroundLayerRenderer(
@@ -1437,33 +1447,10 @@ void render_bg_m3x(int line)
   g_bg_layer_renderer_m3x->RenderBackground(line);
 }
 
-/* Invalid (2+3/1+2+3) */
+/* Invalid (1+3/1+2+3) */
 void render_bg_inv(int line)
 {
-  u8 color = reg[7];
-
-  u8 *lb = &linebuf[0][0x20];
-
-  /* 40 x 6 pixels */
-  int width = 40;
-
-  /* Left border (8 pixels) */
-  xee::mem::Memset (lb, 0x40, 8);
-  lb += 8;
-
-  do
-  {
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 4) & 0x0F);
-    *lb++ = 0x10 | ((color >> 0) & 0x0F);
-    *lb++ = 0x10 | ((color >> 0) & 0x0F);
-  }
-  while (--width);
-
-  /* Right borders (8 pixels) */
-  xee::mem::Memset(lb, 0x40, 8);
+  g_bg_layer_renderer_inv->RenderBackground(line);
 }
 
 /* Mode 4 */
