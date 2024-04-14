@@ -83,6 +83,7 @@
 #include "gpgx/ppu/vdp/m5_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_sprite_tile_drawer.h"
 #include "gpgx/ppu/vdp/m5_ste_sprite_layer_renderer.h"
+#include "gpgx/ppu/vdp/m5_vs_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/tms_satb_parser.h"
 #include "gpgx/ppu/vdp/tms_sprite_layer_renderer.h"
 
@@ -246,6 +247,7 @@ static gpgx::ppu::vdp::M3XBackgroundLayerRenderer* g_bg_layer_renderer_m3x = nul
 static gpgx::ppu::vdp::M4BackgroundLayerRenderer* g_bg_layer_renderer_m4 = nullptr;
 static gpgx::ppu::vdp::M5BackgroundLayerRenderer* g_bg_layer_renderer_m5 = nullptr;
 static gpgx::ppu::vdp::M5Im2BackgroundLayerRenderer* g_bg_layer_renderer_m5_im2 = nullptr;
+static gpgx::ppu::vdp::M5VsBackgroundLayerRenderer* g_bg_layer_renderer_m5_vs = nullptr;
 
 gpgx::ppu::vdp::ISpriteLayerRenderer* g_sprite_layer_renderer = nullptr;
 gpgx::ppu::vdp::TmsSpriteLayerRenderer* g_sprite_layer_renderer_tms = nullptr;
@@ -361,6 +363,38 @@ static void background_layer_rendering_init()
   // Initialize renderer of background layer in mode 5.
   if (!g_bg_layer_renderer_m5) {
     g_bg_layer_renderer_m5 = new gpgx::ppu::vdp::M5BackgroundLayerRenderer(
+      reg,
+      vram,
+      vsram,
+
+      &playfield_shift,
+      &playfield_col_mask,
+      &playfield_row_mask,
+
+      &hscb,
+      &hscroll_mask,
+
+      &ntab,
+      &ntbb,
+      &ntwb,
+
+      linebuf[1],
+      linebuf[0],
+
+      lut[0],
+      lut[2],
+
+      &clip[0],
+      &clip[1],
+
+      &viewport,
+      g_bg_column_drawer_m5
+    );
+  }
+
+  // Initialize renderer of background layer in mode 5 with 16 pixel column vertical scrolling.
+  if (!g_bg_layer_renderer_m5_vs) {
+    g_bg_layer_renderer_m5_vs = new gpgx::ppu::vdp::M5VsBackgroundLayerRenderer(
       reg,
       vram,
       vsram,
@@ -1216,192 +1250,7 @@ void render_bg_m5(int line)
 
 void render_bg_m5_vs(int line)
 {
-  int column;
-  u32 atex, atbuf, *src, *dst;
-  u32 v_line, *nt;
-
-  /* Common data */
-  u32 xscroll      = *(u32 *)&vram[hscb + ((line & hscroll_mask) << 2)];
-  u32 yscroll      = 0;
-  u32 pf_col_mask  = playfield_col_mask;
-  u32 pf_row_mask  = playfield_row_mask;
-  u32 pf_shift     = playfield_shift;
-  u32 *vs          = (u32 *)&vsram[0];
-
-  /* Window & Plane A */
-  int a = (reg[18] & 0x1F) << 3;
-  int w = (reg[18] >> 7) & 1;
-
-  /* Plane B width */
-  int start = 0;
-  int end = viewport.w >> 4;
-
-  /* Plane B horizontal scroll */
-#ifdef LSB_FIRST
-  u32 shift  = (xscroll >> 16) & 0x0F;
-  u32 index  = pf_col_mask + 1 - ((xscroll >> 20) & pf_col_mask);
-#else
-  u32 shift  = (xscroll & 0x0F);
-  u32 index  = pf_col_mask + 1 - ((xscroll >> 4) & pf_col_mask);
-#endif
-
-  /* Left-most column vertical scrolling when partially shown horizontally (verified on PAL MD2)  */
-  /* TODO: check on Genesis 3 models since it apparently behaves differently  */
-  /* In H32 mode, vertical scrolling is disabled, in H40 mode, same value is used for both planes */
-  /* See Formula One / Kawasaki Superbike Challenge (H32) & Gynoug / Cutie Suzuki no Ringside Angel (H40) */
-  if (reg[12] & 1)
-  {
-    yscroll = vs[19] & (vs[19] >> 16);
-  }
-
-  if(shift)
-  {
-    /* Plane B vertical scroll */
-    v_line = (line + yscroll) & pf_row_mask;
-
-    /* Plane B name table */
-    nt = (u32 *)&vram[ntbb + (((v_line >> 3) << pf_shift) & 0x1FC0)];
-
-    /* Pattern row index */
-    v_line = (v_line & 7) << 3;
-
-    /* Plane B line buffer */
-    dst = (u32 *)&linebuf[0][0x10 + shift];
-
-    atbuf = nt[(index - 1) & pf_col_mask];
-    g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
-  }
-  else
-  {
-    /* Plane B line buffer */
-    dst = (u32 *)&linebuf[0][0x20];
-  }
-
-  for(column = 0; column < end; column++, index++)
-  {
-    /* Plane B vertical scroll */
-#ifdef LSB_FIRST
-    v_line = (line + (vs[column] >> 16)) & pf_row_mask;
-#else
-    v_line = (line + vs[column]) & pf_row_mask;
-#endif
-
-    /* Plane B name table */
-    nt = (u32 *)&vram[ntbb + (((v_line >> 3) << pf_shift) & 0x1FC0)];
-
-    /* Pattern row index */
-    v_line = (v_line & 7) << 3;
-
-    atbuf = nt[index & pf_col_mask];
-    g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
-  }
-
-  if (w == (line >= a))
-  {
-    /* Window takes up entire line */
-    a = 0;
-    w = 1;
-  }
-  else
-  {
-    /* Window and Plane A share the line */
-    a = clip[0].enable;
-    w = clip[1].enable;
-  }
-
-  /* Plane A */
-  if (a)
-  {
-    /* Plane A width */
-    start = clip[0].left;
-    end   = clip[0].right;
-
-    /* Plane A horizontal scroll */
-#ifdef LSB_FIRST
-    shift = (xscroll & 0x0F);
-    index = pf_col_mask + start + 1 - ((xscroll >> 4) & pf_col_mask);
-#else
-    shift = (xscroll >> 16) & 0x0F;
-    index = pf_col_mask + start + 1 - ((xscroll >> 20) & pf_col_mask);
-#endif
-
-    if(shift)
-    {
-      /* Plane A vertical scroll */
-      v_line = (line + yscroll) & pf_row_mask;
-
-      /* Plane A name table */
-      nt = (u32 *)&vram[ntab + (((v_line >> 3) << pf_shift) & 0x1FC0)];
-
-      /* Pattern row index */
-      v_line = (v_line & 7) << 3;
-
-      /* Plane A line buffer */
-      dst = (u32 *)&linebuf[1][0x10 + shift + (start << 4)];
-
-      /* Window bug */
-      if (start)
-      {
-        atbuf = nt[index & pf_col_mask];
-      }
-      else
-      {
-        atbuf = nt[(index - 1) & pf_col_mask];
-      }
-
-      g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
-    }
-    else
-    {
-      /* Plane A line buffer */
-      dst = (u32 *)&linebuf[1][0x20 + (start << 4)];
-    }
-
-    for(column = start; column < end; column++, index++)
-    {
-      /* Plane A vertical scroll */
-#ifdef LSB_FIRST
-      v_line = (line + vs[column]) & pf_row_mask;
-#else
-      v_line = (line + (vs[column] >> 16)) & pf_row_mask;
-#endif
-
-      /* Plane A name table */
-      nt = (u32 *)&vram[ntab + (((v_line >> 3) << pf_shift) & 0x1FC0)];
-
-      /* Pattern row index */
-      v_line = (v_line & 7) << 3;
-
-      atbuf = nt[index & pf_col_mask];
-      g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
-    }
-
-    /* Window width */
-    start = clip[1].left;
-    end   = clip[1].right;
-  }
-
-  /* Window */
-  if (w)
-  {
-    /* Window name table */
-    nt = (u32 *)&vram[ntwb | ((line >> 3) << (6 + (reg[12] & 1)))];
-
-    /* Pattern row index */
-    v_line = (line & 7) << 3;
-
-    /* Plane A line buffer */
-    dst = (u32 *)&linebuf[1][0x20 + (start << 4)];
-
-    for(column = start; column < end; column++)
-    {
-      atbuf = nt[column];
-      g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
-    }
-  }
-
-  /* Merge background layers */
-  merge(&linebuf[1][0x20], &linebuf[0][0x20], &linebuf[0][0x20], lut[(reg[12] & 0x08) >> 2], viewport.w);
+  g_bg_layer_renderer_m5_vs->RenderBackground(line);
 }
 
 void render_bg_m5_im2(int line)

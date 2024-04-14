@@ -234,6 +234,7 @@ add_executable(vigas
     inc/gpgx/ppu/vdp/m5_sprite_layer_renderer.h
     inc/gpgx/ppu/vdp/m5_sprite_tile_drawer.h
     inc/gpgx/ppu/vdp/m5_ste_sprite_layer_renderer.h
+    inc/gpgx/ppu/vdp/m5_vs_bg_layer_renderer.h
     inc/gpgx/ppu/vdp/satb_parser.h
     inc/gpgx/ppu/vdp/sprite_layer_renderer.h
     inc/gpgx/ppu/vdp/tms_satb_parser.h
@@ -358,6 +359,7 @@ add_executable(vigas
     src/gpgx/ppu/vdp/m5_sprite_layer_renderer.cpp
     src/gpgx/ppu/vdp/m5_sprite_tile_drawer.cpp
     src/gpgx/ppu/vdp/m5_ste_sprite_layer_renderer.cpp
+    src/gpgx/ppu/vdp/m5_vs_bg_layer_renderer.cpp
     src/gpgx/ppu/vdp/tms_satb_parser.cpp
     src/gpgx/ppu/vdp/tms_sprite_layer_renderer.cpp
     src/gpgx/ppu/vdp/tms_sprite_tile_drawer.cpp
