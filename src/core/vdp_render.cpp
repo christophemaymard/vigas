@@ -73,6 +73,7 @@
 #include "gpgx/ppu/vdp/m4_zoomed_sprite_tile_drawer.h"
 #include "gpgx/ppu/vdp/m5_bg_column_drawer.h"
 #include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m5_im2_bg_column_drawer.h"
 #include "gpgx/ppu/vdp/m5_im2_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_im2_ste_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_satb_parser.h"
@@ -100,73 +101,6 @@
 /* Pixel priority look-up tables information */
 #define LUT_MAX     (6)
 #define LUT_SIZE    (0x10000)
-
-
-/* Draw 2-cell column (16 pixels high) */
-/*
-   Pattern cache base address: VHN NNNNNNNN NYYYYxxx
-   with :
-      x = Pattern Pixel (0-7)
-      Y = Pattern Row (0-15)
-      N = Pattern Number (0-1023)
-      H = Horizontal Flip bit
-      V = Vertical Flip bit
-*/
-#define GET_LSB_TILE_IM2(ATTR, LINE) \
-  atex = atex_table[(ATTR >> 13) & 7]; \
-  src = (u32 *)&bg_pattern_cache[((ATTR & 0x000003FF) << 7 | (ATTR & 0x00001800) << 6 | (LINE)) ^ ((ATTR & 0x00001000) >> 6)];
-#define GET_MSB_TILE_IM2(ATTR, LINE) \
-  atex = atex_table[(ATTR >> 29) & 7]; \
-  src = (u32 *)&bg_pattern_cache[((ATTR & 0x03FF0000) >> 9 | (ATTR & 0x18000000) >> 10 | (LINE)) ^ ((ATTR & 0x10000000) >> 22)];
-
-/*
-   One column = 2 tiles
-   Two pattern attributes are written in VRAM as two consecutives 16-bit words:
-
-   P = priority bit
-   C = color palette (2 bits)
-   V = Vertical Flip bit
-   H = Horizontal Flip bit
-   N = Pattern Number (11 bits)
-
-   (MSB) PCCVHNNN NNNNNNNN (LSB) (MSB) PCCVHNNN NNNNNNNN (LSB)
-              PATTERN1                      PATTERN2
-
-   Both pattern attributes are read from VRAM as one 32-bit word:
-
-   LIT_ENDIAN: (MSB) PCCVHNNN NNNNNNNN PCCVHNNN NNNNNNNN (LSB)
-                          PATTERN2          PATTERN1
-
-   BIG_ENDIAN: (MSB) PCCVHNNN NNNNNNNN PCCVHNNN NNNNNNNN (LSB)
-                          PATTERN1          PATTERN2
-
-
-   In line buffers, one pixel = one byte: (msb) 0Pppcccc (lsb)
-   with:
-      P = priority bit  (from pattern attribute)
-      p = color palette (from pattern attribute)
-      c = color data (from pattern cache)
-
-   One pattern = 8 pixels = 8 bytes = two 32-bit writes per pattern
-*/
-
-#ifdef LSB_FIRST
-#define DRAW_COLUMN_IM2(ATTR, LINE) \
-  GET_LSB_TILE_IM2(ATTR, LINE) \
-  *dst++ = (src[0] | atex); \
-  *dst++ = (src[1] | atex); \
-  GET_MSB_TILE_IM2(ATTR, LINE) \
-  *dst++ = (src[0] | atex); \
-  *dst++ = (src[1] | atex);
-#else
-#define DRAW_COLUMN_IM2(ATTR, LINE) \
-  GET_MSB_TILE_IM2(ATTR, LINE) \
-  *dst++ = (src[0] | atex); \
-  *dst++ = (src[1] | atex); \
-  GET_LSB_TILE_IM2(ATTR, LINE) \
-  *dst++ = (src[0] | atex); \
-  *dst++ = (src[1] | atex);
-#endif
 
 
 /* Pixels conversion macro */
@@ -294,6 +228,7 @@ u16 spr_col;
 void (*render_bg)(int line);
 
 static gpgx::ppu::vdp::M5BackgroundColumnDrawer* g_bg_column_drawer_m5 = nullptr;
+static gpgx::ppu::vdp::M5Im2BackgroundColumnDrawer* g_bg_column_drawer_m5_im2 = nullptr;
 
 static gpgx::ppu::vdp::InvalidBackgroundLayerRenderer* g_bg_layer_renderer_inv = nullptr;
 static gpgx::ppu::vdp::M0BackgroundLayerRenderer* g_bg_layer_renderer_m0 = nullptr;
@@ -410,6 +345,14 @@ static void background_layer_rendering_init()
   // Initialize column drawer in background layer rendering mode 5.
   if (!g_bg_column_drawer_m5) {
     g_bg_column_drawer_m5 = new gpgx::ppu::vdp::M5BackgroundColumnDrawer(
+      atex_table,
+      bg_pattern_cache
+    );
+  }
+
+  // Initialize column drawer in background layer rendering mode 5.
+  if (!g_bg_column_drawer_m5_im2) {
+    g_bg_column_drawer_m5_im2 = new gpgx::ppu::vdp::M5Im2BackgroundColumnDrawer(
       atex_table,
       bg_pattern_cache
     );
@@ -1576,7 +1519,7 @@ void render_bg_m5_im2(int line)
     dst = (u32 *)&linebuf[0][0x10 + shift];
 
     atbuf = nt[(index - 1) & pf_col_mask];
-    DRAW_COLUMN_IM2(atbuf, v_line)
+    g_bg_column_drawer_m5_im2->DrawColumn(&dst, atbuf, v_line);
   }
   else
   {
@@ -1587,7 +1530,7 @@ void render_bg_m5_im2(int line)
   for(column = 0; column < end; column++, index++)
   {
     atbuf = nt[index & pf_col_mask];
-    DRAW_COLUMN_IM2(atbuf, v_line)
+    g_bg_column_drawer_m5_im2->DrawColumn(&dst, atbuf, v_line);
   }
 
   if (w == (line >= a))
@@ -1642,7 +1585,7 @@ void render_bg_m5_im2(int line)
         atbuf = nt[(index - 1) & pf_col_mask];
       }
 
-      DRAW_COLUMN_IM2(atbuf, v_line)
+      g_bg_column_drawer_m5_im2->DrawColumn(&dst, atbuf, v_line);
     }
     else
     {
@@ -1653,7 +1596,7 @@ void render_bg_m5_im2(int line)
     for(column = start; column < end; column++, index++)
     {
       atbuf = nt[index & pf_col_mask];
-      DRAW_COLUMN_IM2(atbuf, v_line)
+      g_bg_column_drawer_m5_im2->DrawColumn(&dst, atbuf, v_line);
     }
 
     /* Window width */
@@ -1676,7 +1619,7 @@ void render_bg_m5_im2(int line)
     for(column = start; column < end; column++)
     {
       atbuf = nt[column];
-      DRAW_COLUMN_IM2(atbuf, v_line)
+      g_bg_column_drawer_m5_im2->DrawColumn(&dst, atbuf, v_line);
     }
   }
 
@@ -1740,7 +1683,7 @@ void render_bg_m5_im2_vs(int line)
     dst = (u32 *)&linebuf[0][0x10 + shift];
 
     atbuf = nt[(index - 1) & pf_col_mask];
-    DRAW_COLUMN_IM2(atbuf, v_line)
+    g_bg_column_drawer_m5_im2->DrawColumn(&dst, atbuf, v_line);
   }
   else
   {
@@ -1764,7 +1707,7 @@ void render_bg_m5_im2_vs(int line)
     v_line = (((v_line & 7) << 1) | odd) << 3;
 
     atbuf = nt[index & pf_col_mask];
-    DRAW_COLUMN_IM2(atbuf, v_line)
+    g_bg_column_drawer_m5_im2->DrawColumn(&dst, atbuf, v_line);
   }
 
   if (w == (line >= a))
@@ -1820,7 +1763,7 @@ void render_bg_m5_im2_vs(int line)
         atbuf = nt[(index - 1) & pf_col_mask];
       }
 
-      DRAW_COLUMN_IM2(atbuf, v_line)
+      g_bg_column_drawer_m5_im2->DrawColumn(&dst, atbuf, v_line);
     }
     else
     {
@@ -1844,7 +1787,7 @@ void render_bg_m5_im2_vs(int line)
       v_line = (((v_line & 7) << 1) | odd) << 3;
 
       atbuf = nt[index & pf_col_mask];
-      DRAW_COLUMN_IM2(atbuf, v_line)
+      g_bg_column_drawer_m5_im2->DrawColumn(&dst, atbuf, v_line);
     }
 
     /* Window width */
@@ -1867,7 +1810,7 @@ void render_bg_m5_im2_vs(int line)
     for(column = start; column < end; column++)
     {
       atbuf = nt[column];
-      DRAW_COLUMN_IM2(atbuf, v_line)
+      g_bg_column_drawer_m5_im2->DrawColumn(&dst, atbuf, v_line);
     }
   }
 
