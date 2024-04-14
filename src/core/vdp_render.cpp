@@ -71,6 +71,7 @@
 #include "gpgx/ppu/vdp/m4_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m4_sprite_tile_drawer.h"
 #include "gpgx/ppu/vdp/m4_zoomed_sprite_tile_drawer.h"
+#include "gpgx/ppu/vdp/m5_bg_column_drawer.h"
 #include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m5_im2_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_im2_ste_sprite_layer_renderer.h"
@@ -100,23 +101,6 @@
 #define LUT_MAX     (6)
 #define LUT_SIZE    (0x10000)
 
-
-/* Draw 2-cell column (8-pixels high) */
-/*
-   Pattern cache base address: VHN NNNNNNNN NNYYYxxx
-   with :
-      x = Pattern Pixel (0-7)
-      Y = Pattern Row (0-7)
-      N = Pattern Number (0-2047) from pattern attribute
-      H = Horizontal Flip bit from pattern attribute
-      V = Vertical Flip bit from pattern attribute
-*/
-#define GET_LSB_TILE(ATTR, LINE) \
-  atex = atex_table[(ATTR >> 13) & 7]; \
-  src = (u32 *)&bg_pattern_cache[(ATTR & 0x00001FFF) << 6 | (LINE)];
-#define GET_MSB_TILE(ATTR, LINE) \
-  atex = atex_table[(ATTR >> 29) & 7]; \
-  src = (u32 *)&bg_pattern_cache[(ATTR & 0x1FFF0000) >> 10 | (LINE)];
 
 /* Draw 2-cell column (16 pixels high) */
 /*
@@ -167,13 +151,6 @@
 */
 
 #ifdef LSB_FIRST
-#define DRAW_COLUMN(ATTR, LINE) \
-  GET_LSB_TILE(ATTR, LINE) \
-  *dst++ = (src[0] | atex); \
-  *dst++ = (src[1] | atex); \
-  GET_MSB_TILE(ATTR, LINE) \
-  *dst++ = (src[0] | atex); \
-  *dst++ = (src[1] | atex);
 #define DRAW_COLUMN_IM2(ATTR, LINE) \
   GET_LSB_TILE_IM2(ATTR, LINE) \
   *dst++ = (src[0] | atex); \
@@ -182,13 +159,6 @@
   *dst++ = (src[0] | atex); \
   *dst++ = (src[1] | atex);
 #else
-#define DRAW_COLUMN(ATTR, LINE) \
-  GET_MSB_TILE(ATTR, LINE) \
-  *dst++ = (src[0] | atex); \
-  *dst++ = (src[1] | atex); \
-  GET_LSB_TILE(ATTR, LINE) \
-  *dst++ = (src[0] | atex); \
-  *dst++ = (src[1] | atex);
 #define DRAW_COLUMN_IM2(ATTR, LINE) \
   GET_MSB_TILE_IM2(ATTR, LINE) \
   *dst++ = (src[0] | atex); \
@@ -323,6 +293,8 @@ u16 spr_col;
 /* Function pointers */
 void (*render_bg)(int line);
 
+static gpgx::ppu::vdp::M5BackgroundColumnDrawer* g_bg_column_drawer_m5 = nullptr;
+
 static gpgx::ppu::vdp::InvalidBackgroundLayerRenderer* g_bg_layer_renderer_inv = nullptr;
 static gpgx::ppu::vdp::M0BackgroundLayerRenderer* g_bg_layer_renderer_m0 = nullptr;
 static gpgx::ppu::vdp::M1BackgroundLayerRenderer* g_bg_layer_renderer_m1 = nullptr;
@@ -432,6 +404,14 @@ static void background_layer_rendering_init()
       vram,
       &system_hw,
       &viewport
+    );
+  }
+
+  // Initialize column drawer in background layer rendering mode 5.
+  if (!g_bg_column_drawer_m5) {
+    g_bg_column_drawer_m5 = new gpgx::ppu::vdp::M5BackgroundColumnDrawer(
+      atex_table,
+      bg_pattern_cache
     );
   }
 }
@@ -1254,7 +1234,7 @@ void render_bg_m5(int line)
     dst = (u32 *)&linebuf[0][0x10 + shift];
 
     atbuf = nt[(index - 1) & pf_col_mask];
-    DRAW_COLUMN(atbuf, v_line)
+    g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
   }
   else
   {
@@ -1265,7 +1245,7 @@ void render_bg_m5(int line)
   for(column = 0; column < end; column++, index++)
   {
     atbuf = nt[index & pf_col_mask];
-    DRAW_COLUMN(atbuf, v_line)
+    g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
   }
 
   if (w == (line >= a))
@@ -1320,7 +1300,7 @@ void render_bg_m5(int line)
         atbuf = nt[(index - 1) & pf_col_mask];
       }
 
-      DRAW_COLUMN(atbuf, v_line)
+      g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
     }
     else
     {
@@ -1331,7 +1311,7 @@ void render_bg_m5(int line)
     for(column = start; column < end; column++, index++)
     {
       atbuf = nt[index & pf_col_mask];
-      DRAW_COLUMN(atbuf, v_line)
+      g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
     }
 
     /* Window width */
@@ -1354,7 +1334,7 @@ void render_bg_m5(int line)
     for(column = start; column < end; column++)
     {
       atbuf = nt[column];
-      DRAW_COLUMN(atbuf, v_line)
+      g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
     }
   }
 
@@ -1417,7 +1397,7 @@ void render_bg_m5_vs(int line)
     dst = (u32 *)&linebuf[0][0x10 + shift];
 
     atbuf = nt[(index - 1) & pf_col_mask];
-    DRAW_COLUMN(atbuf, v_line)
+    g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
   }
   else
   {
@@ -1441,7 +1421,7 @@ void render_bg_m5_vs(int line)
     v_line = (v_line & 7) << 3;
 
     atbuf = nt[index & pf_col_mask];
-    DRAW_COLUMN(atbuf, v_line)
+    g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
   }
 
   if (w == (line >= a))
@@ -1497,7 +1477,7 @@ void render_bg_m5_vs(int line)
         atbuf = nt[(index - 1) & pf_col_mask];
       }
 
-      DRAW_COLUMN(atbuf, v_line)
+      g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
     }
     else
     {
@@ -1521,7 +1501,7 @@ void render_bg_m5_vs(int line)
       v_line = (v_line & 7) << 3;
 
       atbuf = nt[index & pf_col_mask];
-      DRAW_COLUMN(atbuf, v_line)
+      g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
     }
 
     /* Window width */
@@ -1544,7 +1524,7 @@ void render_bg_m5_vs(int line)
     for(column = start; column < end; column++)
     {
       atbuf = nt[column];
-      DRAW_COLUMN(atbuf, v_line)
+      g_bg_column_drawer_m5->DrawColumn(&dst, atbuf, v_line);
     }
   }
 
