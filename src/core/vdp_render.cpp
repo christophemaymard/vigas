@@ -56,6 +56,7 @@
 #include "core/vdp_ctrl.h"
 #include "core/viewport.h"
 #include "core/vram.h"
+#include "core/vdp/clip_t.h"
 #include "core/vdp/object_info_t.h"
 
 #include "gpgx/ppu/vdp/inv_bg_layer_renderer.h"
@@ -126,12 +127,7 @@
 #endif
 
 /* Window & Plane A clipping */
-static struct clip_t
-{
-  u8 left;
-  u8 right;
-  u8 enable;
-} clip[2];
+static clip_t clip[2];
 
 /* Pattern attribute (priority + palette bits) expansion table */
 static const u32 atex_table[] =
