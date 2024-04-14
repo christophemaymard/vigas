@@ -126,7 +126,9 @@
 #define MAKE_PIXEL(r,g,b) ((0xff << 24) | (r) << 20 | (r) << 16 | (g) << 12 | (g)  << 8 | (b) << 4 | (b))
 #endif
 
-/* Window & Plane A clipping */
+/// Clipping:
+/// - clip[0] = Plane A clipping,
+/// - clip[1] = Window clipping
 static clip_t clip[2];
 
 /* Pattern attribute (priority + palette bits) expansion table */
@@ -198,7 +200,13 @@ static u8 name_lut[0x400];
 /* Bitplane to packed pixel look-up table (Mode 4) */
 static u32 bp_lut[0x10000];
 
-/* Layer priority pixel look-up tables */
+/// Layer priority pixel look-up tables:
+/// - lut[0] = bg,
+/// - lut[1] = bgobj,
+/// - lut[2] = bg_ste,
+/// - lut[3] = obj,
+/// - lut[4] = bgobj_ste,
+/// - lut[5] = bgobj_m4
 static u8 lut[LUT_MAX][LUT_SIZE];
 
 /* Output pixel data look-up tables*/
