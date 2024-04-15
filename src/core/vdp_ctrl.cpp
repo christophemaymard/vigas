@@ -238,27 +238,6 @@ static void (*const dma_func[16])(unsigned int length) =
   vdp_dma_copy,vdp_dma_copy,vdp_dma_copy,vdp_dma_copy
 };
 
-/* BG rendering functions */
-static void (*const render_bg_modes[16])(int line) =
-{
-  render_bg_m0,   /* Graphics I */
-  render_bg_m2,   /* Graphics II */
-  render_bg_m4,   /* Mode 4 */
-  render_bg_m4,   /* Mode 4 */
-  render_bg_m3,   /* Multicolor */
-  render_bg_m3x,  /* Multicolor (Extended PG) */
-  render_bg_m4,   /* Mode 4 */
-  render_bg_m4,   /* Mode 4 */
-  render_bg_m1,   /* Text */
-  render_bg_m1x,  /* Text (Extended PG) */
-  render_bg_m4,   /* Mode 4 */
-  render_bg_m4,   /* Mode 4 */
-  render_bg_inv,  /* Invalid (1+3) */
-  render_bg_inv,  /* Invalid (1+2+3) */
-  render_bg_m4,   /* Mode 4 */
-  render_bg_m4,   /* Mode 4 */
-};
-
 /*--------------------------------------------------------------------------*/
 /* Init, reset, context functions                                           */
 /*--------------------------------------------------------------------------*/
@@ -389,14 +368,14 @@ void vdp_reset(void)
   if (system_hw < SYSTEM_MD)
   {
     /* Mode 0 */
-    render_bg = render_bg_m0;
+    g_bg_layer_renderer = g_bg_layer_renderer_m0;
     g_sprite_layer_renderer = g_sprite_layer_renderer_tms;
     g_satb_parser = g_satb_parser_tms;
   }
   else
   {
     /* Mode 4 */
-    render_bg = render_bg_m4;
+    g_bg_layer_renderer = g_bg_layer_renderer_m4;
     g_sprite_layer_renderer = g_sprite_layer_renderer_m4;
     g_satb_parser = g_satb_parser_m4;
   }
@@ -462,7 +441,7 @@ void vdp_reset(void)
     vdp_reg_w(6 , 0xFF, 0);
 
     /* Mode 4 */
-    render_bg = render_bg_m4;
+    g_bg_layer_renderer = g_bg_layer_renderer_m4;
     g_sprite_layer_renderer = g_sprite_layer_renderer_m4;
     g_satb_parser = g_satb_parser_m4;
   }
@@ -544,7 +523,7 @@ int vdp_context_load(u8 *state)
       }
 
       /* Rendering mode */
-      render_bg = render_bg_modes[((reg[0] & 0x02) | (reg[1] & 0x18)) >> 1];
+      g_bg_layer_renderer = g_bg_layer_renderer_modes[((reg[0] & 0x02) | (reg[1] & 0x18)) >> 1];
     }
   }
   else
@@ -1114,7 +1093,7 @@ void vdp_sms_ctrl_w(unsigned int data)
         }
 
         /* Rendering mode */
-        render_bg = render_bg_modes[mode>>1];
+        g_bg_layer_renderer = g_bg_layer_renderer_modes[mode>>1];
 
         /* Mode switching */
         if (prev & 0x04)
@@ -1194,7 +1173,7 @@ void vdp_tms_ctrl_w(unsigned int data)
       if (data < 2)
       {
         /* Rendering mode */
-        render_bg = render_bg_modes[((reg[0] & 0x02) | (reg[1] & 0x18)) >> 1];
+        g_bg_layer_renderer = g_bg_layer_renderer_modes[((reg[0] & 0x02) | (reg[1] & 0x18)) >> 1];
       }
     }
   }
@@ -1765,7 +1744,11 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
             g_bg_pattern_cache_updater = g_bg_pattern_cache_updater_m5;
             if (im2_flag)
             {
-              render_bg = (reg[11] & 0x04) ? render_bg_m5_im2_vs : render_bg_m5_im2;
+              if (reg[11] & 0x04) {
+                g_bg_layer_renderer = g_bg_layer_renderer_m5_im2_vs;
+              } else {
+                g_bg_layer_renderer = g_bg_layer_renderer_m5_im2;
+              }
 
               if (reg[12] & 0x08) {
                 g_sprite_layer_renderer = g_sprite_layer_renderer_m5_im2_ste;
@@ -1775,7 +1758,11 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
             }
             else
             {
-              render_bg = (reg[11] & 0x04) ? render_bg_m5_vs : render_bg_m5;
+              if (reg[11] & 0x04) {
+                g_bg_layer_renderer = g_bg_layer_renderer_m5_vs;
+              } else {
+                g_bg_layer_renderer = g_bg_layer_renderer_m5;
+              }
 
               if (reg[12] & 0x08) {
                 g_sprite_layer_renderer = g_sprite_layer_renderer_m5_ste;
@@ -1815,7 +1802,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
             /* Mode 4 rendering */
             g_satb_parser = g_satb_parser_m4;
             g_bg_pattern_cache_updater = g_bg_pattern_cache_updater_m4;
-            render_bg = render_bg_m4;
+            g_bg_layer_renderer = g_bg_layer_renderer_m4;
             g_sprite_layer_renderer = g_sprite_layer_renderer_m4;
 
             /* Reset color palette */
@@ -1991,11 +1978,19 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
       /* Vertical Scrolling mode */
       if (d & 0x04)
       {
-        render_bg = im2_flag ? render_bg_m5_im2_vs : render_bg_m5_vs;
+        if (im2_flag) {
+          g_bg_layer_renderer = g_bg_layer_renderer_m5_im2_vs;
+        } else {
+          g_bg_layer_renderer = g_bg_layer_renderer_m5_vs;
+        }
       }
       else
       {
-        render_bg = im2_flag ? render_bg_m5_im2 : render_bg_m5;
+        if (im2_flag) {
+          g_bg_layer_renderer = g_bg_layer_renderer_m5_im2;
+        } else {
+          g_bg_layer_renderer = g_bg_layer_renderer_m5;
+        }
       }
       break;
     }

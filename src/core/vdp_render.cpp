@@ -232,24 +232,27 @@ static u8 object_count[2];
 /* Sprite Collision Info */
 u16 spr_col;
 
-/* Function pointers */
-void (*render_bg)(int line);
-
 static gpgx::ppu::vdp::M5BackgroundColumnDrawer* g_bg_column_drawer_m5 = nullptr;
 static gpgx::ppu::vdp::M5Im2BackgroundColumnDrawer* g_bg_column_drawer_m5_im2 = nullptr;
 
-static gpgx::ppu::vdp::InvalidBackgroundLayerRenderer* g_bg_layer_renderer_inv = nullptr;
-static gpgx::ppu::vdp::M0BackgroundLayerRenderer* g_bg_layer_renderer_m0 = nullptr;
-static gpgx::ppu::vdp::M1BackgroundLayerRenderer* g_bg_layer_renderer_m1 = nullptr;
-static gpgx::ppu::vdp::M1XBackgroundLayerRenderer* g_bg_layer_renderer_m1x = nullptr;
-static gpgx::ppu::vdp::M2BackgroundLayerRenderer* g_bg_layer_renderer_m2 = nullptr;
-static gpgx::ppu::vdp::M3BackgroundLayerRenderer* g_bg_layer_renderer_m3 = nullptr;
-static gpgx::ppu::vdp::M3XBackgroundLayerRenderer* g_bg_layer_renderer_m3x = nullptr;
-static gpgx::ppu::vdp::M4BackgroundLayerRenderer* g_bg_layer_renderer_m4 = nullptr;
-static gpgx::ppu::vdp::M5BackgroundLayerRenderer* g_bg_layer_renderer_m5 = nullptr;
-static gpgx::ppu::vdp::M5Im2BackgroundLayerRenderer* g_bg_layer_renderer_m5_im2 = nullptr;
-static gpgx::ppu::vdp::M5Im2VsBackgroundLayerRenderer* g_bg_layer_renderer_m5_im2_vs = nullptr;
-static gpgx::ppu::vdp::M5VsBackgroundLayerRenderer* g_bg_layer_renderer_m5_vs = nullptr;
+gpgx::ppu::vdp::IBackgroundLayerRenderer* g_bg_layer_renderer = nullptr;
+gpgx::ppu::vdp::InvalidBackgroundLayerRenderer* g_bg_layer_renderer_inv = nullptr;
+gpgx::ppu::vdp::M0BackgroundLayerRenderer* g_bg_layer_renderer_m0 = nullptr;
+gpgx::ppu::vdp::M1BackgroundLayerRenderer* g_bg_layer_renderer_m1 = nullptr;
+gpgx::ppu::vdp::M1XBackgroundLayerRenderer* g_bg_layer_renderer_m1x = nullptr;
+gpgx::ppu::vdp::M2BackgroundLayerRenderer* g_bg_layer_renderer_m2 = nullptr;
+gpgx::ppu::vdp::M3BackgroundLayerRenderer* g_bg_layer_renderer_m3 = nullptr;
+gpgx::ppu::vdp::M3XBackgroundLayerRenderer* g_bg_layer_renderer_m3x = nullptr;
+gpgx::ppu::vdp::M4BackgroundLayerRenderer* g_bg_layer_renderer_m4 = nullptr;
+gpgx::ppu::vdp::M5BackgroundLayerRenderer* g_bg_layer_renderer_m5 = nullptr;
+gpgx::ppu::vdp::M5Im2BackgroundLayerRenderer* g_bg_layer_renderer_m5_im2 = nullptr;
+gpgx::ppu::vdp::M5Im2VsBackgroundLayerRenderer* g_bg_layer_renderer_m5_im2_vs = nullptr;
+gpgx::ppu::vdp::M5VsBackgroundLayerRenderer* g_bg_layer_renderer_m5_vs = nullptr;
+
+
+/// Renderers of background layer.
+/// Index = M1 M3 M4 M2
+gpgx::ppu::vdp::IBackgroundLayerRenderer* g_bg_layer_renderer_modes[16] = { 0 };
 
 gpgx::ppu::vdp::ISpriteLayerRenderer* g_sprite_layer_renderer = nullptr;
 gpgx::ppu::vdp::TmsSpriteLayerRenderer* g_sprite_layer_renderer_tms = nullptr;
@@ -502,6 +505,26 @@ static void background_layer_rendering_init()
       &viewport,
       g_bg_column_drawer_m5_im2
     );
+  }
+
+  // 
+  if (!g_bg_layer_renderer_modes[0]) {
+    g_bg_layer_renderer_modes[0] = g_bg_layer_renderer_m0;
+    g_bg_layer_renderer_modes[1] = g_bg_layer_renderer_m2;
+    g_bg_layer_renderer_modes[2] = g_bg_layer_renderer_m4;
+    g_bg_layer_renderer_modes[3] = g_bg_layer_renderer_m4;
+    g_bg_layer_renderer_modes[4] = g_bg_layer_renderer_m3;
+    g_bg_layer_renderer_modes[5] = g_bg_layer_renderer_m3x;
+    g_bg_layer_renderer_modes[6] = g_bg_layer_renderer_m4;
+    g_bg_layer_renderer_modes[7] = g_bg_layer_renderer_m4;
+    g_bg_layer_renderer_modes[8] = g_bg_layer_renderer_m1;
+    g_bg_layer_renderer_modes[9] = g_bg_layer_renderer_m1x;
+    g_bg_layer_renderer_modes[10] = g_bg_layer_renderer_m4;
+    g_bg_layer_renderer_modes[11] = g_bg_layer_renderer_m4;
+    g_bg_layer_renderer_modes[12] = g_bg_layer_renderer_inv;
+    g_bg_layer_renderer_modes[13] = g_bg_layer_renderer_inv;
+    g_bg_layer_renderer_modes[14] = g_bg_layer_renderer_m4;
+    g_bg_layer_renderer_modes[15] = g_bg_layer_renderer_m4;
   }
 }
 
@@ -1228,80 +1251,6 @@ void color_update_m5(int index, unsigned int data)
 
 
 /*--------------------------------------------------------------------------*/
-/* Background layers rendering functions                                    */
-/*--------------------------------------------------------------------------*/
-
-/* Graphics I */
-void render_bg_m0(int line)
-{
-  g_bg_layer_renderer_m0->RenderBackground(line);
-}
-
-/* Text */
-void render_bg_m1(int line)
-{
-  g_bg_layer_renderer_m1->RenderBackground(line);
-}
-
-/* Text + extended PG */
-void render_bg_m1x(int line)
-{
-  g_bg_layer_renderer_m1x->RenderBackground(line);
-}
-
-/* Graphics II */
-void render_bg_m2(int line)
-{
-  g_bg_layer_renderer_m2->RenderBackground(line);
-}
-
-/* Multicolor */
-void render_bg_m3(int line)
-{
-  g_bg_layer_renderer_m3->RenderBackground(line);
-}
-
-/* Multicolor + extended PG */
-void render_bg_m3x(int line)
-{
-  g_bg_layer_renderer_m3x->RenderBackground(line);
-}
-
-/* Invalid (1+3/1+2+3) */
-void render_bg_inv(int line)
-{
-  g_bg_layer_renderer_inv->RenderBackground(line);
-}
-
-/* Mode 4 */
-void render_bg_m4(int line)
-{
-  g_bg_layer_renderer_m4->RenderBackground(line);
-}
-
-/* Mode 5 */
-void render_bg_m5(int line)
-{
-  g_bg_layer_renderer_m5->RenderBackground(line);
-}
-
-void render_bg_m5_vs(int line)
-{
-  g_bg_layer_renderer_m5_vs->RenderBackground(line);
-}
-
-void render_bg_m5_im2(int line)
-{
-  g_bg_layer_renderer_m5_im2->RenderBackground(line);
-}
-
-void render_bg_m5_im2_vs(int line)
-{
-  g_bg_layer_renderer_m5_im2_vs->RenderBackground(line);
-}
-
-
-/*--------------------------------------------------------------------------*/
 /* Window & Plane A clipping update function (Mode 5)                       */
 /*--------------------------------------------------------------------------*/
 
@@ -1433,7 +1382,7 @@ void render_line(int line)
     }
 
     /* Render BG layer(s) */
-    render_bg(line);
+    g_bg_layer_renderer->RenderBackground(line);
 
     /* Render sprite layer */
     g_sprite_layer_renderer->RenderSprites(line & 1);

@@ -45,16 +45,29 @@
 
 #include "xee/fnd/data_type.h"
 
+#include "gpgx/ppu/vdp/bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/inv_bg_layer_renderer.h"
+#include "gpgx/ppu/vdp/m0_bg_layer_renderer.h"
+#include "gpgx/ppu/vdp/m1_bg_layer_renderer.h"
+#include "gpgx/ppu/vdp/m1x_bg_layer_renderer.h"
+#include "gpgx/ppu/vdp/m2_bg_layer_renderer.h"
+#include "gpgx/ppu/vdp/m3_bg_layer_renderer.h"
+#include "gpgx/ppu/vdp/m3x_bg_layer_renderer.h"
+#include "gpgx/ppu/vdp/m4_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m4_bg_pattern_cache_updater.h"
 #include "gpgx/ppu/vdp/m4_satb_parser.h"
 #include "gpgx/ppu/vdp/m4_sprite_layer_renderer.h"
+#include "gpgx/ppu/vdp/m5_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m5_im2_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_im2_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_im2_ste_sprite_layer_renderer.h"
+#include "gpgx/ppu/vdp/m5_im2_vs_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_satb_parser.h"
 #include "gpgx/ppu/vdp/m5_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_ste_sprite_layer_renderer.h"
+#include "gpgx/ppu/vdp/m5_vs_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/satb_parser.h"
 #include "gpgx/ppu/vdp/sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/tms_satb_parser.h"
@@ -126,23 +139,56 @@ extern void render_line(int line);
 extern void blank_line(int line, int offset, int width);
 extern void remap_line(int line);
 extern void window_clip(unsigned int data, unsigned int sw);
-extern void render_bg_m0(int line);
-extern void render_bg_m1(int line);
-extern void render_bg_m1x(int line);
-extern void render_bg_m2(int line);
-extern void render_bg_m3(int line);
-extern void render_bg_m3x(int line);
-extern void render_bg_inv(int line);
-extern void render_bg_m4(int line);
-extern void render_bg_m5(int line);
-extern void render_bg_m5_vs(int line);
-extern void render_bg_m5_im2(int line);
-extern void render_bg_m5_im2_vs(int line);
 extern void color_update_m4(int index, unsigned int data);
 extern void color_update_m5(int index, unsigned int data);
 
-/* Function pointers */
-extern void (*render_bg)(int line);
+//------------------------------------------------------------------------------
+// Background layer rendering.
+
+/// Renderer of background layer.
+extern gpgx::ppu::vdp::IBackgroundLayerRenderer* g_bg_layer_renderer;
+
+/// Renderer of background layer in invalid mode (1+3 or 1+2+3).
+extern gpgx::ppu::vdp::InvalidBackgroundLayerRenderer* g_bg_layer_renderer_inv;
+
+/// Renderer of background layer in mode 0 (Graphics I).
+extern gpgx::ppu::vdp::M0BackgroundLayerRenderer* g_bg_layer_renderer_m0;
+
+/// Renderer of background layer in mode 1 (Text).
+extern gpgx::ppu::vdp::M1BackgroundLayerRenderer* g_bg_layer_renderer_m1;
+
+/// Renderer of background layer in mode 1 (Text) with Extended PG.
+extern gpgx::ppu::vdp::M1XBackgroundLayerRenderer* g_bg_layer_renderer_m1x;
+
+/// Renderer of background layer in mode 2 (Graphics II).
+extern gpgx::ppu::vdp::M2BackgroundLayerRenderer* g_bg_layer_renderer_m2;
+
+/// Renderer of background layer in mode 3 (Multicolor).
+extern gpgx::ppu::vdp::M3BackgroundLayerRenderer* g_bg_layer_renderer_m3;
+
+/// Renderer of background layer in mode 3 (Multicolor) with Extended PG.
+extern gpgx::ppu::vdp::M3XBackgroundLayerRenderer* g_bg_layer_renderer_m3x;
+
+/// Renderer of background layer in mode 4.
+extern gpgx::ppu::vdp::M4BackgroundLayerRenderer* g_bg_layer_renderer_m4;
+
+/// Renderer of background layer in mode 5.
+extern gpgx::ppu::vdp::M5BackgroundLayerRenderer* g_bg_layer_renderer_m5;
+
+/// Renderer of background layer in mode 5 with interlace double resolution 
+/// (IM2) enabled.
+extern gpgx::ppu::vdp::M5Im2BackgroundLayerRenderer* g_bg_layer_renderer_m5_im2;
+
+/// Renderer of background layer in mode 5 with interlace double resolution 
+/// (IM2) enabled and 16 pixel column vertical scrolling.
+extern gpgx::ppu::vdp::M5Im2VsBackgroundLayerRenderer* g_bg_layer_renderer_m5_im2_vs;
+
+/// Renderer of background layer in mode 5 with 16 pixel column vertical scrolling.
+extern gpgx::ppu::vdp::M5VsBackgroundLayerRenderer* g_bg_layer_renderer_m5_vs;
+
+/// Renderers of background layer.
+/// Index = M1 M3 M4 M2
+extern gpgx::ppu::vdp::IBackgroundLayerRenderer* g_bg_layer_renderer_modes[16];
 
 //------------------------------------------------------------------------------
 // Sprite layer rendering.
