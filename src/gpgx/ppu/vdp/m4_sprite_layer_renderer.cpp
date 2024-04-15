@@ -100,7 +100,6 @@ M4SpriteLayerRenderer::M4SpriteLayerRenderer(
 
 void M4SpriteLayerRenderer::RenderSprites(s32 line)
 {
-  s32 i = 0;
   s32 xpos = 0;
   s32 end = 0;
   u8* src = nullptr;

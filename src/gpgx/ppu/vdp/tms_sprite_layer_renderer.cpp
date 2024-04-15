@@ -88,7 +88,6 @@ TmsSpriteLayerRenderer::TmsSpriteLayerRenderer(
 
 void TmsSpriteLayerRenderer::RenderSprites(s32 line)
 {
-  s32 x = 0;
   s32 start = 0;
   s32 end = 0;
   u8* lb = nullptr;

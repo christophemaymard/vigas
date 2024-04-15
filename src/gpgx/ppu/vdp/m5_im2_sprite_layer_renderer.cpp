@@ -78,7 +78,6 @@ M5Im2SpriteLayerRenderer::M5Im2SpriteLayerRenderer(
 
 void M5Im2SpriteLayerRenderer::RenderSprites(s32 line)
 {
-  s32 i = 0;
   s32 column = 0;
   s32 xpos = 0;
   s32 width = 0;

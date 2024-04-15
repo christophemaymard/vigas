@@ -46,8 +46,6 @@ app_config_t app_config;
 
 void set_config_defaults(void)
 {
-  int i;
-
   /* sound options */
   core_config.psg_preamp     = 150;
   core_config.fm_preamp      = 100;
