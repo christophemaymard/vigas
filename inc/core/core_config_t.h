@@ -172,9 +172,6 @@ struct core_config_t
   // - 0 = OFF,
   // - 1 = show extended Game Gear screen (256x192)
   u8 gg_extra;
-
-  // - 0 = 0.8 fixed point
-  u8 lcd;
 };
 
 #endif // #ifndef __CORE_CORE_CONFIG_T_H__

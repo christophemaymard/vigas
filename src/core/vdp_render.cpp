@@ -1438,20 +1438,10 @@ void remap_line(int line)
 
   /* Convert VDP pixel data to output pixel format */
   PIXEL_OUT_T *dst = ((PIXEL_OUT_T *)&framebuffer.data[(line * framebuffer.pitch)]);
-  if (core_config.lcd)
+
+  do
   {
-    do
-    {
-      RENDER_PIXEL_LCD(src,dst,pixel, core_config.lcd);
-    }
-    while (--width);
+    *dst++ = pixel[*src++];
   }
-  else
-  {
-    do
-    {
-      *dst++ = pixel[*src++];
-    }
-    while (--width);
-  }
+  while (--width);
 }

@@ -80,7 +80,6 @@ void set_config_defaults(void)
   /* display options */
   core_config.overscan = 0;  /* 3 = all borders (0 = no borders , 1 = vertical borders only, 2 = horizontal borders only) */
   core_config.gg_extra = 0;  /* 1 = show extended Game Gear screen (256x192) */
-  core_config.lcd      = 0;  /* 0.8 fixed point */
 
   /* controllers options */
   input.system[0]       = SYSTEM_GAMEPAD;
