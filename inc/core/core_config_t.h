@@ -175,9 +175,6 @@ struct core_config_t
 
   // - 0 = 0.8 fixed point
   u8 lcd;
-
-  // - 1 = double resolution output (only when interlaced mode 2 is enabled)
-  u8 render;
 };
 
 #endif // #ifndef __CORE_CORE_CONFIG_T_H__

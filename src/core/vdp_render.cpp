@@ -1436,12 +1436,6 @@ void remap_line(int line)
   /* Take care of Game Gear reduced screen when overscan is disabled */
   if (line < 0) return;
 
-  /* Adjust for interlaced output */
-  if (interlaced && core_config.render)
-  {
-    line = (line * 2) + odd_frame;
-  }
-
   /* Convert VDP pixel data to output pixel format */
   PIXEL_OUT_T *dst = ((PIXEL_OUT_T *)&framebuffer.data[(line * framebuffer.pitch)]);
   if (core_config.lcd)
