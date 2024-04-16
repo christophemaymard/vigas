@@ -15,7 +15,7 @@ Repository on GitHub: https://github.com/ekeeke/Genesis-Plus-GX
 | BUILD_TABLES |  |  |
 | CD_TRAY_CALLBACK |  |  |
 | CHEATS_UPDATE |  |  |
-| CUSTOM_BLITTER |  |  |
+| CUSTOM_BLITTER | Removed |  |
 | HAVE_NO_SPRITE_LIMIT |  |  |
 | HAVE_YM3438 | Removed | Always use YM3438. |
 | HOOK_CPU |  |  |

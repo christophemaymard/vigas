@@ -1442,28 +1442,22 @@ void remap_line(int line)
     line = (line * 2) + odd_frame;
   }
 
+  /* Convert VDP pixel data to output pixel format */
+  PIXEL_OUT_T *dst = ((PIXEL_OUT_T *)&framebuffer.data[(line * framebuffer.pitch)]);
+  if (core_config.lcd)
   {
-#ifdef CUSTOM_BLITTER
-    CUSTOM_BLITTER(line, width, pixel, src)
-#else
-    /* Convert VDP pixel data to output pixel format */
-    PIXEL_OUT_T *dst = ((PIXEL_OUT_T *)&framebuffer.data[(line * framebuffer.pitch)]);
-    if (core_config.lcd)
+    do
     {
-      do
-      {
-        RENDER_PIXEL_LCD(src,dst,pixel, core_config.lcd);
-      }
-      while (--width);
+      RENDER_PIXEL_LCD(src,dst,pixel, core_config.lcd);
     }
-    else
+    while (--width);
+  }
+  else
+  {
+    do
     {
-      do
-      {
-        *dst++ = pixel[*src++];
-      }
-      while (--width);
+      *dst++ = pixel[*src++];
     }
- #endif
+    while (--width);
   }
 }
