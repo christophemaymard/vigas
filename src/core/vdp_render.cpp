@@ -58,6 +58,7 @@
 #include "core/vram.h"
 #include "core/vdp/clip_t.h"
 #include "core/vdp/object_info_t.h"
+#include "core/vdp/pixel.h"
 
 #include "gpgx/ppu/vdp/inv_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m0_bg_layer_renderer.h"
@@ -93,42 +94,9 @@
 #define MODE5_MAX_SPRITE_PIXELS max_sprite_pixels
 #endif
 
-/* Output pixels type*/
-#if defined(USE_8BPP_RENDERING)
-#define PIXEL_OUT_T u8
-#elif defined(USE_32BPP_RENDERING)
-#define PIXEL_OUT_T u32
-#else
-#define PIXEL_OUT_T u16
-#endif
-
-
 /* Pixel priority look-up tables information */
 #define LUT_MAX     (6)
 #define LUT_SIZE    (0x10000)
-
-
-/* Pixels conversion macro */
-/* 4-bit color channels are either compressed to 2/3-bit or dithered to 5/6/8-bit equivalents */
-/* 3:3:2 RGB */
-#if defined(USE_8BPP_RENDERING)
-#define MAKE_PIXEL(r,g,b)  (((r) >> 1) << 5 | ((g) >> 1) << 2 | (b) >> 2)
-
-/* 5:5:5 RGB */
-#elif defined(USE_15BPP_RENDERING)
-#if defined(USE_ABGR)
-#define MAKE_PIXEL(r,g,b) ((1 << 15) | (b) << 11 | ((b) >> 3) << 10 | (g) << 6 | ((g) >> 3) << 5 | (r) << 1 | (r) >> 3)
-#else
-#define MAKE_PIXEL(r,g,b) ((1 << 15) | (r) << 11 | ((r) >> 3) << 10 | (g) << 6 | ((g) >> 3) << 5 | (b) << 1 | (b) >> 3)
-#endif
-/* 5:6:5 RGB */
-#elif defined(USE_16BPP_RENDERING)
-#define MAKE_PIXEL(r,g,b) ((r) << 12 | ((r) >> 3) << 11 | (g) << 7 | ((g) >> 2) << 5 | (b) << 1 | (b) >> 3)
-
-/* 8:8:8 RGB */
-#elif defined(USE_32BPP_RENDERING)
-#define MAKE_PIXEL(r,g,b) ((0xff << 24) | (r) << 20 | (r) << 16 | (g) << 12 | (g)  << 8 | (b) << 4 | (b))
-#endif
 
 /// Clipping:
 /// - clip[0] = Plane A clipping,
@@ -159,7 +127,7 @@ static const u8 tms_crom[16] =
 
 /* original SG-1000 palette */
 #if defined(USE_8BPP_RENDERING)
-static const u8 tms_palette[16] =
+static const PIXEL_OUT_T tms_palette[16] =
 {
   0x00, 0x00, 0x39, 0x79,
   0x4B, 0x6F, 0xC9, 0x5B,
@@ -168,7 +136,7 @@ static const u8 tms_palette[16] =
 };
 
 #elif defined(USE_15BPP_RENDERING)
-static const u16 tms_palette[16] =
+static const PIXEL_OUT_T tms_palette[16] =
 {
   0x8000, 0x8000, 0x9308, 0xAF6F,
   0xA95D, 0xBDDF, 0xE949, 0xA3BE,
@@ -177,7 +145,7 @@ static const u16 tms_palette[16] =
 };
 
 #elif defined(USE_16BPP_RENDERING)
-static const u16 tms_palette[16] =
+static const PIXEL_OUT_T tms_palette[16] =
 {
   0x0000, 0x0000, 0x2648, 0x5ECF,
   0x52BD, 0x7BBE, 0xD289, 0x475E,
@@ -186,7 +154,7 @@ static const u16 tms_palette[16] =
 };
 
 #elif defined(USE_32BPP_RENDERING)
-static const u32 tms_palette[16] =
+static const PIXEL_OUT_T tms_palette[16] =
 {
   0xFF000000, 0xFF000000, 0xFF21C842, 0xFF5EDC78,
   0xFF5455ED, 0xFF7D76FC, 0xFFD4524D, 0xFF42EBF5,

@@ -45,6 +45,7 @@
 #include "xee/mem/memory.h"
 
 #include "osd.h"
+#include "core/vdp/pixel.h"
 #include "core/loadrom.h"
 #include "core/audio_subsystem.h"
 #include "core/boot_rom.h"
@@ -792,15 +793,7 @@ int main (int argc, char **argv)
   xee::mem::Memset(&framebuffer, 0, sizeof(framebuffer));
   framebuffer.width        = 720;
   framebuffer.height       = 576;
-#if defined(USE_8BPP_RENDERING)
-  framebuffer.pitch        = (framebuffer.width * 1);
-#elif defined(USE_15BPP_RENDERING)
-  framebuffer.pitch        = (framebuffer.width * 2);
-#elif defined(USE_16BPP_RENDERING)
-  framebuffer.pitch        = (framebuffer.width * 2);
-#elif defined(USE_32BPP_RENDERING)
-  framebuffer.pitch        = (framebuffer.width * 4);
-#endif
+  framebuffer.pitch        = framebuffer.width * sizeof(PIXEL_OUT_T);
   framebuffer.data         = (u8*)sdl_video.surf_bitmap->pixels;
   SDL_UnlockSurface(sdl_video.surf_bitmap);
   viewport.changed = 3;
