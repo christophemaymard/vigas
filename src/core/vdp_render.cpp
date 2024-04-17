@@ -116,53 +116,6 @@ static const u32 atex_table[] =
   0x70707070
 };
 
-/* fixed Master System palette for Modes 0,1,2,3 */
-static const u8 tms_crom[16] =
-{
-  0x00, 0x00, 0x08, 0x0C,
-  0x10, 0x30, 0x01, 0x3C,
-  0x02, 0x03, 0x05, 0x0F,
-  0x04, 0x33, 0x15, 0x3F
-};
-
-/* original SG-1000 palette */
-#if defined(USE_8BPP_RENDERING)
-static const PIXEL_OUT_T tms_palette[16] =
-{
-  0x00, 0x00, 0x39, 0x79,
-  0x4B, 0x6F, 0xC9, 0x5B,
-  0xE9, 0xED, 0xD5, 0xD9,
-  0x35, 0xCE, 0xDA, 0xFF
-};
-
-#elif defined(USE_15BPP_RENDERING)
-static const PIXEL_OUT_T tms_palette[16] =
-{
-  0x8000, 0x8000, 0x9308, 0xAF6F,
-  0xA95D, 0xBDDF, 0xE949, 0xA3BE,
-  0xFD4A, 0xFDEF, 0xEB0A, 0xF330,
-  0x92A7, 0xE177, 0xE739, 0xFFFF
-};
-
-#elif defined(USE_16BPP_RENDERING)
-static const PIXEL_OUT_T tms_palette[16] =
-{
-  0x0000, 0x0000, 0x2648, 0x5ECF,
-  0x52BD, 0x7BBE, 0xD289, 0x475E,
-  0xF2AA, 0xFBCF, 0xD60A, 0xE670,
-  0x2567, 0xC2F7, 0xCE59, 0xFFFF
-};
-
-#elif defined(USE_32BPP_RENDERING)
-static const PIXEL_OUT_T tms_palette[16] =
-{
-  0xFF000000, 0xFF000000, 0xFF21C842, 0xFF5EDC78,
-  0xFF5455ED, 0xFF7D76FC, 0xFFD4524D, 0xFF42EBF5,
-  0xFFFC5554, 0xFFFF7978, 0xFFD4C154, 0xFFE6CE80,
-  0xFF21B03B, 0xFFC95BB4, 0xFFCCCCCC, 0xFFFFFFFF
-};
-#endif
-
 /* Cached and flipped patterns */
 static u8 ALIGNED_(4) bg_pattern_cache[0x80000];
 
@@ -184,7 +137,6 @@ static u8 lut[LUT_MAX][LUT_SIZE];
 /* Output pixel data look-up tables*/
 static PIXEL_OUT_T pixel[0x100];
 static PIXEL_OUT_T pixel_lut[3][0x200];
-static PIXEL_OUT_T pixel_lut_m4[0x40];
 
 /* Background & Sprite line buffers */
 static u8 linebuf[2][0x200];
@@ -238,6 +190,8 @@ gpgx::ppu::vdp::M5SpriteAttributeTableParser* g_satb_parser_m5 = nullptr;
 gpgx::ppu::vdp::IBackgroundPatternCacheUpdater* g_bg_pattern_cache_updater = nullptr;
 gpgx::ppu::vdp::M4BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m4 = nullptr;
 gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m5 = nullptr;
+
+gpgx::ppu::vdp::MXColorPaletteUpdater* g_color_palette_updater_mx = nullptr;
 
 /*--------------------------------------------------------------------------*/
 /*                                                                          */
@@ -1055,125 +1009,22 @@ static void palette_init(void)
     pixel_lut[2][i] = MAKE_PIXEL(r+7,g+7,b+7);
   }
 
-  /* Initialize Mode 4 pixel color look-up table */
-  for (i = 0; i < 0x40; i++)
-  {
-    /* CRAM 6-bit value (000BBGGRR) */
-    r = (i >> 0) & 3;
-    g = (i >> 2) & 3;
-    b = (i >> 4) & 3;
-
-    /* Expand to full range & convert to output pixel format */
-    pixel_lut_m4[i] = MAKE_PIXEL((r << 2) | r, (g << 2) | g, (b << 2) | b);
+  // Initialize updater of color palette in mode 0, 1, 2, 3 and 4.
+  if (!g_color_palette_updater_mx) {
+    g_color_palette_updater_mx = new gpgx::ppu::vdp::MXColorPaletteUpdater(
+      reg,
+      pixel,
+      &system_hw
+    );
   }
+
+  g_color_palette_updater_mx->Initialize();
 }
 
 
 /*--------------------------------------------------------------------------*/
 /* Color palette update functions                                           */
 /*--------------------------------------------------------------------------*/
-
-void color_update_m4(int index, unsigned int data)
-{
-  switch (system_hw)
-  {
-    case SYSTEM_GG:
-    {
-      /* CRAM value (BBBBGGGGRRRR) */
-      int r = (data >> 0) & 0x0F;
-      int g = (data >> 4) & 0x0F;
-      int b = (data >> 8) & 0x0F;
-
-      /* Convert to output pixel */
-      data = MAKE_PIXEL(r,g,b);
-      break;
-    }
-
-    case SYSTEM_SG:
-    case SYSTEM_SGII:
-    case SYSTEM_SGII_RAM_EXT:
-    {
-      /* Fixed TMS99xx palette */
-      if (index & 0x0F)
-      {
-        /* Colors 1-15 */
-        data = tms_palette[index & 0x0F];
-      }
-      else
-      {
-        /* Backdrop color */
-        data = tms_palette[reg[7] & 0x0F];
-      }
-      break;
-    }
-
-    default:
-    {
-      /* Test M4 bit */
-      if (!(reg[0] & 0x04))
-      {
-        if (system_hw & SYSTEM_MD)
-        {
-          /* Invalid Mode (black screen) */
-          data = 0x00;
-        }
-        else if (system_hw != SYSTEM_GGMS)
-        {
-          /* Fixed CRAM palette */
-          if (index & 0x0F)
-          {
-            /* Colors 1-15 */
-            data = tms_crom[index & 0x0F];
-          }
-          else
-          {
-            /* Backdrop color */
-            data = tms_crom[reg[7] & 0x0F];
-          }
-        }
-      }
-
-      /* Mode 4 palette */
-      data = pixel_lut_m4[data & 0x3F];
-      break;
-    }
-  }
-
-
-  /* Input pixel: x0xiiiii (normal) or 01000000 (backdrop) */
-  if (reg[0] & 0x04)
-  {
-    /* Mode 4 */
-    pixel[0x00 | index] = data;
-    pixel[0x20 | index] = data;
-    pixel[0x80 | index] = data;
-    pixel[0xA0 | index] = data;
-  }
-  else
-  {
-    /* TMS99xx modes (palette bit forced to 1 because Game Gear uses CRAM palette #1) */
-    if ((index == 0x40) || (index == (0x10 | (reg[7] & 0x0F))))
-    {
-      /* Update backdrop color */
-      pixel[0x40] = data;
-
-      /* Update transparent color */
-      pixel[0x10] = data;
-      pixel[0x30] = data;
-      pixel[0x90] = data;
-      pixel[0xB0] = data;
-    }
-
-    if (index & 0x0F)
-    {
-      /* update non-transparent colors */
-      pixel[0x00 | index] = data;
-      pixel[0x20 | index] = data;
-      pixel[0x80 | index] = data;
-      pixel[0xA0 | index] = data;
-    }
-  }
-}
 
 void color_update_m5(int index, unsigned int data)
 {

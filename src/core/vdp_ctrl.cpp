@@ -459,9 +459,9 @@ void vdp_reset(void)
   /* reset color palette */
   for(i = 0; i < 0x20; i ++)
   {
-    color_update_m4(i, 0x00);
+    g_color_palette_updater_mx->UpdateColor(i, 0x00);
   }
-  color_update_m4(0x40, 0x00);
+  g_color_palette_updater_mx->UpdateColor(0x40, 0x00);
 }
 
 int vdp_context_save(u8 *state)
@@ -579,9 +579,9 @@ int vdp_context_load(u8 *state)
     /* reinitialize palette */
     for(i = 0; i < 0x20; i ++)
     {
-      color_update_m4(i, *(u16 *)&cram[i << 1]);
+      g_color_palette_updater_mx->UpdateColor(i, *(u16 *)&cram[i << 1]);
     }
-    color_update_m4(0x40, *(u16 *)&cram[(0x10 | (border & 0x0F)) << 1]);
+    g_color_palette_updater_mx->UpdateColor(0x40, *(u16 *)&cram[(0x10 | (border & 0x0F)) << 1]);
   }
 
   /* invalidate tile cache */
@@ -1122,9 +1122,9 @@ void vdp_sms_ctrl_w(unsigned int data)
           /* reinitialize palette */
           for(i = 0; i < 0x20; i ++)
           {
-            color_update_m4(i, *(u16 *)&cram[i << 1]);
+            g_color_palette_updater_mx->UpdateColor(i, *(u16 *)&cram[i << 1]);
           }
-          color_update_m4(0x40, *(u16 *)&cram[(0x10 | (border & 0x0F)) << 1]);
+          g_color_palette_updater_mx->UpdateColor(0x40, *(u16 *)&cram[(0x10 | (border & 0x0F)) << 1]);
         }
       }
     }
@@ -1568,9 +1568,9 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
             /* Mode 4 */
             for (i = 0; i < 0x20; i++)
             {
-              color_update_m4(i, *(u16 *)&cram[i << 1]);
+              g_color_palette_updater_mx->UpdateColor(i, *(u16 *)&cram[i << 1]);
             }
-            color_update_m4(0x40, *(u16 *)&cram[(0x10 | (border & 0x0F)) << 1]);
+            g_color_palette_updater_mx->UpdateColor(0x40, *(u16 *)&cram[(0x10 | (border & 0x0F)) << 1]);
           }
         }
       }
@@ -1808,9 +1808,9 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
             /* Reset color palette */
             for (i = 0; i < 0x20; i++)
             {
-              color_update_m4(i, *(u16 *)&cram[i << 1]);
+              g_color_palette_updater_mx->UpdateColor(i, *(u16 *)&cram[i << 1]);
             }
-            color_update_m4(0x40, *(u16 *)&cram[(0x10 | (border & 0x0F)) << 1]);
+            g_color_palette_updater_mx->UpdateColor(0x40, *(u16 *)&cram[(0x10 | (border & 0x0F)) << 1]);
 
             /* Mode 4 bus access */
             vdp_68k_data_w = vdp_68k_data_w_m4;
@@ -1925,7 +1925,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
         else
         {
           /* Mode 4 */
-          color_update_m4(0x40, *(u16 *)&cram[(0x10 | (d & 0x0F)) << 1]);
+          g_color_palette_updater_mx->UpdateColor(0x40, *(u16 *)&cram[(0x10 | (d & 0x0F)) << 1]);
         }
 
         /* Backdrop color modified during HBLANK (Road Rash 1,2,3)*/
@@ -2362,12 +2362,12 @@ static void vdp_68k_data_w_m4(unsigned int data)
       *p = data;
 
       /* Update color palette */
-      color_update_m4(index, data);
+      g_color_palette_updater_mx->UpdateColor(index, data);
 
       /* Update backdrop color */
       if (index == (0x10 | (border & 0x0F)))
       {
-        color_update_m4(0x40, data);
+        g_color_palette_updater_mx->UpdateColor(0x40, data);
       }
     }
   }
@@ -2614,12 +2614,12 @@ static void vdp_z80_data_w_m4(unsigned int data)
       *p = data;
 
       /* Update color palette */
-      color_update_m4(index, data);
+      g_color_palette_updater_mx->UpdateColor(index, data);
 
       /* Update backdrop color */
       if (index == (0x10 | (border & 0x0F)))
       {
-        color_update_m4(0x40, data);
+        g_color_palette_updater_mx->UpdateColor(0x40, data);
       }
     }
   }
@@ -2885,12 +2885,12 @@ static void vdp_z80_data_w_ms(unsigned int data)
       *p = data;
 
       /* Update color palette */
-      color_update_m4(index, data);
+      g_color_palette_updater_mx->UpdateColor(index, data);
 
       /* Update backdrop color */
       if (index == (0x10 | (border & 0x0F)))
       {
-        color_update_m4(0x40, data);
+        g_color_palette_updater_mx->UpdateColor(0x40, data);
       }
     }
 #ifdef LOGVDP
@@ -2965,12 +2965,12 @@ static void vdp_z80_data_w_gg(unsigned int data)
         *p = data;
 
         /* Update color palette */
-        color_update_m4(index, data);
+        g_color_palette_updater_mx->UpdateColor(index, data);
 
         /* Update backdrop color */
         if (index == (0x10 | (border & 0x0F)))
         {
-          color_update_m4(0x40, data);
+          g_color_palette_updater_mx->UpdateColor(0x40, data);
         }
       }
     }
