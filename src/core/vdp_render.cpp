@@ -136,7 +136,6 @@ static u8 lut[LUT_MAX][LUT_SIZE];
 
 /* Output pixel data look-up tables*/
 static PIXEL_OUT_T pixel[0x100];
-static PIXEL_OUT_T pixel_lut[3][0x200];
 
 /* Background & Sprite line buffers */
 static u8 linebuf[2][0x200];
@@ -192,6 +191,7 @@ gpgx::ppu::vdp::M4BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m4 =
 gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updater_m5 = nullptr;
 
 gpgx::ppu::vdp::MXColorPaletteUpdater* g_color_palette_updater_mx = nullptr;
+gpgx::ppu::vdp::M5ColorPaletteUpdater* g_color_palette_updater_m5 = nullptr;
 
 /*--------------------------------------------------------------------------*/
 /*                                                                          */
@@ -977,38 +977,6 @@ static u32 make_lut_bgobj_m4(u32 bx, u32 sx)
 
 static void palette_init(void)
 {
-  int r, g, b, i;
-
-  /************************************************/
-  /* Each R,G,B color channel is 4-bit with a     */
-  /* total of 15 different intensity levels.      */
-  /*                                              */
-  /* Color intensity depends on the mode:         */
-  /*                                              */
-  /*    normal   : xxx0     (0-14)                */
-  /*    shadow   : 0xxx     (0-7)                 */
-  /*    highlight: 1xxx - 1 (7-14)                */
-  /*    mode4    : xxxx(*)  (0-15)                */
-  /*    GG mode  : xxxx     (0-15)                */
-  /*                                              */
-  /* with x = original CRAM value (2, 3 or 4-bit) */
-  /*  (*) 2-bit CRAM value is expanded to 4-bit   */
-  /************************************************/
-
-  /* Initialize Mode 5 pixel color look-up tables */
-  for (i = 0; i < 0x200; i++)
-  {
-    /* CRAM 9-bit value (BBBGGGRRR) */
-    r = (i >> 0) & 7;
-    g = (i >> 3) & 7;
-    b = (i >> 6) & 7;
-
-    /* Convert to output pixel format */
-    pixel_lut[0][i] = MAKE_PIXEL(r,g,b);
-    pixel_lut[1][i] = MAKE_PIXEL(r<<1,g<<1,b<<1);
-    pixel_lut[2][i] = MAKE_PIXEL(r+7,g+7,b+7);
-  }
-
   // Initialize updater of color palette in mode 0, 1, 2, 3 and 4.
   if (!g_color_palette_updater_mx) {
     g_color_palette_updater_mx = new gpgx::ppu::vdp::MXColorPaletteUpdater(
@@ -1019,39 +987,16 @@ static void palette_init(void)
   }
 
   g_color_palette_updater_mx->Initialize();
-}
 
-
-/*--------------------------------------------------------------------------*/
-/* Color palette update functions                                           */
-/*--------------------------------------------------------------------------*/
-
-void color_update_m5(int index, unsigned int data)
-{
-  /* Palette Mode */
-  if (!(reg[0] & 0x04))
-  {
-    /* Color value is limited to 00X00X00X */
-    data &= 0x49;
+  // Initialize updater of color palette in mode 5.
+  if (!g_color_palette_updater_m5) {
+    g_color_palette_updater_m5 = new gpgx::ppu::vdp::M5ColorPaletteUpdater(
+      reg,
+      pixel
+    );
   }
 
-  if(reg[12] & 0x08)
-  {
-    /* Mode 5 (Shadow/Normal/Highlight) */
-    pixel[0x00 | index] = pixel_lut[0][data];
-    pixel[0x40 | index] = pixel_lut[1][data];
-    pixel[0x80 | index] = pixel_lut[2][data];
-  }
-  else
-  {
-    /* Mode 5 (Normal) */
-    data = pixel_lut[1][data];
-
-    /* Input pixel: xxiiiiii */
-    pixel[0x00 | index] = data;
-    pixel[0x40 | index] = data;
-    pixel[0x80 | index] = data;
-  }
+  g_color_palette_updater_m5->Initialize();
 }
 
 

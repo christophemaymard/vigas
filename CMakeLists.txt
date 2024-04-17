@@ -227,6 +227,7 @@ add_executable(vigas
     inc/gpgx/ppu/vdp/m5_bg_column_drawer.h
     inc/gpgx/ppu/vdp/m5_bg_layer_renderer.h
     inc/gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h
+    inc/gpgx/ppu/vdp/m5_color_palette_updater.h
     inc/gpgx/ppu/vdp/m5_im2_bg_column_drawer.h
     inc/gpgx/ppu/vdp/m5_im2_bg_layer_renderer.h
     inc/gpgx/ppu/vdp/m5_im2_sprite_layer_renderer.h
@@ -354,6 +355,7 @@ add_executable(vigas
     src/gpgx/ppu/vdp/m5_bg_column_drawer.cpp
     src/gpgx/ppu/vdp/m5_bg_layer_renderer.cpp
     src/gpgx/ppu/vdp/m5_bg_pattern_cache_updater.cpp
+    src/gpgx/ppu/vdp/m5_color_palette_updater.cpp
     src/gpgx/ppu/vdp/m5_im2_bg_column_drawer.cpp
     src/gpgx/ppu/vdp/m5_im2_bg_layer_renderer.cpp
     src/gpgx/ppu/vdp/m5_im2_sprite_layer_renderer.cpp

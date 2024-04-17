@@ -565,10 +565,10 @@ int vdp_context_load(u8 *state)
     bg_list_index = 0x800;
 
     /* reinitialize palette */
-    color_update_m5(0, *(u16 *)&cram[border << 1]);
+    g_color_palette_updater_m5->UpdateColor(0, *(u16 *)&cram[border << 1]);
     for(i = 1; i < 0x40; i++)
     {
-      color_update_m5(i, *(u16 *)&cram[i << 1]);
+      g_color_palette_updater_m5->UpdateColor(i, *(u16 *)&cram[i << 1]);
     }
   }
   else
@@ -1557,10 +1557,10 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
           if (reg[1] & 0x04)
           {
             /* Mode 5 */
-            color_update_m5(0x00, *(u16 *)&cram[border << 1]);
+            g_color_palette_updater_m5->UpdateColor(0x00, *(u16 *)&cram[border << 1]);
             for (i = 1; i < 0x40; i++)
             {
-              color_update_m5(i, *(u16 *)&cram[i << 1]);
+              g_color_palette_updater_m5->UpdateColor(i, *(u16 *)&cram[i << 1]);
             }
           }
           else
@@ -1772,10 +1772,10 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
             }
 
             /* Reset color palette */
-            color_update_m5(0x00, *(u16 *)&cram[border << 1]);
+            g_color_palette_updater_m5->UpdateColor(0x00, *(u16 *)&cram[border << 1]);
             for (i = 1; i < 0x40; i++)
             {
-              color_update_m5(i, *(u16 *)&cram[i << 1]);
+              g_color_palette_updater_m5->UpdateColor(i, *(u16 *)&cram[i << 1]);
             }
 
             /* Mode 5 bus access */
@@ -1920,7 +1920,7 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
         if (reg[1] & 4)
         {
           /* Mode 5 */
-          color_update_m5(0x00, *(u16 *)&cram[d << 1]);
+          g_color_palette_updater_m5->UpdateColor(0x00, *(u16 *)&cram[d << 1]);
         }
         else
         {
@@ -2006,10 +2006,10 @@ static void vdp_reg_w(unsigned int r, unsigned int d, unsigned int cycles)
       {
         /* Reset color palette */
         int i;
-        color_update_m5(0x00, *(u16 *)&cram[border << 1]);
+        g_color_palette_updater_m5->UpdateColor(0x00, *(u16 *)&cram[border << 1]);
         for (i = 1; i < 0x40; i++)
         {
-          color_update_m5(i, *(u16 *)&cram[i << 1]);
+          g_color_palette_updater_m5->UpdateColor(i, *(u16 *)&cram[i << 1]);
         }
 
         /* Update sprite rendering function */
@@ -2236,13 +2236,13 @@ static void vdp_bus_w(unsigned int data)
         if (index & 0x0F)
         {
           /* Update color palette */
-          color_update_m5(index, data);
+          g_color_palette_updater_m5->UpdateColor(index, data);
         }
 
         /* Update backdrop color */
         if (index == border)
         {
-          color_update_m5(0x00, data);
+          g_color_palette_updater_m5->UpdateColor(0x00, data);
         }
 
         /* CRAM modified during HBLANK (Striker, Zero the Kamikaze, Yuu Yuu Hakusho, etc) */
@@ -2713,13 +2713,13 @@ static void vdp_z80_data_w_m5(unsigned int data)
         if (index & 0x0F)
         {
           /* Update color palette */
-          color_update_m5(index, data);
+          g_color_palette_updater_m5->UpdateColor(index, data);
         }
 
         /* Update backdrop color */
         if (index == border)
         {
-          color_update_m5(0x00, data);
+          g_color_palette_updater_m5->UpdateColor(0x00, data);
         }
       }
       break;
@@ -3229,13 +3229,13 @@ static void vdp_dma_fill(unsigned int length)
           if (index & 0x0F)
           {
             /* Update color palette */
-            color_update_m5(index, data);
+            g_color_palette_updater_m5->UpdateColor(index, data);
           }
 
           /* Update backdrop color */
           if (index == border)
           {
-            color_update_m5(0x00, data);
+            g_color_palette_updater_m5->UpdateColor(0x00, data);
           }
         }
           

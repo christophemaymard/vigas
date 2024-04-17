@@ -60,6 +60,7 @@
 #include "gpgx/ppu/vdp/m4_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_bg_pattern_cache_updater.h"
+#include "gpgx/ppu/vdp/m5_color_palette_updater.h"
 #include "gpgx/ppu/vdp/m5_im2_bg_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_im2_sprite_layer_renderer.h"
 #include "gpgx/ppu/vdp/m5_im2_ste_sprite_layer_renderer.h"
@@ -84,7 +85,6 @@ extern void render_line(int line);
 extern void blank_line(int line, int offset, int width);
 extern void remap_line(int line);
 extern void window_clip(unsigned int data, unsigned int sw);
-extern void color_update_m5(int index, unsigned int data);
 
 //------------------------------------------------------------------------------
 // Background layer rendering.
@@ -190,5 +190,8 @@ extern gpgx::ppu::vdp::M5BackgroundPatternCacheUpdater* g_bg_pattern_cache_updat
 
 /// Updater of color palette in mode 0, 1, 2, 3 and 4.
 extern gpgx::ppu::vdp::MXColorPaletteUpdater* g_color_palette_updater_mx;
+
+/// Updater of color palette in mode 5.
+extern gpgx::ppu::vdp::M5ColorPaletteUpdater* g_color_palette_updater_m5;
 
 #endif /* _RENDER_H_ */
