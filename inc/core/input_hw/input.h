@@ -42,24 +42,10 @@
 
 #include "xee/fnd/data_type.h"
 
+#include "gpgx/hid/device_type.h"
+
 /* Max. number of devices */
 #define MAX_DEVICES (8)
-
-/* Ports configuration */
-#define NO_SYSTEM              (0) /* unconnected port*/
-#define SYSTEM_GAMEPAD         (1) /* 2-buttons, 3-buttons or 6-buttons Control Pad */
-#define SYSTEM_MOUSE           (2) /* Sega Mouse (only supported in either port A or port B) */
-#define SYSTEM_MENACER         (3) /* Sega Menacer (only supported in port B) */
-#define SYSTEM_JUSTIFIER       (4) /* Konami Justifiers (only supported in port B) */
-#define SYSTEM_XE_1AP          (5) /* XE-1AP analog controller */
-#define SYSTEM_ACTIVATOR       (6) /* Sega Activator */
-#define SYSTEM_LIGHTPHASER     (7) /* Sega Light Phaser */
-#define SYSTEM_PADDLE          (8) /* Sega Paddle Control */
-#define SYSTEM_SPORTSPAD       (9) /* Sega Sports Pad */
-#define SYSTEM_GRAPHIC_BOARD  (10) /* Sega Graphic Board */
-#define SYSTEM_MASTERTAP      (11) /* Multi Tap -- Furrtek's Master Tap (unofficial) */
-#define SYSTEM_TEAMPLAYER     (12) /* Multi Tap -- Sega TeamPlayer */
-#define SYSTEM_WAYPLAY        (13) /* Multi Tap -- EA 4-Way Play (use both ports) */
 
 /* Device type */
 #define NO_DEVICE             (0xff) /* unconnected device (fixed ID for Team Player) */
@@ -140,7 +126,7 @@
 
 typedef struct
 {
-  u8 system[2];              /* can be one of the SYSTEM_* values */
+  gpgx::hid::DeviceType system[2];
   u8 dev[MAX_DEVICES];       /* can be one of the DEVICE_* values */
   u16 pad[MAX_DEVICES];      /* digital inputs (any of INPUT_* values)  */
   s16 analog[MAX_DEVICES][2]; /* analog inputs (x/y) */

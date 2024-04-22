@@ -63,6 +63,7 @@
 #include "core/cart_hw/eeprom_93c.h"
 #include "core/input_hw/terebi_oekaki.h"
 
+#include "gpgx/hid/device_type.h"
 #include "gpgx/g_z80.h"
 
 #define MAPPER_NONE           (0x00)
@@ -97,7 +98,7 @@ typedef struct
   u32 crc;
   u8 g_3d;
   u8 fm;
-  u8 peripheral;
+  gpgx::hid::DeviceType peripheral;
   u8 mapper;
   u8 system;
   u8 region;
@@ -113,354 +114,354 @@ typedef struct
 static const rominfo_t game_list[] =
 {
   /* program requiring Mega Drive VDP (Mode 5) */
-  {0x47FA618D, 0, 1, 0, MAPPER_SEGA, SYSTEM_PBC,  REGION_USA}, /* Charles MacDonald's Mode 5 Demo Program */
+  {0x47FA618D, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_PBC,  REGION_USA}, /* Charles MacDonald's Mode 5 Demo Program */
 
   /* game requiring SEGA mapper */
-  {0xFF67359B, 0, 0, 0, MAPPER_SEGA, SYSTEM_SMS2, REGION_USA}, /* DataStorm (homebrew) */
+  {0xFF67359B, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS2, REGION_USA}, /* DataStorm (homebrew) */
 
   /* games requiring 315-5124 VDP (Mark-III, Master System I) */
-  {0x32759751, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Y's (J) */
-  {0xE8B82066, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Y's (J) [Demo] */
+  {0x32759751, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Y's (J) */
+  {0xE8B82066, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Y's (J) [Demo] */
 
   /* games requiring Sega 315-5235 mapper without bank shifting */
-  {0x23BAC434, 0, 0, 0,  MAPPER_SEGA_X, SYSTEM_GG, REGION_USA}, /* Shining Force Gaiden - Final Conflict (JP) [T-Eng] */
+  {0x23BAC434, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA_X, SYSTEM_GG, REGION_USA}, /* Shining Force Gaiden - Final Conflict (JP) [T-Eng] */
 
   /* games using "Korean" mappers */
-  {0x445525E2, 0, 0, 0, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Penguin Adventure (KR) */
-  {0x83F0EEDE, 0, 0, 0, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Street Master (KR) */
-  {0xA05258F5, 0, 0, 0, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Wonsiin (KR) */
-  {0x06965ED9, 0, 0, 0, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* F-1 Spirit - The way to Formula-1 (KR) */
-  {0x77EFE84A, 0, 0, 0, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Cyborg Z (KR) */
-  {0xF89AF3CC, 0, 0, 0, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Knightmare II: The Maze of Galious (KR) */
-  {0x9195C34C, 0, 0, 0, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Boy 3 (KR) */
-  {0xE316C06D, 0, 0, 0, MAPPER_MSX_NEMESIS,    SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Nemesis (KR) */
-  {0x0A77FA5E, 0, 0, 0, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Nemesis 2 (KR) */
-  {0x89B79E77, 0, 0, 0, MAPPER_KOREA,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Dodgeball King (KR) */
-  {0x929222C4, 0, 0, 0, MAPPER_KOREA,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Jang Pung II (KR) */
-  {0x18FB98A3, 0, 0, 0, MAPPER_KOREA,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Jang Pung 3 (KR) */
-  {0x97D03541, 0, 0, 0, MAPPER_KOREA,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Sangokushi 3 (KR) */
-  {0x192949D5, 0, 0, 0, MAPPER_KOREA_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Janggun-ui Adeul (KR) */
-  {0x76C5BDFB, 0, 0, 0, MAPPER_KOREA_16K,     SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Jang Pung II [SMS-GG] (KR) */
-  {0x01A2D595, 0, 0, 0, MAPPER_KOREA_16K,     SYSTEM_GGMS,        REGION_USA}, /* Street Battle [Proto] [SMS-GG] (US) */
-  {0x9FA727A0, 0, 0, 0, MAPPER_KOREA_16K,     SYSTEM_GGMS,        REGION_USA}, /* Street Hero [Proto 0] [SMS-GG] (US) */
-  {0xFB481971, 0, 0, 0, MAPPER_KOREA_16K,     SYSTEM_GGMS,        REGION_USA}, /* Street Hero [Proto 1] [SMS-GG] (US) */
-  {0xA67F2A5C, 0, 0, 0, MAPPER_MULTI_16K,      SYSTEM_SMS, REGION_JAPAN_NTSC}, /* 4-Pak All Action (KR) */
-  {0x98AF0236, 0, 0, 0, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 1) (KR) */
-  {0x6EBFE1C3, 0, 0, 0, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 2) (KR) */
-  {0x81A36A4F, 0, 0, 0, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 3) (KR) */
-  {0x8D2D695D, 0, 0, 0, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 4) (KR) */
-  {0x82C09B57, 0, 0, 0, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 5) (KR) */
-  {0x4088EEB4, 0, 0, 0, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 6) (KR) */
-  {0xFBA94148, 0, 0, 0, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 8-in-1 The Best Game Collection (Vol. 1) (KR) */
-  {0x8333C86E, 0, 0, 0, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 8-in-1 The Best Game Collection (Vol. 2) (KR) */
-  {0x00E9809F, 0, 0, 0, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 8-in-1 The Best Game Collection (Vol. 3) (KR) */
-  {0xBA5EC0E3, 0, 0, 0, MAPPER_MULTI_4x8K,     SYSTEM_SMS, REGION_JAPAN_NTSC}, /* 128 Hap (KR) */
-  {0x380D7400, 0, 0, 0, MAPPER_MULTI_4x8K,     SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Game Mo-eumjip 188 Hap [v0] (KR) */
-  {0xC76601E0, 0, 0, 0, MAPPER_MULTI_4x8K,     SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Game Mo-eumjip 188 Hap [v1] (KR) */
-  {0x38B3A72F, 0, 0, 0, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Game Chongjiphap 200 (KR).sms */
-  {0xD3056492, 0, 0, 0, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 270 Hap ~ Jaemissneun-270 (KR) */
-  {0xAB07ECD4, 0, 0, 0, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game World 260 Hap (KR) */
-  {0x0CDE0938, 0, 0, 0, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game World 30 Hap [v0] (KR) */
-  {0xE6AD4D4B, 0, 0, 0, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game World 30 Hap [v1] (KR) */
-  {0xC29BB8CD, 0, 0, 0, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game World 75 Hap (KR) */
-  {0x660BF6EC, 0, 0, 0, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Multi Game - Super 75 in 1 (KR) */
-  {0xEB7790DE, 0, 0, 0, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Multi Game - Super 125 in 1 (KR) */
-  {0xEDB13847, 0, 0, 0, MAPPER_MULTI_2x16K_V1, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 45 (KR) */
-  {0xA841C0B7, 0, 0, 0, MAPPER_MULTI_2x16K_V2, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 52 Hap (KR) */
-  {0x4E202AA2, 0, 0, 0, MAPPER_MULTI_2x16K_V2, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 180 (KR) */
-  {0xBA5D2776, 0, 0, 0, MAPPER_MULTI_2x16K_V2, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 200 (KR) */
-  {0xF60E71EC, 0, 0, 0, MAPPER_MULTI_16K_32K,  SYSTEM_PBC, REGION_JAPAN_NTSC}, /* Jaemiissneun Game Mo-eumjip 42 Hap [SMS-MD] (KR) */
-  {0x53904167, 0, 0, 0, MAPPER_MULTI_16K_32K,  SYSTEM_PBC, REGION_JAPAN_NTSC}, /* Jaemiissneun Game Mo-eumjip 65 Hap [SMS-MD] (KR)/ */
-  {0x7F667485, 0, 0, 0, MAPPER_MULTI_16K_32K,  SYSTEM_PBC, REGION_JAPAN_NTSC}, /* Mega Mode Super Game 138 [SMS-MD] (KR) */
-  {0xC0AC6956, 0, 0, 0, MAPPER_MULTI_16K_32K,  SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Pigu-Wang 7 Hap - Jaemiiss-neun Game Mo-eumjip (KR) */
-  {0x4342DB9D, 0, 0, 0, MAPPER_MULTI_32K,      SYSTEM_SMS, REGION_JAPAN_NTSC}, /* 11 Hap Gam-Boy (KR) */
-  {0x1B8956D1, 0, 0, 0, MAPPER_MULTI_32K_16K,  SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 150 (KR) */
-  {0xD9EF7D69, 0, 0, 0, MAPPER_MULTI_32K_16K,  SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 270 (KR) */
-  {0xE6C9C046, 0, 0, 0, MAPPER_ZEMINA_4x8K,    SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Zemina Best 25 (KR) */
-  {0xD8169FE2, 0, 0, 0, MAPPER_ZEMINA_4x8K,    SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Zemina Best 39 (KR) */
-  {0x3C339D9E, 0, 0, 0, MAPPER_ZEMINA_4x8K,    SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Zemina Best 88 (KR) */
-  {0x7CD51467, 0, 0, 0, MAPPER_ZEMINA_16K_32K, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Zemina 4-in-1 (Q-Bert, Sports 3, Gulkave, Pooyan) (KR) */
-  {0x1B3E032E, 0, 0, 0, MAPPER_HWASUNG,        SYSTEM_SMS, REGION_JAPAN_NTSC}, /* 2 Hap in 1 (Moai-ui bomul, David-2) (KR) */
+  {0x445525E2, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Penguin Adventure (KR) */
+  {0x83F0EEDE, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Street Master (KR) */
+  {0xA05258F5, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Wonsiin (KR) */
+  {0x06965ED9, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* F-1 Spirit - The way to Formula-1 (KR) */
+  {0x77EFE84A, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Cyborg Z (KR) */
+  {0xF89AF3CC, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Knightmare II: The Maze of Galious (KR) */
+  {0x9195C34C, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Boy 3 (KR) */
+  {0xE316C06D, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MSX_NEMESIS,    SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Nemesis (KR) */
+  {0x0A77FA5E, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MSX,            SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Nemesis 2 (KR) */
+  {0x89B79E77, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_KOREA,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Dodgeball King (KR) */
+  {0x929222C4, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_KOREA,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Jang Pung II (KR) */
+  {0x18FB98A3, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_KOREA,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Jang Pung 3 (KR) */
+  {0x97D03541, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_KOREA,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Sangokushi 3 (KR) */
+  {0x192949D5, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_KOREA_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Janggun-ui Adeul (KR) */
+  {0x76C5BDFB, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_KOREA_16K,     SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Jang Pung II [SMS-GG] (KR) */
+  {0x01A2D595, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_KOREA_16K,     SYSTEM_GGMS,        REGION_USA}, /* Street Battle [Proto] [SMS-GG] (US) */
+  {0x9FA727A0, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_KOREA_16K,     SYSTEM_GGMS,        REGION_USA}, /* Street Hero [Proto 0] [SMS-GG] (US) */
+  {0xFB481971, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_KOREA_16K,     SYSTEM_GGMS,        REGION_USA}, /* Street Hero [Proto 1] [SMS-GG] (US) */
+  {0xA67F2A5C, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_16K,      SYSTEM_SMS, REGION_JAPAN_NTSC}, /* 4-Pak All Action (KR) */
+  {0x98AF0236, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 1) (KR) */
+  {0x6EBFE1C3, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 2) (KR) */
+  {0x81A36A4F, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 3) (KR) */
+  {0x8D2D695D, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 4) (KR) */
+  {0x82C09B57, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 5) (KR) */
+  {0x4088EEB4, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 3-in-1 The Best Game Collection (Vol. 6) (KR) */
+  {0xFBA94148, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 8-in-1 The Best Game Collection (Vol. 1) (KR) */
+  {0x8333C86E, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 8-in-1 The Best Game Collection (Vol. 2) (KR) */
+  {0x00E9809F, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_HICOM,          SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hi-Com 8-in-1 The Best Game Collection (Vol. 3) (KR) */
+  {0xBA5EC0E3, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_4x8K,     SYSTEM_SMS, REGION_JAPAN_NTSC}, /* 128 Hap (KR) */
+  {0x380D7400, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_4x8K,     SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Game Mo-eumjip 188 Hap [v0] (KR) */
+  {0xC76601E0, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_4x8K,     SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Game Mo-eumjip 188 Hap [v1] (KR) */
+  {0x38B3A72F, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Game Chongjiphap 200 (KR).sms */
+  {0xD3056492, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 270 Hap ~ Jaemissneun-270 (KR) */
+  {0xAB07ECD4, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game World 260 Hap (KR) */
+  {0x0CDE0938, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game World 30 Hap [v0] (KR) */
+  {0xE6AD4D4B, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game World 30 Hap [v1] (KR) */
+  {0xC29BB8CD, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game World 75 Hap (KR) */
+  {0x660BF6EC, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Multi Game - Super 75 in 1 (KR) */
+  {0xEB7790DE, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_8K,       SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Multi Game - Super 125 in 1 (KR) */
+  {0xEDB13847, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_2x16K_V1, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 45 (KR) */
+  {0xA841C0B7, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_2x16K_V2, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 52 Hap (KR) */
+  {0x4E202AA2, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_2x16K_V2, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 180 (KR) */
+  {0xBA5D2776, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_2x16K_V2, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 200 (KR) */
+  {0xF60E71EC, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_16K_32K,  SYSTEM_PBC, REGION_JAPAN_NTSC}, /* Jaemiissneun Game Mo-eumjip 42 Hap [SMS-MD] (KR) */
+  {0x53904167, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_16K_32K,  SYSTEM_PBC, REGION_JAPAN_NTSC}, /* Jaemiissneun Game Mo-eumjip 65 Hap [SMS-MD] (KR)/ */
+  {0x7F667485, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_16K_32K,  SYSTEM_PBC, REGION_JAPAN_NTSC}, /* Mega Mode Super Game 138 [SMS-MD] (KR) */
+  {0xC0AC6956, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_16K_32K,  SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Pigu-Wang 7 Hap - Jaemiiss-neun Game Mo-eumjip (KR) */
+  {0x4342DB9D, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_32K,      SYSTEM_SMS, REGION_JAPAN_NTSC}, /* 11 Hap Gam-Boy (KR) */
+  {0x1B8956D1, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_32K_16K,  SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 150 (KR) */
+  {0xD9EF7D69, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_MULTI_32K_16K,  SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Game 270 (KR) */
+  {0xE6C9C046, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_ZEMINA_4x8K,    SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Zemina Best 25 (KR) */
+  {0xD8169FE2, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_ZEMINA_4x8K,    SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Zemina Best 39 (KR) */
+  {0x3C339D9E, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_ZEMINA_4x8K,    SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Zemina Best 88 (KR) */
+  {0x7CD51467, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_ZEMINA_16K_32K, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Zemina 4-in-1 (Q-Bert, Sports 3, Gulkave, Pooyan) (KR) */
+  {0x1B3E032E, 0, 0, gpgx::hid::DeviceType::kNone, MAPPER_HWASUNG,        SYSTEM_SMS, REGION_JAPAN_NTSC}, /* 2 Hap in 1 (Moai-ui bomul, David-2) (KR) */
 
   /* games using Codemaster mapper */
-  {0x29822980, 0, 0, 0,  MAPPER_CODIES, SYSTEM_SMS2, REGION_EUROPE}, /* Cosmic Spacehead */
-  {0x8813514B, 0, 0, 0,  MAPPER_CODIES, SYSTEM_SMS2, REGION_EUROPE}, /* Excellent Dizzy Collection, The [Proto] */
-  {0xB9664AE1, 0, 0, 0,  MAPPER_CODIES, SYSTEM_SMS2, REGION_EUROPE}, /* Fantastic Dizzy */
-  {0xA577CE46, 0, 0, 0,  MAPPER_CODIES, SYSTEM_SMS2, REGION_EUROPE}, /* Micro Machines */
-  {0xEA5C3A6F, 0, 0, 0,  MAPPER_CODIES, SYSTEM_SMS2,    REGION_USA}, /* Dinobasher - Starring Bignose the Caveman [Proto] */
-  {0xAA140C9C, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GGMS,    REGION_USA}, /* Excellent Dizzy Collection, The [SMS-GG] */
-  {0xC888222B, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GGMS,    REGION_USA}, /* Fantastic Dizzy [SMS-GG] */
-  {0x6CAA625B, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Cosmic Spacehead [GG]*/
-  {0x152F0DCC, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Drop Zone */
-  {0x5E53C7F7, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Ernie Els Golf */
-  {0xD9A7F170, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Man Overboard! */
-  {0xF7C524F6, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Micro Machines [GG] */
-  {0xC21E6CD0, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Micro Machines [GG] [Proto] */
-  {0xDBE8895C, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Micro Machines 2 - Turbo Tournament */
-  {0xC1756BEE, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Pete Sampras Tennis */
-  {0x72981057, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* CJ Elephant Fugitive */
-  {0x3ACE6335, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* CJ Elephant Fugitive [Proto] */
-  {0x2306AAF4, 0, 0, 0,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Dinobasher - Starring Bignose the Caveman [GG] [Proto] */
+  {0x29822980, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_SMS2, REGION_EUROPE}, /* Cosmic Spacehead */
+  {0x8813514B, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_SMS2, REGION_EUROPE}, /* Excellent Dizzy Collection, The [Proto] */
+  {0xB9664AE1, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_SMS2, REGION_EUROPE}, /* Fantastic Dizzy */
+  {0xA577CE46, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_SMS2, REGION_EUROPE}, /* Micro Machines */
+  {0xEA5C3A6F, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_SMS2,    REGION_USA}, /* Dinobasher - Starring Bignose the Caveman [Proto] */
+  {0xAA140C9C, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GGMS,    REGION_USA}, /* Excellent Dizzy Collection, The [SMS-GG] */
+  {0xC888222B, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GGMS,    REGION_USA}, /* Fantastic Dizzy [SMS-GG] */
+  {0x6CAA625B, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Cosmic Spacehead [GG]*/
+  {0x152F0DCC, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Drop Zone */
+  {0x5E53C7F7, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Ernie Els Golf */
+  {0xD9A7F170, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Man Overboard! */
+  {0xF7C524F6, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Micro Machines [GG] */
+  {0xC21E6CD0, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Micro Machines [GG] [Proto] */
+  {0xDBE8895C, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Micro Machines 2 - Turbo Tournament */
+  {0xC1756BEE, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Pete Sampras Tennis */
+  {0x72981057, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* CJ Elephant Fugitive */
+  {0x3ACE6335, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* CJ Elephant Fugitive [Proto] */
+  {0x2306AAF4, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_CODIES, SYSTEM_GG,      REGION_USA}, /* Dinobasher - Starring Bignose the Caveman [GG] [Proto] */
 
   /* games using serial EEPROM */
-  {0x36EBCD6D, 0, 0, 0,  MAPPER_93C46,  SYSTEM_GG,   REGION_USA}, /* Majors Pro Baseball */
-  {0x2DA8E943, 0, 0, 0,  MAPPER_93C46,  SYSTEM_GG,   REGION_USA}, /* Pro Yakyuu GG League */
-  {0x3D8D0DD6, 0, 0, 0,  MAPPER_93C46,  SYSTEM_GG,   REGION_USA}, /* World Series Baseball [v0] */
-  {0xBB38CFD7, 0, 0, 0,  MAPPER_93C46,  SYSTEM_GG,   REGION_USA}, /* World Series Baseball [v1] */
-  {0x578A8A38, 0, 0, 0,  MAPPER_93C46,  SYSTEM_GG,   REGION_USA}, /* World Series Baseball '95 */
+  {0x36EBCD6D, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_93C46,  SYSTEM_GG,   REGION_USA}, /* Majors Pro Baseball */
+  {0x2DA8E943, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_93C46,  SYSTEM_GG,   REGION_USA}, /* Pro Yakyuu GG League */
+  {0x3D8D0DD6, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_93C46,  SYSTEM_GG,   REGION_USA}, /* World Series Baseball [v0] */
+  {0xBB38CFD7, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_93C46,  SYSTEM_GG,   REGION_USA}, /* World Series Baseball [v1] */
+  {0x578A8A38, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_93C46,  SYSTEM_GG,   REGION_USA}, /* World Series Baseball '95 */
 
   /* games using Terebi Oekaki graphic board */
-  {0xDD4A661B, 0, 0, 0,  MAPPER_TEREBI, SYSTEM_SG,   REGION_JAPAN_NTSC}, /* Terebi Oekaki */
+  {0xDD4A661B, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_TEREBI, SYSTEM_SG,   REGION_JAPAN_NTSC}, /* Terebi Oekaki */
 
   /* games using 2KB external RAM (volatile) */
-  {0xAF4F14BC, 0, 0, 0,  MAPPER_RAM_2K, SYSTEM_SG,   REGION_JAPAN_NTSC}, /* Othello (J) */
-  {0x1D1A0CA3, 0, 0, 0,  MAPPER_RAM_2K, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Othello (TW) */
+  {0xAF4F14BC, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_2K, SYSTEM_SG,   REGION_JAPAN_NTSC}, /* Othello (J) */
+  {0x1D1A0CA3, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_2K, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Othello (TW) */
 
   /* games using 8KB external RAM (volatile) */
-  {0x092F29D6, 0, 0, 0,  MAPPER_RAM_8K, SYSTEM_SG,   REGION_JAPAN_NTSC}, /* The Castle (J) */
+  {0x092F29D6, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K, SYSTEM_SG,   REGION_JAPAN_NTSC}, /* The Castle (J) */
 
   /* games requiring SG-1000 II 8K RAM extension adapter (type A) */
-  {0x16F240D3, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Adventure Island [DahJee] (TW) */
-  {0xCE5648C3, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Bomberman Special [DahJee] (TW) */
-  {0x223397A1, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* King's Valley (TW) */
-  {0x281D2888, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Knightmare [Jumbo] (TW) */
-  {0x306D5F78, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Rally-X [DahJee] (TW) */
-  {0x29E047CC, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Road Fighter (TW) */
-  {0x5CBD1163, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Tank Battalion (TW) */
-  {0x40414556, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* The Goonies (TW) */
-  {0x2E7166D5, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* The Legend of Kage (TW) */
-  {0xC550B4F0, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* TwinBee (TW) */
-  {0xFC87463C, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Yie Ar Kung-Fu II (TW) */
-  {0xDF7CBFA5, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Pippols (TW) */
-  {0xE0816BB7, 0, 0, 0,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Star Soldier [DahJee] (TW) */
+  {0x16F240D3, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Adventure Island [DahJee] (TW) */
+  {0xCE5648C3, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Bomberman Special [DahJee] (TW) */
+  {0x223397A1, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* King's Valley (TW) */
+  {0x281D2888, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Knightmare [Jumbo] (TW) */
+  {0x306D5F78, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Rally-X [DahJee] (TW) */
+  {0x29E047CC, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Road Fighter (TW) */
+  {0x5CBD1163, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Tank Battalion (TW) */
+  {0x40414556, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* The Goonies (TW) */
+  {0x2E7166D5, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* The Legend of Kage (TW) */
+  {0xC550B4F0, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* TwinBee (TW) */
+  {0xFC87463C, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Yie Ar Kung-Fu II (TW) */
+  {0xDF7CBFA5, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Pippols (TW) */
+  {0xE0816BB7, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_RAM_8K_EXT1, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Star Soldier [DahJee] (TW) */
 
   /* games requiring SG-1000 II 8K RAM extension adapter (type B) */
-  {0x69FC1494, 0, 0, 0,  MAPPER_NONE, SYSTEM_SGII_RAM_EXT, REGION_JAPAN_NTSC}, /* Bomberman Special (TW) */
-  {0xFFC4EE3F, 0, 0, 0,  MAPPER_NONE, SYSTEM_SGII_RAM_EXT, REGION_JAPAN_NTSC}, /* Magical Kid Wiz (TW) */
-  {0x2E366CCF, 0, 0, 0,  MAPPER_NONE, SYSTEM_SGII_RAM_EXT, REGION_JAPAN_NTSC}, /* The Castle [MSX] (TW) */
-  {0xAAAC12CF, 0, 0, 0,  MAPPER_NONE, SYSTEM_SGII_RAM_EXT, REGION_JAPAN_NTSC}, /* Rally-X (TW) */
-  {0xD2EDD329, 0, 0, 0,  MAPPER_NONE, SYSTEM_SGII_RAM_EXT, REGION_JAPAN_NTSC}, /* Road Fighter (TW) */
+  {0x69FC1494, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_NONE, SYSTEM_SGII_RAM_EXT, REGION_JAPAN_NTSC}, /* Bomberman Special (TW) */
+  {0xFFC4EE3F, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_NONE, SYSTEM_SGII_RAM_EXT, REGION_JAPAN_NTSC}, /* Magical Kid Wiz (TW) */
+  {0x2E366CCF, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_NONE, SYSTEM_SGII_RAM_EXT, REGION_JAPAN_NTSC}, /* The Castle [MSX] (TW) */
+  {0xAAAC12CF, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_NONE, SYSTEM_SGII_RAM_EXT, REGION_JAPAN_NTSC}, /* Rally-X (TW) */
+  {0xD2EDD329, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_NONE, SYSTEM_SGII_RAM_EXT, REGION_JAPAN_NTSC}, /* Road Fighter (TW) */
 
   /* games requiring 2KB internal RAM (SG-1000 II clone hardware) */
-  {0x7F7F009D, 0, 0, 0,  MAPPER_NONE, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Circus Charlie (KR) */
-  {0x77DB4704, 0, 0, 0,  MAPPER_NONE, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Q*Bert */
-  {0xC5A67B95, 0, 0, 0,  MAPPER_NONE, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Othello Multivision BIOS */
+  {0x7F7F009D, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_NONE, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Circus Charlie (KR) */
+  {0x77DB4704, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_NONE, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Q*Bert */
+  {0xC5A67B95, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_NONE, SYSTEM_SGII, REGION_JAPAN_NTSC}, /* Othello Multivision BIOS */
 
   /* games requiring Japanese region setting */
-  {0x71DEBA5A, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GG,  REGION_JAPAN_NTSC}, /* Pop Breaker */
-  {0xC9DD4E5F, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Woody Pop (Super Arkanoid) */
+  {0x71DEBA5A, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GG,  REGION_JAPAN_NTSC}, /* Pop Breaker */
+  {0xC9DD4E5F, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Woody Pop (Super Arkanoid) */
 
   /* games requiring Japanese Master System I/O chip (315-5297) */
-  {0xBD1CC7DF, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Tetris (KR) */
-  {0x6D309AC5, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Power Boggle Boggle (KR) */
+  {0xBD1CC7DF, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Tetris (KR) */
+  {0x6D309AC5, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Power Boggle Boggle (KR) */
 
   /* games requiring random RAM pattern initialization */
-  {0x08BF3DE3, 0, 0, 0,  MAPPER_NONE, SYSTEM_MARKIII, REGION_JAPAN_NTSC}, /* Alibaba and 40 Thieves (KR) */
-  {0x643B6B76, 0, 0, 0,  MAPPER_NONE, SYSTEM_MARKIII, REGION_JAPAN_NTSC}, /* Block Hole (KR) */
+  {0x08BF3DE3, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_NONE, SYSTEM_MARKIII, REGION_JAPAN_NTSC}, /* Alibaba and 40 Thieves (KR) */
+  {0x643B6B76, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_NONE, SYSTEM_MARKIII, REGION_JAPAN_NTSC}, /* Block Hole (KR) */
 
   /* games requiring PAL timings */
-  {0x72420F38, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Addams Familly */
-  {0x2D48C1D3, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Back to the Future Part III */
-  {0x1CBB7BF1, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Battlemaniacs (BR) */
-  {0x1B10A951, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Bram Stoker's Dracula */
-  {0xC0E25D62, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* California Games II */
-  {0x45C50294, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Jogos de Verao II (BR) */
-  {0xC9DBF936, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Home Alone */
-  {0xA109A6FE, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Power Strike II */
-  {0x0047B615, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Predator2 */
-  {0xF42E145C, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Quest for the Shaven Yak Starring Ren Hoek & Stimpy (BR) */
-  {0x9F951756, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* RoboCop 3 */
-  {0xF8176918, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Sensible Soccer */
-  {0x1575581D, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Shadow of the Beast */
-  {0x96B3F29E, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Sonic Blast (BR) */
-  {0x5B3B922C, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Sonic the Hedgehog 2 [V0] */
-  {0xD6F2BFCA, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Sonic the Hedgehog 2 [V1] */
-  {0xCA1D3752, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Space Harrier [50 Hz] */
-  {0x85CFC9C9, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Taito Chase H.Q. */
-  {0x332A847D, 0, 0, 0,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* NBA Jam [Proto] */
+  {0x72420F38, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Addams Familly */
+  {0x2D48C1D3, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Back to the Future Part III */
+  {0x1CBB7BF1, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Battlemaniacs (BR) */
+  {0x1B10A951, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Bram Stoker's Dracula */
+  {0xC0E25D62, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* California Games II */
+  {0x45C50294, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Jogos de Verao II (BR) */
+  {0xC9DBF936, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Home Alone */
+  {0xA109A6FE, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Power Strike II */
+  {0x0047B615, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Predator2 */
+  {0xF42E145C, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Quest for the Shaven Yak Starring Ren Hoek & Stimpy (BR) */
+  {0x9F951756, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* RoboCop 3 */
+  {0xF8176918, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Sensible Soccer */
+  {0x1575581D, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Shadow of the Beast */
+  {0x96B3F29E, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Sonic Blast (BR) */
+  {0x5B3B922C, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Sonic the Hedgehog 2 [V0] */
+  {0xD6F2BFCA, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Sonic the Hedgehog 2 [V1] */
+  {0xCA1D3752, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Space Harrier [50 Hz] */
+  {0x85CFC9C9, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* Taito Chase H.Q. */
+  {0x332A847D, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS2, REGION_EUROPE}, /* NBA Jam [Proto] */
 
   /* games running in Game Gear MS compatibility mode */
-  {0x59840FD6, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Castle of Illusion - Starring Mickey Mouse [SMS-GG] */
-  {0xCC521975, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Cave Dude [Proto] [SMS-GG] */
-  {0x1D93246E, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Olympic Gold [A][SMS-GG] */
-  {0xA2F9C7AF, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Olympic Gold [B][SMS-GG] */
-  {0x01EAB89D, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Out Run Europa [SMS-GG] */
-  {0xF037EC00, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Out Run Europa (US) [SMS-GG] */
-  {0xE5F789B9, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Predator 2 [SMS-GG] */
-  {0x311D2863, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Prince of Persia [A][SMS-GG] */
-  {0x45F058D6, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Prince of Persia [B][SMS-GG] */
-  {0x56201996, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* R.C. Grand Prix [SMS-GG] */
-  {0x10DBBEF4, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Super Kick Off [SMS-GG] */
-  {0xC8381DEF, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Taito Chase H.Q [SMS-GG] */
-  {0xDA8E95A9, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* WWF Wrestlemania Steel Cage Challenge [SMS-GG] */
-  {0x6630E5FD, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Aerial Assault (TW) [SMS-GG] */
-  {0x6F8E46CF, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Alex Kidd in Miracle World (TW) [SMS-GG] */
-  {0x5E4B454E, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Argos no Juujiken (TW) [SMS-GG] */
-  {0x98F64975, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Black Belt (TW) [SMS-GG] */
-  {0x9942B69B, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Castle of Illusion - Starring Mickey Mouse (J) [SMS-GG] */
-  {0x55F929CE, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Choplifter (TW) [SMS-GG] */
-  {0xAD9FF469, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Cyber Shinobi, The (TW) [SMS-GG] */
-  {0xFB163003, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Doki Doki Penguin Land - Uchuu-Daibouken (TW) [SMS-GG] */
-  {0xF4F848C2, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Double Dragon (TW) [SMS-GG] */
-  {0x96E16FE4, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* E-SWAT [v1] (TW) [SMS-GG] */
-  {0xB948752E, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Final Bubble Bobble (TW) [SMS-GG] */
-  {0x44136A72, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Forgotten Worlds (TW) [SMS-GG] */
-  {0x6FE448A5, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Great Basketball (TW) [SMS-GG] */
-  {0xB6207F0D, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Hokuto no Ken (TW) [SMS-GG] */
-  {0x4762E022, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Kung Fu Kid (TW) [SMS-GG] */
-  {0x7EAED675, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Lord of Sword (TW) [SMS-GG] */
-  {0x3382D73F, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Olympic Gold (TW) [SMS-GG] */
-  {0x354BEE78, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Paperboy [v1] (TW) [SMS-GG] */
-  {0xCAFD2D83, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Prince of Persia (TW) [SMS-GG] */
-  {0xCACDF759, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Quartet (TW) [SMS-GG] */
-  {0xE532716F, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* R-Type (TW) [SMS-GG] */
-  {0x9C76FB3A, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Rastan Saga (J) [SMS-GG] */
-  {0x7D59283B, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Scramble Spirits (TW) [SMS-GG] */
-  {0x89EFCC22, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Secret Command (TW) [SMS-GG] */
-  {0xD0263024, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Seishun Scandal (TW) [SMS-GG] */
-  {0xAB67C6BD, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Shadow Dancer - The Secret Of Shinobi (TW) [SMS-GG] */
-  {0xAC2EA669, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Shadow of the Beast (TW) [SMS-GG] */
-  {0x63A7F906, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Strider (TW) [SMS-GG] */
-  {0xD282EF71, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Submarine Attack (TW) [SMS-GG] */
-  {0x7BB81E3D, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Taito Chase H.Q (J) [SMS-GG] */
-  {0x98CF1254, 0, 0, 0,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Thunder Blade (TW) [SMS-GG] */
+  {0x59840FD6, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Castle of Illusion - Starring Mickey Mouse [SMS-GG] */
+  {0xCC521975, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Cave Dude [Proto] [SMS-GG] */
+  {0x1D93246E, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Olympic Gold [A][SMS-GG] */
+  {0xA2F9C7AF, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Olympic Gold [B][SMS-GG] */
+  {0x01EAB89D, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Out Run Europa [SMS-GG] */
+  {0xF037EC00, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Out Run Europa (US) [SMS-GG] */
+  {0xE5F789B9, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Predator 2 [SMS-GG] */
+  {0x311D2863, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Prince of Persia [A][SMS-GG] */
+  {0x45F058D6, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Prince of Persia [B][SMS-GG] */
+  {0x56201996, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* R.C. Grand Prix [SMS-GG] */
+  {0x10DBBEF4, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Super Kick Off [SMS-GG] */
+  {0xC8381DEF, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* Taito Chase H.Q [SMS-GG] */
+  {0xDA8E95A9, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS,        REGION_USA}, /* WWF Wrestlemania Steel Cage Challenge [SMS-GG] */
+  {0x6630E5FD, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Aerial Assault (TW) [SMS-GG] */
+  {0x6F8E46CF, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Alex Kidd in Miracle World (TW) [SMS-GG] */
+  {0x5E4B454E, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Argos no Juujiken (TW) [SMS-GG] */
+  {0x98F64975, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Black Belt (TW) [SMS-GG] */
+  {0x9942B69B, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Castle of Illusion - Starring Mickey Mouse (J) [SMS-GG] */
+  {0x55F929CE, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Choplifter (TW) [SMS-GG] */
+  {0xAD9FF469, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Cyber Shinobi, The (TW) [SMS-GG] */
+  {0xFB163003, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Doki Doki Penguin Land - Uchuu-Daibouken (TW) [SMS-GG] */
+  {0xF4F848C2, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Double Dragon (TW) [SMS-GG] */
+  {0x96E16FE4, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* E-SWAT [v1] (TW) [SMS-GG] */
+  {0xB948752E, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Final Bubble Bobble (TW) [SMS-GG] */
+  {0x44136A72, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Forgotten Worlds (TW) [SMS-GG] */
+  {0x6FE448A5, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Great Basketball (TW) [SMS-GG] */
+  {0xB6207F0D, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Hokuto no Ken (TW) [SMS-GG] */
+  {0x4762E022, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Kung Fu Kid (TW) [SMS-GG] */
+  {0x7EAED675, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Lord of Sword (TW) [SMS-GG] */
+  {0x3382D73F, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Olympic Gold (TW) [SMS-GG] */
+  {0x354BEE78, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Paperboy [v1] (TW) [SMS-GG] */
+  {0xCAFD2D83, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Prince of Persia (TW) [SMS-GG] */
+  {0xCACDF759, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Quartet (TW) [SMS-GG] */
+  {0xE532716F, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* R-Type (TW) [SMS-GG] */
+  {0x9C76FB3A, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Rastan Saga (J) [SMS-GG] */
+  {0x7D59283B, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Scramble Spirits (TW) [SMS-GG] */
+  {0x89EFCC22, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Secret Command (TW) [SMS-GG] */
+  {0xD0263024, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Seishun Scandal (TW) [SMS-GG] */
+  {0xAB67C6BD, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Shadow Dancer - The Secret Of Shinobi (TW) [SMS-GG] */
+  {0xAC2EA669, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Shadow of the Beast (TW) [SMS-GG] */
+  {0x63A7F906, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Strider (TW) [SMS-GG] */
+  {0xD282EF71, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Submarine Attack (TW) [SMS-GG] */
+  {0x7BB81E3D, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Taito Chase H.Q (J) [SMS-GG] */
+  {0x98CF1254, 0, 0, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_GGMS, REGION_JAPAN_NTSC}, /* Thunder Blade (TW) [SMS-GG] */
 
   /* games requiring 3-D Glasses */
-  {0x6BD5C2BF, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Space Harrier 3-D */
-  {0x8ECD201C, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Blade Eagle 3-D */
-  {0xFBF96C81, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Blade Eagle 3-D (BR) */
-  {0x58D5FC48, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Blade Eagle 3-D [Proto] */
-  {0x31B8040B, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Maze Hunter 3-D */
-  {0xABD48AD2, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Poseidon Wars 3-D */
-  {0xA3EF13CB, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Zaxxon 3-D */
-  {0xBBA74147, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Zaxxon 3-D [Proto] */
-  {0xD6F43DDA, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Out Run 3-D */
-  {0x4E684EC0, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Out Run 3-D [Proto] */
-  {0x871562b0, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Maze Walker */
-  {0x156948f9, 1, 1, 0,  MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Space Harrier 3-D (J) */
+  {0x6BD5C2BF, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Space Harrier 3-D */
+  {0x8ECD201C, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Blade Eagle 3-D */
+  {0xFBF96C81, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Blade Eagle 3-D (BR) */
+  {0x58D5FC48, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Blade Eagle 3-D [Proto] */
+  {0x31B8040B, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Maze Hunter 3-D */
+  {0xABD48AD2, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Poseidon Wars 3-D */
+  {0xA3EF13CB, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Zaxxon 3-D */
+  {0xBBA74147, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Zaxxon 3-D [Proto] */
+  {0xD6F43DDA, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Out Run 3-D */
+  {0x4E684EC0, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Out Run 3-D [Proto] */
+  {0x871562b0, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Maze Walker */
+  {0x156948f9, 1, 1, gpgx::hid::DeviceType::kNone,  MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Space Harrier 3-D (J) */
 
   /* games requiring 3-D Glasses & Sega Light Phaser */
-  {0xFBE5CFBB, 1, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Missile Defense 3D */
-  {0xE79BB689, 1, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Missile Defense 3D [BIOS] */
-  {0x43DEF05D, 1, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Missile Defense 3D [Proto] */
-  {0x56DCB2D4, 1, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* 3D Gunner [Proto] */
+  {0xFBE5CFBB, 1, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Missile Defense 3D */
+  {0xE79BB689, 1, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Missile Defense 3D [BIOS] */
+  {0x43DEF05D, 1, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Missile Defense 3D [Proto] */
+  {0x56DCB2D4, 1, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* 3D Gunner [Proto] */
 
   /* games requiring Sega Light Phaser */
-  {0x861B6E79, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Assault City [Light Phaser] */
-  {0x5FC74D2A, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Gangster Town */
-  {0xE167A561, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Hang-On / Safari Hunt */
-  {0x91E93385, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Hang-On / Safari Hunt [BIOS] */
-  {0xE8EA842C, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Marksman Shooting / Trap Shooting */
-  {0xE8215C2E, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Marksman Shooting / Trap Shooting / Safari Hunt */
-  {0x205CAAE8, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Operation Wolf */
-  {0x23283F37, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Operation Wolf [A] */
-  {0xDA5A7013, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Rambo 3 */
-  {0x79AC8E7F, 0, 1, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Rescue Mission */
-  {0x4B051022, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Shooting Gallery */
-  {0xA908CFF5, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Spacegun */
-  {0x5359762D, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Wanted */
-  {0x0CA95637, 0, 0, SYSTEM_LIGHTPHASER, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Laser Ghost */
+  {0x861B6E79, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Assault City [Light Phaser] */
+  {0x5FC74D2A, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Gangster Town */
+  {0xE167A561, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Hang-On / Safari Hunt */
+  {0x91E93385, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Hang-On / Safari Hunt [BIOS] */
+  {0xE8EA842C, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Marksman Shooting / Trap Shooting */
+  {0xE8215C2E, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Marksman Shooting / Trap Shooting / Safari Hunt */
+  {0x205CAAE8, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Operation Wolf */
+  {0x23283F37, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Operation Wolf [A] */
+  {0xDA5A7013, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Rambo 3 */
+  {0x79AC8E7F, 0, 1, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Rescue Mission */
+  {0x4B051022, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Shooting Gallery */
+  {0xA908CFF5, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Spacegun */
+  {0x5359762D, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Wanted */
+  {0x0CA95637, 0, 0, gpgx::hid::DeviceType::kLightPhaser, MAPPER_SEGA, SYSTEM_SMS, REGION_USA}, /* Laser Ghost */
 
   /* games requiring Sega Paddle */
-  {0xF9DBB533, 0, 1, SYSTEM_PADDLE, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Alex Kidd BMX Trial */
-  {0xA6FA42D0, 0, 1, SYSTEM_PADDLE, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Galactic Protector */
-  {0x29BC7FAD, 0, 1, SYSTEM_PADDLE, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Megumi Rescue */
-  {0x315917D4, 0, 0, SYSTEM_PADDLE, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Woody Pop */
+  {0xF9DBB533, 0, 1, gpgx::hid::DeviceType::kPaddle, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Alex Kidd BMX Trial */
+  {0xA6FA42D0, 0, 1, gpgx::hid::DeviceType::kPaddle, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Galactic Protector */
+  {0x29BC7FAD, 0, 1, gpgx::hid::DeviceType::kPaddle, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Megumi Rescue */
+  {0x315917D4, 0, 0, gpgx::hid::DeviceType::kPaddle, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Woody Pop */
 
   /* games requiring Sega Sport Pad */
-  {0x41C948BF, 0, 0, SYSTEM_SPORTSPAD, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Sports Pad Soccer */
-  {0x0CB7E21F, 0, 0, SYSTEM_SPORTSPAD, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Great Ice Hockey */
-  {0xE42E4998, 0, 0, SYSTEM_SPORTSPAD, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Sports Pad Football */
+  {0x41C948BF, 0, 0, gpgx::hid::DeviceType::kSportsPad, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Sports Pad Soccer */
+  {0x0CB7E21F, 0, 0, gpgx::hid::DeviceType::kSportsPad, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Great Ice Hockey */
+  {0xE42E4998, 0, 0, gpgx::hid::DeviceType::kSportsPad, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Sports Pad Football */
 
   /* games requiring Furrtek's Master Tap */
-  {0xFAB6F52F, 0, 0, SYSTEM_MASTERTAP, MAPPER_NONE, SYSTEM_SMS2, REGION_USA}, /* BOom (v1.0) */
-  {0x143AB50B, 0, 0, SYSTEM_MASTERTAP, MAPPER_NONE, SYSTEM_SMS2, REGION_USA}, /* BOom (v1.1) */
+  {0xFAB6F52F, 0, 0, gpgx::hid::DeviceType::kMasterTap, MAPPER_NONE, SYSTEM_SMS2, REGION_USA}, /* BOom (v1.0) */
+  {0x143AB50B, 0, 0, gpgx::hid::DeviceType::kMasterTap, MAPPER_NONE, SYSTEM_SMS2, REGION_USA}, /* BOom (v1.1) */
 
   /* games requiring Sega Graphic Board */
-  {0x276AA542, 0, 0, SYSTEM_GRAPHIC_BOARD, MAPPER_NONE, SYSTEM_SMS, REGION_USA}, /* Sega Graphic Board v2.0 Software (Prototype) */
+  {0x276AA542, 0, 0, gpgx::hid::DeviceType::kGraphicBoard, MAPPER_NONE, SYSTEM_SMS, REGION_USA}, /* Sega Graphic Board v2.0 Software (Prototype) */
 
   /* games supporting YM2413 FM */
-  {0x1C951F8E, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* After Burner */
-  {0xC13896D5, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Alex Kidd: The Lost Stars */
-  {0x5CBFE997, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Alien Syndrome */
-  {0xBBA2FE98, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Altered Beast */
-  {0xFF614EB3, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Aztec Adventure */
-  {0x3084CF11, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Bomber Raid */
-  {0xAC6009A7, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* California Games */
-  {0xA4852757, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Captain Silver */
-  {0xB81F6FA5, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Captain Silver (U) */
-  {0x3CFF6E80, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Casino Games */
-  {0xE7F62E6D, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Cloud Master */
-  {0x908E7524, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Cyborg Hunter */
-  {0xA55D89F3, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Double Dragon */
-  {0xB8B141F9, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Fantasy Zone II */
-  {0xD29889AD, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Fantasy Zone: The Maze */
-  {0xA4AC35D8, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Galaxy Force */
-  {0x6C827520, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Galaxy Force (U) */
-  {0x1890F407, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Game Box Série Esportes Radicais (BR) */
-  {0xB746A6F5, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Global Defense */
-  {0x91A0FC4E, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Global Defense [Proto] */
-  {0x48651325, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Golfamania */
-  {0x5DABFDC3, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Golfamania [Proto] */
-  {0xA51376FE, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Golvellius - Valley of Doom */
-  {0x98E4AE4A, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Great Golf */
-  {0x516ED32E, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Kenseiden */
-  {0xE8511B08, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Lord of The Sword */
-  {0x0E333B6E, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Miracle Warriors - Seal of The Dark Lord */
-  {0x301A59AA, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Miracle Warriors - Seal of The Dark Lord [Proto] */
-  {0x01D67C0B, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Mônica no Castelo do Dragão (BR) */
-  {0x5589D8D2, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Out Run */
-  {0xE030E66C, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Parlour Games */
-  {0xF97E9875, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Penguin Land */
-  {0x4077EFD9, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Power Strike */
-  {0xBB54B6B0, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* R-Type */
-  {0x42FC47EE, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Rampage */
-  {0xC547EB1B, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Rastan */
-  {0x9A8B28EC, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Scramble Spirits */
-  {0xAAB67EC3, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Shanghai */
-  {0x0C6FAC4E, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Shinobi */
-  {0x4752CAE7, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* SpellCaster */
-  {0x1A390B93, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Tennis Ace */
-  {0xAE920E4B, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Thunder Blade */
-  {0x51BD14BE, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Time Soldiers */
-  {0x22CCA9BB, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Turma da Mônica em: O Resgate (BR) */
-  {0xB52D60C8, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Ultima IV */
-  {0xDE9F8517, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Ultima IV [Proto] */
-  {0xDFB0B161, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Vigilante */
-  {0x679E1676, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Wonder Boy III: The Dragon's Trap */
-  {0x8CBEF0C1, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Wonder Boy in Monster Land */
-  {0x2F2E3BC9, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Zillion II - The Tri Formation */
-  {0x48D44A13, 0, 1, 0, MAPPER_NONE, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* BIOS (J) */
-  {0xD8C4165B, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Aleste */
-  {0x4CC11DF9, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Alien Syndrome (J) */
-  {0xE421E466, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Chouon Senshi Borgman */
-  {0x2BCDB8FA, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Doki Doki Penguin Land - Uchuu-Daibouken */
-  {0x56BD2455, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Doki Doki Penguin Land - Uchuu-Daibouken [Proto] */
-  {0xC722FB42, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Fantasy Zone II (J) */
-  {0x7ABC70E9, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Family Games (Party Games) */
-  {0x9AFAB511, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Game De Check! Koutsuu Anzen [Proto] (JP) */
-  {0x9E9DEB18, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Game De Check! Koutsuu Anzen [Proto] (JP) [T-Eng] */
-  {0x6586BD1F, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Masters Golf */
-  {0x4847BC91, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Masters Golf [Proto] */
-  {0xB9FDF6D9, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Haja no Fuuin */
-  {0x955A009E, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hoshi wo Sagashite */
-  {0x05EA5353, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Kenseiden (J) */
-  {0xD11D32E4, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Kujakuou */
-  {0xAA7D6F45, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Lord of Sword */
-  {0xBF0411AD, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Maou Golvellius */
-  {0x21A21352, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Maou Golvellius [Proto] */
-  {0x5B5F9106, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Nekyuu Kousien */
-  {0xBEA27D5C, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Opa Opa */
-  {0x6605D36A, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Phantasy Star (J) */
-  {0x70E89681, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Phantasy Star (J) [T-Eng v1.02] */
-  {0xA04CF71A, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Phantasy Star (J) [T-Eng v2.00] */
-  {0xE1FFF1BB, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Shinobi (J) */
-  {0x11645549, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Solomon no Kagi - Oujo Rihita no Namida */
-  {0x7E0EF8CB, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Racing */
-  {0xB1DA6A30, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Wonder Boy Monster World */
-  {0x8132AB2C, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Tensai Bakabon */
-  {0xC0CE19B1, 0, 1, 0, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Thunder Blade (J) */
-  {0x07301F83, 0, 1, 0, MAPPER_SEGA, SYSTEM_PBC, REGION_JAPAN_NTSC}  /* Phantasy Star [Megadrive] (J) */
+  {0x1C951F8E, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* After Burner */
+  {0xC13896D5, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Alex Kidd: The Lost Stars */
+  {0x5CBFE997, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Alien Syndrome */
+  {0xBBA2FE98, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Altered Beast */
+  {0xFF614EB3, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Aztec Adventure */
+  {0x3084CF11, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Bomber Raid */
+  {0xAC6009A7, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* California Games */
+  {0xA4852757, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Captain Silver */
+  {0xB81F6FA5, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Captain Silver (U) */
+  {0x3CFF6E80, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Casino Games */
+  {0xE7F62E6D, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Cloud Master */
+  {0x908E7524, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Cyborg Hunter */
+  {0xA55D89F3, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Double Dragon */
+  {0xB8B141F9, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Fantasy Zone II */
+  {0xD29889AD, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Fantasy Zone: The Maze */
+  {0xA4AC35D8, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Galaxy Force */
+  {0x6C827520, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Galaxy Force (U) */
+  {0x1890F407, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Game Box Série Esportes Radicais (BR) */
+  {0xB746A6F5, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Global Defense */
+  {0x91A0FC4E, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Global Defense [Proto] */
+  {0x48651325, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Golfamania */
+  {0x5DABFDC3, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Golfamania [Proto] */
+  {0xA51376FE, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Golvellius - Valley of Doom */
+  {0x98E4AE4A, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Great Golf */
+  {0x516ED32E, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Kenseiden */
+  {0xE8511B08, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Lord of The Sword */
+  {0x0E333B6E, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Miracle Warriors - Seal of The Dark Lord */
+  {0x301A59AA, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Miracle Warriors - Seal of The Dark Lord [Proto] */
+  {0x01D67C0B, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Mônica no Castelo do Dragão (BR) */
+  {0x5589D8D2, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Out Run */
+  {0xE030E66C, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Parlour Games */
+  {0xF97E9875, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Penguin Land */
+  {0x4077EFD9, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Power Strike */
+  {0xBB54B6B0, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* R-Type */
+  {0x42FC47EE, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Rampage */
+  {0xC547EB1B, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Rastan */
+  {0x9A8B28EC, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Scramble Spirits */
+  {0xAAB67EC3, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Shanghai */
+  {0x0C6FAC4E, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Shinobi */
+  {0x4752CAE7, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* SpellCaster */
+  {0x1A390B93, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Tennis Ace */
+  {0xAE920E4B, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Thunder Blade */
+  {0x51BD14BE, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Time Soldiers */
+  {0x22CCA9BB, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Turma da Mônica em: O Resgate (BR) */
+  {0xB52D60C8, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Ultima IV */
+  {0xDE9F8517, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Ultima IV [Proto] */
+  {0xDFB0B161, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Vigilante */
+  {0x679E1676, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Wonder Boy III: The Dragon's Trap */
+  {0x8CBEF0C1, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Wonder Boy in Monster Land */
+  {0x2F2E3BC9, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS,        REGION_USA}, /* Zillion II - The Tri Formation */
+  {0x48D44A13, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_NONE, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* BIOS (J) */
+  {0xD8C4165B, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Aleste */
+  {0x4CC11DF9, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Alien Syndrome (J) */
+  {0xE421E466, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Chouon Senshi Borgman */
+  {0x2BCDB8FA, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Doki Doki Penguin Land - Uchuu-Daibouken */
+  {0x56BD2455, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Doki Doki Penguin Land - Uchuu-Daibouken [Proto] */
+  {0xC722FB42, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Fantasy Zone II (J) */
+  {0x7ABC70E9, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Family Games (Party Games) */
+  {0x9AFAB511, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Game De Check! Koutsuu Anzen [Proto] (JP) */
+  {0x9E9DEB18, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Game De Check! Koutsuu Anzen [Proto] (JP) [T-Eng] */
+  {0x6586BD1F, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Masters Golf */
+  {0x4847BC91, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Masters Golf [Proto] */
+  {0xB9FDF6D9, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Haja no Fuuin */
+  {0x955A009E, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Hoshi wo Sagashite */
+  {0x05EA5353, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Kenseiden (J) */
+  {0xD11D32E4, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Kujakuou */
+  {0xAA7D6F45, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Lord of Sword */
+  {0xBF0411AD, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Maou Golvellius */
+  {0x21A21352, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Maou Golvellius [Proto] */
+  {0x5B5F9106, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Nekyuu Kousien */
+  {0xBEA27D5C, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Opa Opa */
+  {0x6605D36A, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Phantasy Star (J) */
+  {0x70E89681, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Phantasy Star (J) [T-Eng v1.02] */
+  {0xA04CF71A, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Phantasy Star (J) [T-Eng v2.00] */
+  {0xE1FFF1BB, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Shinobi (J) */
+  {0x11645549, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Solomon no Kagi - Oujo Rihita no Namida */
+  {0x7E0EF8CB, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Racing */
+  {0xB1DA6A30, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Super Wonder Boy Monster World */
+  {0x8132AB2C, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Tensai Bakabon */
+  {0xC0CE19B1, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_SMS, REGION_JAPAN_NTSC}, /* Thunder Blade (J) */
+  {0x07301F83, 0, 1, gpgx::hid::DeviceType::kNone, MAPPER_SEGA, SYSTEM_PBC, REGION_JAPAN_NTSC}  /* Phantasy Star [Megadrive] (J) */
 };
 
 /* Cartridge & BIOS ROM hardware */
@@ -548,7 +549,7 @@ void sms_cart_init(void)
       cart_rom.mapper = game_list[i].mapper;
 
       /* auto-detect required peripherals */
-      if (game_list[i].peripheral)
+      if (game_list[i].peripheral != gpgx::hid::DeviceType::kNone)
       {
         input.system[0] = game_list[i].peripheral;
       }

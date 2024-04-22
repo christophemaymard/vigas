@@ -59,7 +59,16 @@
 #include "core/input_hw/terebi_oekaki.h"
 #include "core/input_hw/graphic_board.h"
 
-t_input input;
+#include "gpgx/hid/device_type.h"
+
+t_input input = {
+  { gpgx::hid::DeviceType::kNone, gpgx::hid::DeviceType::kNone },
+  { 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0 },
+  { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } },
+  0,
+  0
+};
 
 
 void input_init(void)
@@ -101,35 +110,35 @@ void input_init(void)
 
   switch (input.system[0])
   {
-    case SYSTEM_GAMEPAD:
+    case gpgx::hid::DeviceType::kGamepad:
     {
       input.dev[0] = padtype;
       player++;
       break;
     }
 
-    case SYSTEM_MOUSE:
+    case gpgx::hid::DeviceType::kMouse:
     {
       input.dev[0] = DEVICE_MOUSE;
       player++;
       break;
     }
 
-    case SYSTEM_ACTIVATOR:
+    case gpgx::hid::DeviceType::kActivator:
     {
       input.dev[0] = DEVICE_ACTIVATOR;
       player++;
       break;
     }
 
-    case SYSTEM_XE_1AP:
+    case gpgx::hid::DeviceType::kXe1Ap:
     {
       input.dev[0] = DEVICE_XE_1AP;
       player++;
       break;
     }
 
-    case SYSTEM_WAYPLAY:
+    case gpgx::hid::DeviceType::kWayPlay:
     {
       for (i=0; i< 4; i++)
       {
@@ -143,7 +152,7 @@ void input_init(void)
       break;
     }
 
-    case SYSTEM_TEAMPLAYER:
+    case gpgx::hid::DeviceType::kTeamPlayer:
     {
       for (i=0; i<4; i++)
       {
@@ -158,7 +167,7 @@ void input_init(void)
       break;
     }
 
-    case SYSTEM_MASTERTAP:
+    case gpgx::hid::DeviceType::kMasterTap:
     {
       for (i=0; i<4; i++)
       {
@@ -171,28 +180,28 @@ void input_init(void)
       break;
     }
 
-    case SYSTEM_LIGHTPHASER:
+    case gpgx::hid::DeviceType::kLightPhaser:
     {
       input.dev[0] = DEVICE_LIGHTGUN;
       player++;
       break;
     }
 
-    case SYSTEM_PADDLE:
+    case gpgx::hid::DeviceType::kPaddle:
     {
       input.dev[0] = DEVICE_PADDLE;
       player++;
       break;
     }
 
-    case SYSTEM_SPORTSPAD:
+    case gpgx::hid::DeviceType::kSportsPad:
     {
       input.dev[0] = DEVICE_SPORTSPAD;
       player++;
       break;
     }
 
-    case SYSTEM_GRAPHIC_BOARD:
+    case gpgx::hid::DeviceType::kGraphicBoard:
     {
       input.dev[0] = DEVICE_GRAPHIC_BOARD;
       player++;
@@ -207,42 +216,42 @@ void input_init(void)
 
   switch (input.system[1])
   {
-    case SYSTEM_GAMEPAD:
+    case gpgx::hid::DeviceType::kGamepad:
     {
       input.dev[4] = padtype;
       player++;
       break;
     }
 
-    case SYSTEM_MOUSE:
+    case gpgx::hid::DeviceType::kMouse:
     {
       input.dev[4] = DEVICE_MOUSE;
       player++;
       break;
     }
 
-    case SYSTEM_ACTIVATOR:
+    case gpgx::hid::DeviceType::kActivator:
     {
       input.dev[4] = DEVICE_ACTIVATOR;
       player++;
       break;
     }
 
-    case SYSTEM_XE_1AP:
+    case gpgx::hid::DeviceType::kXe1Ap:
     {
       input.dev[4] = DEVICE_XE_1AP;
       player++;
       break;
     }
 
-    case SYSTEM_MENACER:
+    case gpgx::hid::DeviceType::kMenacer:
     {
       input.dev[4] = DEVICE_LIGHTGUN;
       player++;
       break;
     }
 
-    case SYSTEM_JUSTIFIER:
+    case gpgx::hid::DeviceType::kJustifier:
     {
       for (i=4; i<6; i++)
       {
@@ -255,7 +264,7 @@ void input_init(void)
       break;
     }
 
-    case SYSTEM_TEAMPLAYER:
+    case gpgx::hid::DeviceType::kTeamPlayer:
     {
       for (i=4; i<8; i++)
       {
@@ -270,7 +279,7 @@ void input_init(void)
       break;
     }
 
-    case SYSTEM_MASTERTAP:
+    case gpgx::hid::DeviceType::kMasterTap:
     {
       for (i=4; i<8; i++)
       {
@@ -283,28 +292,28 @@ void input_init(void)
       break;
     }
 
-    case SYSTEM_LIGHTPHASER:
+    case gpgx::hid::DeviceType::kLightPhaser:
     {
       input.dev[4] = DEVICE_LIGHTGUN;
       player++;
       break;
     }
 
-    case SYSTEM_PADDLE:
+    case gpgx::hid::DeviceType::kPaddle:
     {
       input.dev[4] = DEVICE_PADDLE;
       player++;
       break;
     }
 
-    case SYSTEM_SPORTSPAD:
+    case gpgx::hid::DeviceType::kSportsPad:
     {
       input.dev[4] = DEVICE_SPORTSPAD;
       player++;
       break;
     }
 
-    case SYSTEM_GRAPHIC_BOARD:
+    case gpgx::hid::DeviceType::kGraphicBoard:
     {
       input.dev[4] = DEVICE_GRAPHIC_BOARD;
       player++;
@@ -402,7 +411,7 @@ void input_reset(void)
   /* Team Player */
   for (i=0; i<2; i++)
   {
-    if (input.system[i] == SYSTEM_TEAMPLAYER)
+    if (input.system[i] == gpgx::hid::DeviceType::kTeamPlayer)
     {
       teamplayer_reset(i);
     }

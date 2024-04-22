@@ -65,6 +65,7 @@
 #include "core/input_hw/sportspad.h"
 #include "core/input_hw/graphic_board.h"
 
+#include "gpgx/hid/device_type.h"
 #include "gpgx/g_psg.h"
 #include "gpgx/g_z80.h"
 
@@ -96,77 +97,77 @@ void io_init(void)
   /* Initialize IO Ports handlers & connected peripherals */
   switch (input.system[0])
   {
-    case SYSTEM_GAMEPAD:
+    case gpgx::hid::DeviceType::kGamepad:
     {
       port[0].data_w = (input.dev[0] == DEVICE_PAD2B) ? dummy_write : gamepad_1_write;
       port[0].data_r = gamepad_1_read;
       break;
     }
 
-    case SYSTEM_MOUSE:
+    case gpgx::hid::DeviceType::kMouse:
     {
       port[0].data_w = mouse_write;
       port[0].data_r = mouse_read;
       break;
     }
 
-    case SYSTEM_ACTIVATOR:
+    case gpgx::hid::DeviceType::kActivator:
     {
       port[0].data_w = activator_1_write;
       port[0].data_r = activator_1_read;
       break;
     }
 
-    case SYSTEM_XE_1AP:
+    case gpgx::hid::DeviceType::kXe1Ap:
     {
       port[0].data_w = xe_1ap_1_write;
       port[0].data_r = xe_1ap_1_read;
       break;
     }
 
-    case SYSTEM_WAYPLAY:
+    case gpgx::hid::DeviceType::kWayPlay:
     {
       port[0].data_w = wayplay_1_write;
       port[0].data_r = wayplay_1_read;
       break;
     }
 
-    case SYSTEM_TEAMPLAYER:
+    case gpgx::hid::DeviceType::kTeamPlayer:
     {
       port[0].data_w = teamplayer_1_write;
       port[0].data_r = teamplayer_1_read;
       break;
     }
 
-    case SYSTEM_MASTERTAP:
+    case gpgx::hid::DeviceType::kMasterTap:
     {
       port[0].data_w = mastertap_1_write;
       port[0].data_r = mastertap_1_read;
       break;
     }
 
-    case SYSTEM_LIGHTPHASER:
+    case gpgx::hid::DeviceType::kLightPhaser:
     {
       port[0].data_w = dummy_write;
       port[0].data_r = phaser_1_read;
       break;
     }
 
-    case SYSTEM_PADDLE:
+    case gpgx::hid::DeviceType::kPaddle:
     {
       port[0].data_w = paddle_1_write;
       port[0].data_r = paddle_1_read;
       break;
     }
 
-    case SYSTEM_SPORTSPAD:
+    case gpgx::hid::DeviceType::kSportsPad:
     {
       port[0].data_w = sportspad_1_write;
       port[0].data_r = sportspad_1_read;
       break;
     }
 
-    case SYSTEM_GRAPHIC_BOARD:
+    case gpgx::hid::DeviceType::kGraphicBoard:
     {
       port[0].data_w = graphic_board_write;
       port[0].data_r = graphic_board_read;
@@ -183,91 +184,91 @@ void io_init(void)
 
   switch (input.system[1])
   {
-    case SYSTEM_GAMEPAD:
+    case gpgx::hid::DeviceType::kGamepad:
     {
       port[1].data_w = (input.dev[4] == DEVICE_PAD2B) ? dummy_write : gamepad_2_write;
       port[1].data_r = gamepad_2_read;
       break;
     }
 
-    case SYSTEM_MOUSE:
+    case gpgx::hid::DeviceType::kMouse:
     {
       port[1].data_w = mouse_write;
       port[1].data_r = mouse_read;
       break;
     }
 
-    case SYSTEM_XE_1AP:
+    case gpgx::hid::DeviceType::kXe1Ap:
     {
       port[1].data_w = xe_1ap_2_write;
       port[1].data_r = xe_1ap_2_read;
       break;
     }
 
-    case SYSTEM_ACTIVATOR:
+    case gpgx::hid::DeviceType::kActivator:
     {
       port[1].data_w = activator_2_write;
       port[1].data_r = activator_2_read;
       break;
     }
 
-    case SYSTEM_MENACER:
+    case gpgx::hid::DeviceType::kMenacer:
     {
       port[1].data_w = dummy_write;
       port[1].data_r = menacer_read;
       break;
     }
 
-    case SYSTEM_JUSTIFIER:
+    case gpgx::hid::DeviceType::kJustifier:
     {
       port[1].data_w = justifier_write;
       port[1].data_r = justifier_read;
       break;
     }
 
-    case SYSTEM_WAYPLAY:
+    case gpgx::hid::DeviceType::kWayPlay:
     {
       port[1].data_w = wayplay_2_write;
       port[1].data_r = wayplay_2_read;
       break;
     }
 
-    case SYSTEM_TEAMPLAYER:
+    case gpgx::hid::DeviceType::kTeamPlayer:
     {
       port[1].data_w = teamplayer_2_write;
       port[1].data_r = teamplayer_2_read;
       break;
     }
 
-    case SYSTEM_MASTERTAP:
+    case gpgx::hid::DeviceType::kMasterTap:
     {
       port[1].data_w = mastertap_2_write;
       port[1].data_r = mastertap_2_read;
       break;
     }
 
-    case SYSTEM_LIGHTPHASER:
+    case gpgx::hid::DeviceType::kLightPhaser:
     {
       port[1].data_w = dummy_write;
       port[1].data_r = phaser_2_read;
       break;
     }
 
-    case SYSTEM_PADDLE:
+    case gpgx::hid::DeviceType::kPaddle:
     {
       port[1].data_w = paddle_2_write;
       port[1].data_r = paddle_2_read;
       break;
     }
 
-    case SYSTEM_SPORTSPAD:
+    case gpgx::hid::DeviceType::kSportsPad:
     {
       port[1].data_w = sportspad_2_write;
       port[1].data_r = sportspad_2_read;
       break;
     }
 
-    case SYSTEM_GRAPHIC_BOARD:
+    case gpgx::hid::DeviceType::kGraphicBoard:
     {
       port[1].data_w = graphic_board_write;
       port[1].data_r = graphic_board_read;

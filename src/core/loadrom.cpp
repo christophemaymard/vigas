@@ -65,6 +65,7 @@
 #include "core/cd_hw/scd.h" // For CD_TYPE_WONDERMEGA, CD_TYPE_WONDERMEGA_M2, CD_TYPE_CDX and CD_TYPE_DEFAULT.
 #include "core/cd_hw/cdd.h" // For cdd_load() and cdd_unload().
 
+#include "gpgx/hid/device_type.h"
 
 /*** ROM Information ***/
 #define ROMCONSOLE    256
@@ -852,71 +853,71 @@ int load_rom(char *filename)
   }
 
   /* default gun settings */
-  input.x_offset = (input.system[1] == SYSTEM_MENACER) ? 64 : 0;
+  input.x_offset = (input.system[1] == gpgx::hid::DeviceType::kMenacer) ? 64 : 0;
   input.y_offset = 0;
 
   /* autodetect gun support */
   if (strstr(rominfo.international,"MENACER") != NULL)
   {
     /* force MENACER configuration */
-    input.system[0] = SYSTEM_GAMEPAD;
-    input.system[1] = SYSTEM_MENACER;
+    input.system[0] = gpgx::hid::DeviceType::kGamepad;
+    input.system[1] = gpgx::hid::DeviceType::kMenacer;
     input.x_offset = 82;
     input.y_offset = 0;
   }
   else if (strstr(rominfo.international,"T2 ; THE ARCADE GAME") != NULL)
   {
     /* force MENACER configuration */
-    input.system[0] = SYSTEM_GAMEPAD;
-    input.system[1] = SYSTEM_MENACER;
+    input.system[0] = gpgx::hid::DeviceType::kGamepad;
+    input.system[1] = gpgx::hid::DeviceType::kMenacer;
     input.x_offset = 133;
     input.y_offset = -8;
   }
   else if (strstr(rominfo.international,"BODY COUNT") != NULL)
   {
     /* force MENACER configuration */
-    input.system[0] = SYSTEM_GAMEPAD;
-    input.system[1] = SYSTEM_MENACER;
+    input.system[0] = gpgx::hid::DeviceType::kGamepad;
+    input.system[1] = gpgx::hid::DeviceType::kMenacer;
     input.x_offset = 68;
     input.y_offset = -24;
   }
   else if (strstr(rominfo.international,"CORPSE KILLER") != NULL)
   {
     /* force MENACER configuration */
-    input.system[0] = SYSTEM_GAMEPAD;
-    input.system[1] = SYSTEM_MENACER;
+    input.system[0] = gpgx::hid::DeviceType::kGamepad;
+    input.system[1] = gpgx::hid::DeviceType::kMenacer;
     input.x_offset = 64;
     input.y_offset = -8;
   }
   else if (strstr(rominfo.international,"CRIME PATROL") != NULL)
   {
     /* force MENACER configuration */
-    input.system[0] = SYSTEM_GAMEPAD;
-    input.system[1] = SYSTEM_MENACER;
+    input.system[0] = gpgx::hid::DeviceType::kGamepad;
+    input.system[1] = gpgx::hid::DeviceType::kMenacer;
     input.x_offset = 61;
     input.y_offset = 0;
   }
   else if (strstr(rominfo.international,"MAD DOG II THE LOST GOLD") != NULL)
   {
     /* force MENACER configuration */
-    input.system[0] = SYSTEM_GAMEPAD;
-    input.system[1] = SYSTEM_MENACER;
+    input.system[0] = gpgx::hid::DeviceType::kGamepad;
+    input.system[1] = gpgx::hid::DeviceType::kMenacer;
     input.x_offset = 70;
     input.y_offset = 18;
   }
   else if (strstr(rominfo.international,"MAD DOG MCCREE") != NULL)
   {
     /* force MENACER configuration */
-    input.system[0] = SYSTEM_GAMEPAD;
-    input.system[1] = SYSTEM_MENACER;
+    input.system[0] = gpgx::hid::DeviceType::kGamepad;
+    input.system[1] = gpgx::hid::DeviceType::kMenacer;
     input.x_offset = 49;
     input.y_offset = 0;
   }
   else if (strstr(rominfo.international,"WHO SHOT JOHNNY ROCK?") != NULL)
   {
     /* force MENACER configuration */
-    input.system[0] = SYSTEM_GAMEPAD;
-    input.system[1] = SYSTEM_MENACER;
+    input.system[0] = gpgx::hid::DeviceType::kGamepad;
+    input.system[1] = gpgx::hid::DeviceType::kMenacer;
     input.x_offset = 60;
     input.y_offset = 30;
   }
@@ -924,8 +925,8 @@ int load_rom(char *filename)
            (strstr(rominfo.international,"SNATCHER") != NULL))
   {
     /* force JUSTIFIER configuration */
-    input.system[0] = SYSTEM_GAMEPAD;
-    input.system[1] = SYSTEM_JUSTIFIER;
+    input.system[0] = gpgx::hid::DeviceType::kGamepad;
+    input.system[1] = gpgx::hid::DeviceType::kJustifier;
     input.x_offset = (strstr(rominfo.international,"GUN FIGHTERS") != NULL) ? 24 : 0;
     input.y_offset = 0;
   }
