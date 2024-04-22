@@ -195,6 +195,7 @@ add_executable(vigas
     
     inc/gpgx/hid/controller_type.h
     inc/gpgx/hid/device_type.h
+    inc/gpgx/hid/input.h
 
     inc/gpgx/ic/sn76489/sn76489.h
     inc/gpgx/ic/sn76489/sn76489_type.h

@@ -79,6 +79,7 @@
 #include "core/cart_hw/megasd.h"
 
 #include "gpgx/audio/blip_buffer.h"
+#include "gpgx/hid/input.h"
 
 /* Cart database entry */
 typedef struct
@@ -2295,29 +2296,29 @@ static u32 topshooter_r(u32 address)
     {
       case 0x43:
       {
-        if (input.pad[0] & INPUT_A)     temp &= ~0x80; /* Shoot */
-        if (input.pad[0] & INPUT_B)     temp &= ~0x10; /* Bet */
-        if (input.pad[0] & INPUT_START) temp &= ~0x20; /* Start */
+        if (input.pad[0] & gpgx::hid::ButtonSet::kA)     temp &= ~0x80; /* Shoot */
+        if (input.pad[0] & gpgx::hid::ButtonSet::kB)     temp &= ~0x10; /* Bet */
+        if (input.pad[0] & gpgx::hid::ButtonSet::kStart) temp &= ~0x20; /* Start */
         break;
       }
 
       case 0x45:  /* ??? (DOWN) & Service Mode (UP) */
       {
-        if (input.pad[0] & INPUT_UP)    temp &= ~0x08; /* Service Mode */
-        if (input.pad[0] & INPUT_DOWN)  temp &= ~0x10; /* ???, used in service menu to select next option */
+        if (input.pad[0] & gpgx::hid::ButtonSet::kUp)    temp &= ~0x08; /* Service Mode */
+        if (input.pad[0] & gpgx::hid::ButtonSet::kDown)  temp &= ~0x10; /* ???, used in service menu to select next option */
         break;
       }
 
       case 0x47:
       {
-        if (input.pad[0] & INPUT_RIGHT) temp &= ~0x03; /* Insert 10 coins */
+        if (input.pad[0] & gpgx::hid::ButtonSet::kRight) temp &= ~0x03; /* Insert 10 coins */
         break;
       }
 
       case 0x49:
       {
-        if (input.pad[0] & INPUT_LEFT)  temp &= ~0x03; /* Clear coins */
-        if (input.pad[0] & INPUT_C)     temp &= ~0x01; /* Insert XXX coins */
+        if (input.pad[0] & gpgx::hid::ButtonSet::kLeft)  temp &= ~0x03; /* Clear coins */
+        if (input.pad[0] & gpgx::hid::ButtonSet::kC)     temp &= ~0x01; /* Insert XXX coins */
         break;
       }
 

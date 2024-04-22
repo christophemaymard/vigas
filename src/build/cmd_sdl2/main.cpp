@@ -71,6 +71,7 @@
 #include "gpgx/cpu/z80/z80.h"
 
 #include "gpgx/hid/controller_type.h"
+#include "gpgx/hid/input.h"
 #include "gpgx/g_audio_renderer.h"
 #include "gpgx/g_z80.h"
 
@@ -541,10 +542,10 @@ int sdl_input_update(void)
       input.analog[joynum][1] =  y - (sdl_video.surf_screen->h-viewport.h)/2;
 
       /* TRIGGER, B, C (Menacer only), START (Menacer & Justifier only) */
-      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= INPUT_A;
-      if(state & SDL_BUTTON_RMASK) input.pad[joynum] |= INPUT_B;
-      if(state & SDL_BUTTON_MMASK) input.pad[joynum] |= INPUT_C;
-      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= INPUT_START;
+      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kA;
+      if(state & SDL_BUTTON_RMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
+      if(state & SDL_BUTTON_MMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kC;
+      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= gpgx::hid::ButtonSet::kStart;
       break;
     }
 
@@ -558,7 +559,7 @@ int sdl_input_update(void)
       input.analog[joynum][0] = x * 256 /sdl_video.surf_screen->w;
 
       /* Button I -> 0 0 0 0 0 0 0 I*/
-      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= INPUT_B;
+      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
 
       break;
     }
@@ -574,8 +575,8 @@ int sdl_input_update(void)
       input.analog[joynum][1] = (unsigned char)(-y & 0xFF);
 
       /* Buttons I & II -> 0 0 0 0 0 0 II I*/
-      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= INPUT_B;
-      if(state & SDL_BUTTON_RMASK) input.pad[joynum] |= INPUT_C;
+      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
+      if(state & SDL_BUTTON_RMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kC;
 
       break;
     }
@@ -595,10 +596,10 @@ int sdl_input_update(void)
         input.analog[joynum][1] = 0 - input.analog[joynum][1];
 
       /* Start,Left,Right,Middle buttons -> 0 0 0 0 START MIDDLE RIGHT LEFT */
-      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= INPUT_B;
-      if(state & SDL_BUTTON_RMASK) input.pad[joynum] |= INPUT_C;
-      if(state & SDL_BUTTON_MMASK) input.pad[joynum] |= INPUT_A;
-      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= INPUT_START;
+      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
+      if(state & SDL_BUTTON_RMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kC;
+      if(state & SDL_BUTTON_MMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kA;
+      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= gpgx::hid::ButtonSet::kStart;
 
       break;
     }
@@ -606,14 +607,14 @@ int sdl_input_update(void)
     case gpgx::hid::ControllerType::kXe1Ap:
     {
       /* A,B,C,D,Select,START,E1,E2 buttons -> E1(?) E2(?) START SELECT(?) A B C D */
-      if(keystate[SDL_SCANCODE_A])  input.pad[joynum] |= INPUT_START;
-      if(keystate[SDL_SCANCODE_S])  input.pad[joynum] |= INPUT_A;
-      if(keystate[SDL_SCANCODE_D])  input.pad[joynum] |= INPUT_C;
-      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= INPUT_Y;
-      if(keystate[SDL_SCANCODE_Z])  input.pad[joynum] |= INPUT_B;
-      if(keystate[SDL_SCANCODE_X])  input.pad[joynum] |= INPUT_X;
-      if(keystate[SDL_SCANCODE_C])  input.pad[joynum] |= INPUT_MODE;
-      if(keystate[SDL_SCANCODE_V])  input.pad[joynum] |= INPUT_Z;
+      if(keystate[SDL_SCANCODE_A])  input.pad[joynum] |= gpgx::hid::ButtonSet::kStart;
+      if(keystate[SDL_SCANCODE_S])  input.pad[joynum] |= gpgx::hid::ButtonSet::kA;
+      if(keystate[SDL_SCANCODE_D])  input.pad[joynum] |= gpgx::hid::ButtonSet::kC;
+      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= gpgx::hid::ButtonSet::kY;
+      if(keystate[SDL_SCANCODE_Z])  input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
+      if(keystate[SDL_SCANCODE_X])  input.pad[joynum] |= gpgx::hid::ButtonSet::kX;
+      if(keystate[SDL_SCANCODE_C])  input.pad[joynum] |= gpgx::hid::ButtonSet::kMode;
+      if(keystate[SDL_SCANCODE_V])  input.pad[joynum] |= gpgx::hid::ButtonSet::kZ;
 
       /* Left Analog Stick (bidirectional) */
       if(keystate[SDL_SCANCODE_UP])     input.analog[joynum][1]-=2;
@@ -655,8 +656,8 @@ int sdl_input_update(void)
 
       /* Map mouse buttons to player #1 inputs */
       if(state & SDL_BUTTON_MMASK) pico_current = (pico_current + 1) & 7;
-      if(state & SDL_BUTTON_RMASK) input.pad[0] |= INPUT_PICO_RED;
-      if(state & SDL_BUTTON_LMASK) input.pad[0] |= INPUT_PICO_PEN;
+      if(state & SDL_BUTTON_RMASK) input.pad[0] |= gpgx::hid::ButtonSet::kPicoRed;
+      if(state & SDL_BUTTON_LMASK) input.pad[0] |= gpgx::hid::ButtonSet::kPicoPen;
 
       break;
     }
@@ -672,7 +673,7 @@ int sdl_input_update(void)
       input.analog[0][1] = (y * 250) / sdl_video.surf_screen->h;
 
       /* Map mouse buttons to player #1 inputs */
-      if(state & SDL_BUTTON_RMASK) input.pad[0] |= INPUT_B;
+      if(state & SDL_BUTTON_RMASK) input.pad[0] |= gpgx::hid::ButtonSet::kB;
 
       break;
     }
@@ -688,38 +689,38 @@ int sdl_input_update(void)
       input.analog[0][1] = (y * 255) / sdl_video.surf_screen->h;
 
       /* Map mouse buttons to player #1 inputs */
-      if(state & SDL_BUTTON_LMASK) input.pad[0] |= INPUT_GRAPHIC_PEN;
-      if(state & SDL_BUTTON_RMASK) input.pad[0] |= INPUT_GRAPHIC_MENU;
-      if(state & SDL_BUTTON_MMASK) input.pad[0] |= INPUT_GRAPHIC_DO;
+      if(state & SDL_BUTTON_LMASK) input.pad[0] |= gpgx::hid::ButtonSet::kGraphicPen;
+      if(state & SDL_BUTTON_RMASK) input.pad[0] |= gpgx::hid::ButtonSet::kGraphicMenu;
+      if(state & SDL_BUTTON_MMASK) input.pad[0] |= gpgx::hid::ButtonSet::kGraphicDo;
 
       break;
     }
 
     case gpgx::hid::ControllerType::kActivator:
     {
-      if(keystate[SDL_SCANCODE_G])  input.pad[joynum] |= INPUT_ACTIVATOR_7L;
-      if(keystate[SDL_SCANCODE_H])  input.pad[joynum] |= INPUT_ACTIVATOR_7U;
-      if(keystate[SDL_SCANCODE_J])  input.pad[joynum] |= INPUT_ACTIVATOR_8L;
-      if(keystate[SDL_SCANCODE_K])  input.pad[joynum] |= INPUT_ACTIVATOR_8U;
+      if(keystate[SDL_SCANCODE_G])  input.pad[joynum] |= gpgx::hid::ButtonSet::kActivator7L;
+      if(keystate[SDL_SCANCODE_H])  input.pad[joynum] |= gpgx::hid::ButtonSet::kActivator7U;
+      if(keystate[SDL_SCANCODE_J])  input.pad[joynum] |= gpgx::hid::ButtonSet::kActivator8L;
+      if(keystate[SDL_SCANCODE_K])  input.pad[joynum] |= gpgx::hid::ButtonSet::kActivator8U;
     }
 
     default:
     {
-      if(keystate[SDL_SCANCODE_A])  input.pad[joynum] |= INPUT_A;
-      if(keystate[SDL_SCANCODE_S])  input.pad[joynum] |= INPUT_B;
-      if(keystate[SDL_SCANCODE_D])  input.pad[joynum] |= INPUT_C;
-      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= INPUT_START;
-      if(keystate[SDL_SCANCODE_Z])  input.pad[joynum] |= INPUT_X;
-      if(keystate[SDL_SCANCODE_X])  input.pad[joynum] |= INPUT_Y;
-      if(keystate[SDL_SCANCODE_C])  input.pad[joynum] |= INPUT_Z;
-      if(keystate[SDL_SCANCODE_V])  input.pad[joynum] |= INPUT_MODE;
+      if(keystate[SDL_SCANCODE_A])  input.pad[joynum] |= gpgx::hid::ButtonSet::kA;
+      if(keystate[SDL_SCANCODE_S])  input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
+      if(keystate[SDL_SCANCODE_D])  input.pad[joynum] |= gpgx::hid::ButtonSet::kC;
+      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= gpgx::hid::ButtonSet::kStart;
+      if(keystate[SDL_SCANCODE_Z])  input.pad[joynum] |= gpgx::hid::ButtonSet::kX;
+      if(keystate[SDL_SCANCODE_X])  input.pad[joynum] |= gpgx::hid::ButtonSet::kY;
+      if(keystate[SDL_SCANCODE_C])  input.pad[joynum] |= gpgx::hid::ButtonSet::kZ;
+      if(keystate[SDL_SCANCODE_V])  input.pad[joynum] |= gpgx::hid::ButtonSet::kMode;
 
-      if(keystate[SDL_SCANCODE_UP]) input.pad[joynum] |= INPUT_UP;
+      if(keystate[SDL_SCANCODE_UP]) input.pad[joynum] |= gpgx::hid::ButtonSet::kUp;
       else
-      if(keystate[SDL_SCANCODE_DOWN]) input.pad[joynum] |= INPUT_DOWN;
-      if(keystate[SDL_SCANCODE_LEFT]) input.pad[joynum] |= INPUT_LEFT;
+      if(keystate[SDL_SCANCODE_DOWN]) input.pad[joynum] |= gpgx::hid::ButtonSet::kDown;
+      if(keystate[SDL_SCANCODE_LEFT]) input.pad[joynum] |= gpgx::hid::ButtonSet::kLeft;
       else
-      if(keystate[SDL_SCANCODE_RIGHT]) input.pad[joynum] |= INPUT_RIGHT;
+      if(keystate[SDL_SCANCODE_RIGHT]) input.pad[joynum] |= gpgx::hid::ButtonSet::kRight;
 
       break;
     }

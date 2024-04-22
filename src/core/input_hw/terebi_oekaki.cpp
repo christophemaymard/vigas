@@ -42,6 +42,8 @@
 
 #include "core/input_hw/input.h"
 
+#include "gpgx/hid/input.h"
+
 static struct
 {
   u8 axis;
@@ -60,7 +62,7 @@ unsigned short terebi_oekaki_read(void)
 {
   u16 data = (tablet.busy << 15) | input.analog[0][tablet.axis];
 
-  if (!(input.pad[0] & INPUT_B))
+  if (!(input.pad[0] & gpgx::hid::ButtonSet::kB))
   {
     data |= 0x100;
   }
