@@ -193,6 +193,7 @@ add_executable(vigas
     inc/gpgx/cpu/z80/z80_register_pair.h
     inc/gpgx/cpu/z80/z80_table_index.h
     
+    inc/gpgx/hid/controller_type.h
     inc/gpgx/hid/device_type.h
 
     inc/gpgx/ic/sn76489/sn76489.h

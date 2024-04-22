@@ -65,6 +65,7 @@
 #include "core/input_hw/sportspad.h"
 #include "core/input_hw/graphic_board.h"
 
+#include "gpgx/hid/controller_type.h"
 #include "gpgx/hid/device_type.h"
 #include "gpgx/g_psg.h"
 #include "gpgx/g_z80.h"
@@ -99,7 +100,7 @@ void io_init(void)
   {
     case gpgx::hid::DeviceType::kGamepad:
     {
-      port[0].data_w = (input.dev[0] == DEVICE_PAD2B) ? dummy_write : gamepad_1_write;
+      port[0].data_w = (input.dev[0] == gpgx::hid::ControllerType::kPad2B) ? dummy_write : gamepad_1_write;
       port[0].data_r = gamepad_1_read;
       break;
     }
@@ -186,7 +187,7 @@ void io_init(void)
   {
     case gpgx::hid::DeviceType::kGamepad:
     {
-      port[1].data_w = (input.dev[4] == DEVICE_PAD2B) ? dummy_write : gamepad_2_write;
+      port[1].data_w = (input.dev[4] == gpgx::hid::ControllerType::kPad2B) ? dummy_write : gamepad_2_write;
       port[1].data_r = gamepad_2_read;
       break;
     }

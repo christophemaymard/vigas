@@ -47,6 +47,7 @@
 #include "core/system_model.h"
 #include "core/input_hw/input.h"
 
+#include "gpgx/hid/controller_type.h"
 #include "gpgx/g_z80.h"
 
 static struct
@@ -201,7 +202,7 @@ static XEE_INLINE void gamepad_write(int port, unsigned char data, unsigned char
     gamepad[port].Latency = 0;
 
     /* 6-Buttons controller specific */
-    if ((input.dev[port] == DEVICE_PAD6B) && (gamepad[port].Counter < 8))
+    if ((input.dev[port] == gpgx::hid::ControllerType::kPad6B) && (gamepad[port].Counter < 8))
     {
       /* TH 0->1 transition */
       if (data && !gamepad[port].State)

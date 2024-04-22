@@ -59,11 +59,21 @@
 #include "core/input_hw/terebi_oekaki.h"
 #include "core/input_hw/graphic_board.h"
 
+#include "gpgx/hid/controller_type.h"
 #include "gpgx/hid/device_type.h"
 
 t_input input = {
   { gpgx::hid::DeviceType::kNone, gpgx::hid::DeviceType::kNone },
-  { 0, 0, 0, 0, 0, 0, 0, 0 },
+  {
+    gpgx::hid::ControllerType::kNone,
+    gpgx::hid::ControllerType::kNone,
+    gpgx::hid::ControllerType::kNone,
+    gpgx::hid::ControllerType::kNone,
+    gpgx::hid::ControllerType::kNone,
+    gpgx::hid::ControllerType::kNone,
+    gpgx::hid::ControllerType::kNone,
+    gpgx::hid::ControllerType::kNone,
+  },
   { 0, 0, 0, 0, 0, 0, 0, 0 },
   { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } },
   0,
@@ -73,39 +83,41 @@ t_input input = {
 
 void input_init(void)
 {
-  int i, padtype;
+  int i;
   int player = 0;
 
   for (i=0; i<MAX_DEVICES; i++)
   {
-    input.dev[i] = NO_DEVICE;
+    input.dev[i] = gpgx::hid::ControllerType::kNone;
     input.pad[i] = 0;
   }
 
   /* PICO tablet */
   if (system_hw == SYSTEM_PICO)
   {
-    input.dev[0] = DEVICE_PICO;
+    input.dev[0] = gpgx::hid::ControllerType::kPico;
     return;
   }
 
   /* Terebi Oekaki tablet */
   if (cart.special & HW_TEREBI_OEKAKI)
   {
-    input.dev[0] = DEVICE_TEREBI;
+    input.dev[0] = gpgx::hid::ControllerType::kTerebi;
     return;
   }
 
-  /* default gamepad type */
+  // Default gamepad type (2-buttons, 3-buttons or 6-buttons).
+  gpgx::hid::ControllerType padtype = gpgx::hid::ControllerType::kNone;
+
   if (romtype & SYSTEM_MD)
   {
     /* 3-buttons or 6-buttons */
-    padtype = (rominfo.peripherals & 2) ? DEVICE_PAD6B : DEVICE_PAD3B;
+    padtype = (rominfo.peripherals & 2) ? gpgx::hid::ControllerType::kPad6B : gpgx::hid::ControllerType::kPad3B;
   }
   else
   {
     /* 2-buttons */
-    padtype = DEVICE_PAD2B;
+    padtype = gpgx::hid::ControllerType::kPad2B;
   }
 
   switch (input.system[0])
@@ -119,21 +131,21 @@ void input_init(void)
 
     case gpgx::hid::DeviceType::kMouse:
     {
-      input.dev[0] = DEVICE_MOUSE;
+      input.dev[0] = gpgx::hid::ControllerType::kMouse;
       player++;
       break;
     }
 
     case gpgx::hid::DeviceType::kActivator:
     {
-      input.dev[0] = DEVICE_ACTIVATOR;
+      input.dev[0] = gpgx::hid::ControllerType::kActivator;
       player++;
       break;
     }
 
     case gpgx::hid::DeviceType::kXe1Ap:
     {
-      input.dev[0] = DEVICE_XE_1AP;
+      input.dev[0] = gpgx::hid::ControllerType::kXe1Ap;
       player++;
       break;
     }
@@ -145,7 +157,7 @@ void input_init(void)
         if (player < MAX_DEVICES)
         {
           /* only allow 3-buttons or 6-buttons control pad */
-          input.dev[i] = padtype & DEVICE_PAD6B;
+          input.dev[i] = (padtype == gpgx::hid::ControllerType::kPad2B) ? gpgx::hid::ControllerType::kPad3B : padtype;
           player++;
         }
       }
@@ -159,7 +171,7 @@ void input_init(void)
         if (player < MAX_DEVICES)
         {
           /* only allow 3-buttons or 6-buttons control pad */
-          input.dev[i] = padtype & DEVICE_PAD6B;
+          input.dev[i] = (padtype == gpgx::hid::ControllerType::kPad2B) ? gpgx::hid::ControllerType::kPad3B : padtype;
           player++;
         }
       }
@@ -173,7 +185,7 @@ void input_init(void)
       {
         if (player < MAX_DEVICES)
         {
-          input.dev[i] = DEVICE_PAD2B;
+          input.dev[i] = gpgx::hid::ControllerType::kPad2B;
           player++;
         }
       }
@@ -182,28 +194,28 @@ void input_init(void)
 
     case gpgx::hid::DeviceType::kLightPhaser:
     {
-      input.dev[0] = DEVICE_LIGHTGUN;
+      input.dev[0] = gpgx::hid::ControllerType::kLightGun;
       player++;
       break;
     }
 
     case gpgx::hid::DeviceType::kPaddle:
     {
-      input.dev[0] = DEVICE_PADDLE;
+      input.dev[0] = gpgx::hid::ControllerType::kPaddle;
       player++;
       break;
     }
 
     case gpgx::hid::DeviceType::kSportsPad:
     {
-      input.dev[0] = DEVICE_SPORTSPAD;
+      input.dev[0] = gpgx::hid::ControllerType::kSportsPad;
       player++;
       break;
     }
 
     case gpgx::hid::DeviceType::kGraphicBoard:
     {
-      input.dev[0] = DEVICE_GRAPHIC_BOARD;
+      input.dev[0] = gpgx::hid::ControllerType::kGraphicBoard;
       player++;
       break;
     }
@@ -225,28 +237,28 @@ void input_init(void)
 
     case gpgx::hid::DeviceType::kMouse:
     {
-      input.dev[4] = DEVICE_MOUSE;
+      input.dev[4] = gpgx::hid::ControllerType::kMouse;
       player++;
       break;
     }
 
     case gpgx::hid::DeviceType::kActivator:
     {
-      input.dev[4] = DEVICE_ACTIVATOR;
+      input.dev[4] = gpgx::hid::ControllerType::kActivator;
       player++;
       break;
     }
 
     case gpgx::hid::DeviceType::kXe1Ap:
     {
-      input.dev[4] = DEVICE_XE_1AP;
+      input.dev[4] = gpgx::hid::ControllerType::kXe1Ap;
       player++;
       break;
     }
 
     case gpgx::hid::DeviceType::kMenacer:
     {
-      input.dev[4] = DEVICE_LIGHTGUN;
+      input.dev[4] = gpgx::hid::ControllerType::kLightGun;
       player++;
       break;
     }
@@ -257,7 +269,7 @@ void input_init(void)
       {
         if (player < MAX_DEVICES)
         {
-          input.dev[i] = DEVICE_LIGHTGUN;
+          input.dev[i] = gpgx::hid::ControllerType::kLightGun;
           player++;
         }
       }
@@ -271,7 +283,7 @@ void input_init(void)
         if (player < MAX_DEVICES)
         {
           /* only allow 3-buttons or 6-buttons control pad */
-          input.dev[i] = padtype & DEVICE_PAD6B;
+          input.dev[i] = (padtype == gpgx::hid::ControllerType::kPad2B) ? gpgx::hid::ControllerType::kPad3B : padtype;
           player++;
         }
       }
@@ -285,7 +297,7 @@ void input_init(void)
       {
         if (player < MAX_DEVICES)
         {
-          input.dev[i] = DEVICE_PAD2B;
+          input.dev[i] = gpgx::hid::ControllerType::kPad2B;
           player++;
         }
       }
@@ -294,28 +306,28 @@ void input_init(void)
 
     case gpgx::hid::DeviceType::kLightPhaser:
     {
-      input.dev[4] = DEVICE_LIGHTGUN;
+      input.dev[4] = gpgx::hid::ControllerType::kLightGun;
       player++;
       break;
     }
 
     case gpgx::hid::DeviceType::kPaddle:
     {
-      input.dev[4] = DEVICE_PADDLE;
+      input.dev[4] = gpgx::hid::ControllerType::kPaddle;
       player++;
       break;
     }
 
     case gpgx::hid::DeviceType::kSportsPad:
     {
-      input.dev[4] = DEVICE_SPORTSPAD;
+      input.dev[4] = gpgx::hid::ControllerType::kSportsPad;
       player++;
       break;
     }
 
     case gpgx::hid::DeviceType::kGraphicBoard:
     {
-      input.dev[4] = DEVICE_GRAPHIC_BOARD;
+      input.dev[4] = gpgx::hid::ControllerType::kGraphicBoard;
       player++;
       break;
     }
@@ -330,7 +342,7 @@ void input_init(void)
       if (player < MAX_DEVICES)
       {
         /* only allow 3-buttons or 6-buttons control pad */
-        input.dev[i] = padtype & DEVICE_PAD6B;
+        input.dev[i] = (padtype == gpgx::hid::ControllerType::kPad2B) ? gpgx::hid::ControllerType::kPad3B : padtype;
         player ++;
       }
     }
@@ -345,57 +357,57 @@ void input_reset(void)
   {
     switch (input.dev[i])
     {
-      case DEVICE_PAD2B:
-      case DEVICE_PAD3B:
-      case DEVICE_PAD6B:
+      case gpgx::hid::ControllerType::kPad2B:
+      case gpgx::hid::ControllerType::kPad3B:
+      case gpgx::hid::ControllerType::kPad6B:
       {
         gamepad_reset(i);
         break;
       }
 
-      case DEVICE_LIGHTGUN:
+      case gpgx::hid::ControllerType::kLightGun:
       {
         lightgun_reset(i);
         break;
       }
 
-      case DEVICE_MOUSE:
+      case gpgx::hid::ControllerType::kMouse:
       {
         mouse_reset(i);
         break;
       }
 
-      case DEVICE_ACTIVATOR:
+      case gpgx::hid::ControllerType::kActivator:
       {
         activator_reset(i >> 2);
         break;
       }
 
-      case DEVICE_XE_1AP:
+      case gpgx::hid::ControllerType::kXe1Ap:
       {
         xe_1ap_reset(i);
         break;
       }
 
-      case DEVICE_PADDLE:
+      case gpgx::hid::ControllerType::kPaddle:
       {
         paddle_reset(i);
         break;
       }
 
-      case DEVICE_SPORTSPAD:
+      case gpgx::hid::ControllerType::kSportsPad:
       {
         sportspad_reset(i);
         break;
       }
 
-      case DEVICE_TEREBI:
+      case gpgx::hid::ControllerType::kTerebi:
       {
         terebi_oekaki_reset();
         break;
       }
 
-      case DEVICE_GRAPHIC_BOARD:
+      case gpgx::hid::ControllerType::kGraphicBoard:
       {
         graphic_board_reset(i);
         break;
@@ -425,13 +437,13 @@ void input_refresh(void)
   {
     switch (input.dev[i])
     {
-      case DEVICE_PAD6B:
+      case gpgx::hid::ControllerType::kPad6B:
       {
         gamepad_refresh(i);
         break;
       }
 
-      case DEVICE_LIGHTGUN:
+      case gpgx::hid::ControllerType::kLightGun:
       {
         lightgun_refresh(i);
         break;
@@ -447,8 +459,8 @@ void input_end_frame(unsigned int cycles)
   {
     switch (input.dev[i])
     {
-      case DEVICE_PAD3B:
-      case DEVICE_PAD6B:
+      case gpgx::hid::ControllerType::kPad3B:
+      case gpgx::hid::ControllerType::kPad6B:
       {
         gamepad_end_frame(i, cycles);
         break;

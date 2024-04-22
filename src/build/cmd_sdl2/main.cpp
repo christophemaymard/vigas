@@ -70,6 +70,7 @@
 
 #include "gpgx/cpu/z80/z80.h"
 
+#include "gpgx/hid/controller_type.h"
 #include "gpgx/g_audio_renderer.h"
 #include "gpgx/g_z80.h"
 
@@ -499,7 +500,7 @@ static int sdl_control_update(SDL_Keycode keystate)
       case SDLK_F12:
       {
         joynum = (joynum + 1) % MAX_DEVICES;
-        while (input.dev[joynum] == NO_DEVICE)
+        while (input.dev[joynum] == gpgx::hid::ControllerType::kNone)
         {
           joynum = (joynum + 1) % MAX_DEVICES;
         }
@@ -527,7 +528,7 @@ int sdl_input_update(void)
 
   switch (input.dev[joynum])
   {
-    case DEVICE_LIGHTGUN:
+    case gpgx::hid::ControllerType::kLightGun:
     {
       /* get mouse coordinates (absolute values) */
       int x,y;
@@ -547,7 +548,7 @@ int sdl_input_update(void)
       break;
     }
 
-    case DEVICE_PADDLE:
+    case gpgx::hid::ControllerType::kPaddle:
     {
       /* get mouse (absolute values) */
       int x;
@@ -562,7 +563,7 @@ int sdl_input_update(void)
       break;
     }
 
-    case DEVICE_SPORTSPAD:
+    case gpgx::hid::ControllerType::kSportsPad:
     {
       /* get mouse (relative values) */
       int x,y;
@@ -579,7 +580,7 @@ int sdl_input_update(void)
       break;
     }
 
-    case DEVICE_MOUSE:
+    case gpgx::hid::ControllerType::kMouse:
     {
       /* get mouse (relative values) */
       int x,y;
@@ -602,7 +603,7 @@ int sdl_input_update(void)
       break;
     }
 
-    case DEVICE_XE_1AP:
+    case gpgx::hid::ControllerType::kXe1Ap:
     {
       /* A,B,C,D,Select,START,E1,E2 buttons -> E1(?) E2(?) START SELECT(?) A B C D */
       if(keystate[SDL_SCANCODE_A])  input.pad[joynum] |= INPUT_START;
@@ -642,7 +643,7 @@ int sdl_input_update(void)
       break;
     }
 
-    case DEVICE_PICO:
+    case gpgx::hid::ControllerType::kPico:
     {
       /* get mouse (absolute values) */
       int x,y;
@@ -660,7 +661,7 @@ int sdl_input_update(void)
       break;
     }
 
-    case DEVICE_TEREBI:
+    case gpgx::hid::ControllerType::kTerebi:
     {
       /* get mouse (absolute values) */
       int x,y;
@@ -676,7 +677,7 @@ int sdl_input_update(void)
       break;
     }
 
-    case DEVICE_GRAPHIC_BOARD:
+    case gpgx::hid::ControllerType::kGraphicBoard:
     {
       /* get mouse (absolute values) */
       int x,y;
@@ -694,7 +695,7 @@ int sdl_input_update(void)
       break;
     }
 
-    case DEVICE_ACTIVATOR:
+    case gpgx::hid::ControllerType::kActivator:
     {
       if(keystate[SDL_SCANCODE_G])  input.pad[joynum] |= INPUT_ACTIVATOR_7L;
       if(keystate[SDL_SCANCODE_H])  input.pad[joynum] |= INPUT_ACTIVATOR_7U;

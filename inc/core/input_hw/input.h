@@ -42,25 +42,11 @@
 
 #include "xee/fnd/data_type.h"
 
+#include "gpgx/hid/controller_type.h"
 #include "gpgx/hid/device_type.h"
 
 /* Max. number of devices */
 #define MAX_DEVICES (8)
-
-/* Device type */
-#define NO_DEVICE             (0xff) /* unconnected device (fixed ID for Team Player) */
-#define DEVICE_PAD3B          (0x00) /* 3-buttons Control Pad (fixed ID for Team Player)*/
-#define DEVICE_PAD6B          (0x01) /* 6-buttons Control Pad (fixed ID for Team Player) */
-#define DEVICE_PAD2B          (0x02) /* 2-buttons Control Pad */
-#define DEVICE_MOUSE          (0x03) /* Sega Mouse */
-#define DEVICE_LIGHTGUN       (0x04) /* Sega Light Phaser, Menacer or Konami Justifiers */
-#define DEVICE_PADDLE         (0x05) /* Sega Paddle Control */
-#define DEVICE_SPORTSPAD      (0x06) /* Sega Sports Pad */
-#define DEVICE_GRAPHIC_BOARD  (0x07) /* Sega Graphic Board */
-#define DEVICE_PICO           (0x08) /* PICO tablet */
-#define DEVICE_TEREBI         (0x09) /* Terebi Oekaki tablet */
-#define DEVICE_XE_1AP         (0x0a) /* XE-1AP analog controller */
-#define DEVICE_ACTIVATOR      (0x0b) /* Activator */
 
 /* Default Input bitmasks */
 #define INPUT_MODE         (0x0800)
@@ -127,7 +113,7 @@
 typedef struct
 {
   gpgx::hid::DeviceType system[2];
-  u8 dev[MAX_DEVICES];       /* can be one of the DEVICE_* values */
+  gpgx::hid::ControllerType dev[MAX_DEVICES];
   u16 pad[MAX_DEVICES];      /* digital inputs (any of INPUT_* values)  */
   s16 analog[MAX_DEVICES][2]; /* analog inputs (x/y) */
   int x_offset;                 /* gun horizontal offset */
