@@ -43,6 +43,7 @@
 
 #include "gpgx/hid/device_type.h"
 #include "gpgx/ic/ym2612/ym2612_type.h"
+#include "gpgx/g_hid_system.h"
 
 app_config_t app_config;
 
@@ -84,8 +85,8 @@ void set_config_defaults(void)
   core_config.gg_extra = 0;  /* 1 = show extended Game Gear screen (256x192) */
 
   /* controllers options */
-  input.system[0]       = gpgx::hid::DeviceType::kGamepad;
-  input.system[1]       = gpgx::hid::DeviceType::kGamepad;
+  gpgx::g_hid_system->ConnectDevice(0, gpgx::hid::DeviceType::kGamepad);
+  gpgx::g_hid_system->ConnectDevice(1, gpgx::hid::DeviceType::kGamepad);
   app_config.gun_cursor[0]  = 1;
   app_config.gun_cursor[1]  = 1;
   app_config.invert_mouse   = 0;

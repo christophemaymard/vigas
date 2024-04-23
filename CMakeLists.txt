@@ -178,6 +178,7 @@ add_executable(vigas
     inc/gpgx/g_audio_renderer.h
     inc/gpgx/g_psg.h
     inc/gpgx/g_fm_synthesizer.h
+    inc/gpgx/g_hid_system.h
     inc/gpgx/g_z80.h
     
     inc/gpgx/audio/audio_renderer.h
@@ -194,7 +195,9 @@ add_executable(vigas
     inc/gpgx/cpu/z80/z80_table_index.h
     
     inc/gpgx/hid/controller_type.h
+    inc/gpgx/hid/device.h
     inc/gpgx/hid/device_type.h
+    inc/gpgx/hid/hid_system.h
     inc/gpgx/hid/input.h
 
     inc/gpgx/ic/sn76489/sn76489.h
@@ -324,6 +327,7 @@ add_executable(vigas
     src/gpgx/g_audio_renderer.cpp
     src/gpgx/g_psg.cpp
     src/gpgx/g_fm_synthesizer.cpp
+    src/gpgx/g_hid_system.cpp
     src/gpgx/g_z80.cpp
     
     src/gpgx/audio/audio_renderer.cpp
@@ -338,6 +342,9 @@ add_executable(vigas
     src/gpgx/cpu/z80/z80_opcodes.cpp
     src/gpgx/cpu/z80/z80_operations.cpp
     
+    src/gpgx/hid/device.cpp
+    src/gpgx/hid/hid_system.cpp
+
     src/gpgx/ic/sn76489/sn76489.cpp
     src/gpgx/ic/ym2413/ym2413.cpp
     src/gpgx/ic/ym2612/ym2612.cpp

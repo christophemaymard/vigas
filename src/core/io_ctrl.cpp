@@ -68,6 +68,7 @@
 #include "gpgx/hid/controller_type.h"
 #include "gpgx/hid/device_type.h"
 #include "gpgx/hid/input.h"
+#include "gpgx/g_hid_system.h"
 #include "gpgx/g_psg.h"
 #include "gpgx/g_z80.h"
 
@@ -97,7 +98,7 @@ void io_init(void)
   input_init();
 
   /* Initialize IO Ports handlers & connected peripherals */
-  switch (input.system[0])
+  switch (gpgx::g_hid_system->GetDevice(0)->GetType())
   {
     case gpgx::hid::DeviceType::kGamepad:
     {
@@ -184,7 +185,7 @@ void io_init(void)
     }
   }
 
-  switch (input.system[1])
+  switch (gpgx::g_hid_system->GetDevice(1)->GetType())
   {
     case gpgx::hid::DeviceType::kGamepad:
     {

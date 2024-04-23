@@ -1,6 +1,5 @@
 /***************************************************************************************
- *  Genesis Plus
- *  Input peripherals support
+ *  Genesis Plus GX
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2016  Eke-Eke (Genesis Plus GX)
@@ -37,32 +36,26 @@
  *
  ****************************************************************************************/
 
-#ifndef _INPUT_H_
-#define _INPUT_H_
+#include "gpgx/hid/device.h"
 
-#include "xee/fnd/data_type.h"
+namespace gpgx::hid {
 
-#include "gpgx/hid/controller_type.h"
+//==============================================================================
+// Device
 
-/* Max. number of devices */
-#define MAX_DEVICES (8)
+//------------------------------------------------------------------------------
 
-typedef struct
+Device::Device(DeviceType type) : 
+  m_type(type)
 {
-  gpgx::hid::ControllerType dev[MAX_DEVICES];
-  u16 pad[MAX_DEVICES];      /// Digital buttons (set of gpgx::hid::ButtonSet::k* values).
-  s16 analog[MAX_DEVICES][2]; /* analog inputs (x/y) */
-  int x_offset;                 /* gun horizontal offset */
-  int y_offset;                 /* gun vertical offset */
-} t_input;
+}
 
-/* Global variables */
-extern t_input input;
+//------------------------------------------------------------------------------
 
-/* Function prototypes */
-extern void input_init(void);
-extern void input_reset(void);
-extern void input_refresh(void);
-extern void input_end_frame(unsigned int cycles);
+DeviceType Device::GetType() const
+{
+  return m_type;
+}
 
-#endif
+} // namespace gpgx::hid
+

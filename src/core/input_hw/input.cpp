@@ -61,9 +61,9 @@
 
 #include "gpgx/hid/controller_type.h"
 #include "gpgx/hid/device_type.h"
+#include "gpgx/g_hid_system.h"
 
 t_input input = {
-  { gpgx::hid::DeviceType::kNone, gpgx::hid::DeviceType::kNone },
   {
     gpgx::hid::ControllerType::kNone,
     gpgx::hid::ControllerType::kNone,
@@ -120,7 +120,7 @@ void input_init(void)
     padtype = gpgx::hid::ControllerType::kPad2B;
   }
 
-  switch (input.system[0])
+  switch (gpgx::g_hid_system->GetDevice(0)->GetType())
   {
     case gpgx::hid::DeviceType::kGamepad:
     {
@@ -226,7 +226,7 @@ void input_init(void)
     return;
   }
 
-  switch (input.system[1])
+  switch (gpgx::g_hid_system->GetDevice(1)->GetType())
   {
     case gpgx::hid::DeviceType::kGamepad:
     {
@@ -423,7 +423,7 @@ void input_reset(void)
   /* Team Player */
   for (i=0; i<2; i++)
   {
-    if (input.system[i] == gpgx::hid::DeviceType::kTeamPlayer)
+    if (gpgx::g_hid_system->GetDevice(i)->GetType() == gpgx::hid::DeviceType::kTeamPlayer)
     {
       teamplayer_reset(i);
     }

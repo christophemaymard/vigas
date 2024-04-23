@@ -53,6 +53,7 @@
 #include "core/input_hw/input.h"
 
 #include "gpgx/hid/device_type.h"
+#include "gpgx/g_hid_system.h"
 #include "gpgx/g_z80.h"
 
 /************************************************************************************/
@@ -133,7 +134,7 @@ void lightgun_refresh(int port)
         int x = input.analog[port][0];
 
         /* Sega Menacer specific */
-        if (input.system[1] == gpgx::hid::DeviceType::kMenacer)
+        if (gpgx::g_hid_system->GetDevice(1)->GetType() == gpgx::hid::DeviceType::kMenacer)
         {
           /* raw position is scaled up by games */
           if (system_hw == SYSTEM_MCD)

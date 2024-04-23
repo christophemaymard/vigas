@@ -71,8 +71,10 @@
 #include "gpgx/cpu/z80/z80.h"
 
 #include "gpgx/hid/controller_type.h"
+#include "gpgx/hid/hid_system.h"
 #include "gpgx/hid/input.h"
 #include "gpgx/g_audio_renderer.h"
+#include "gpgx/g_hid_system.h"
 #include "gpgx/g_z80.h"
 
 #define SOUND_FREQUENCY 48000
@@ -745,6 +747,10 @@ int main (int argc, char **argv)
 
   // 
   gpgx::g_z80 = new gpgx::cpu::z80::Z80();
+
+  // Initialize the HID system.
+  gpgx::g_hid_system = new gpgx::hid::HIDSystem();
+  gpgx::g_hid_system->Initialize();
 
   /* set default config */
   error_init();

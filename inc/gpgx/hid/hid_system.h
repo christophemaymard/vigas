@@ -1,7 +1,7 @@
 /***************************************************************************************
- *  Genesis Plus
- *  Input peripherals support
- *
+ *  Genesis Plus GX
+ *  HID system.
+ * 
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2016  Eke-Eke (Genesis Plus GX)
  *
@@ -37,32 +37,45 @@
  *
  ****************************************************************************************/
 
-#ifndef _INPUT_H_
-#define _INPUT_H_
+#ifndef __GPGX_HID_HID_SYSTEM_H__
+#define __GPGX_HID_HID_SYSTEM_H__
 
-#include "xee/fnd/data_type.h"
+#include "gpgx/hid/device.h"
+#include "gpgx/hid/device_type.h"
 
-#include "gpgx/hid/controller_type.h"
+namespace gpgx::hid {
 
-/* Max. number of devices */
-#define MAX_DEVICES (8)
+//==============================================================================
 
-typedef struct
+//------------------------------------------------------------------------------
+
+/// HID system.
+class HIDSystem
 {
-  gpgx::hid::ControllerType dev[MAX_DEVICES];
-  u16 pad[MAX_DEVICES];      /// Digital buttons (set of gpgx::hid::ButtonSet::k* values).
-  s16 analog[MAX_DEVICES][2]; /* analog inputs (x/y) */
-  int x_offset;                 /* gun horizontal offset */
-  int y_offset;                 /* gun vertical offset */
-} t_input;
+public:
+  static constexpr u32 kDeviceCount = 2; /// Max number of devices.
 
-/* Global variables */
-extern t_input input;
+  HIDSystem();
 
-/* Function prototypes */
-extern void input_init(void);
-extern void input_reset(void);
-extern void input_refresh(void);
-extern void input_end_frame(unsigned int cycles);
+  void Initialize();
 
-#endif
+  /// Connects a device to a port.
+  /// 
+  /// @param  port  The port to connect the device to (0 or 1).
+  /// @param  type  The type of the device to connect.
+  void ConnectDevice(u32 port, DeviceType type);
+
+  /// Retrieves the device connected to the specified port.
+  /// 
+  /// @param  port  The port of the device to retrieve (0 or 1).
+  /// @return The instance of the connected device.
+  Device* GetDevice(u32 port) const;
+
+private:
+  Device* m_devices[kDeviceCount]; /// The connected devices.
+};
+
+} // namespace gpgx::hid
+
+#endif // #ifndef __GPGX_HID_HID_SYSTEM_H__
+

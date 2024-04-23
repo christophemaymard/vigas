@@ -1,6 +1,6 @@
 /***************************************************************************************
- *  Genesis Plus
- *  Input peripherals support
+ *  Genesis Plus GX
+ *  HID system.
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2016  Eke-Eke (Genesis Plus GX)
@@ -37,32 +37,61 @@
  *
  ****************************************************************************************/
 
-#ifndef _INPUT_H_
-#define _INPUT_H_
+#include "gpgx/hid/hid_system.h"
 
-#include "xee/fnd/data_type.h"
+#include "gpgx/hid/device.h"
+#include "gpgx/hid/device_type.h"
 
-#include "gpgx/hid/controller_type.h"
+namespace gpgx::hid {
 
-/* Max. number of devices */
-#define MAX_DEVICES (8)
+//==============================================================================
+// HIDSystem
 
-typedef struct
+//------------------------------------------------------------------------------
+
+HIDSystem::HIDSystem()
 {
-  gpgx::hid::ControllerType dev[MAX_DEVICES];
-  u16 pad[MAX_DEVICES];      /// Digital buttons (set of gpgx::hid::ButtonSet::k* values).
-  s16 analog[MAX_DEVICES][2]; /* analog inputs (x/y) */
-  int x_offset;                 /* gun horizontal offset */
-  int y_offset;                 /* gun vertical offset */
-} t_input;
+  for (u32 idx = 0; idx < kDeviceCount; idx++) {
+    m_devices[idx] = nullptr;
+  }
+}
 
-/* Global variables */
-extern t_input input;
+//------------------------------------------------------------------------------
 
-/* Function prototypes */
-extern void input_init(void);
-extern void input_reset(void);
-extern void input_refresh(void);
-extern void input_end_frame(unsigned int cycles);
+void HIDSystem::Initialize()
+{
+  for (u32 idx = 0; idx < kDeviceCount; idx++) {
+    if (m_devices[idx]) {
+      delete m_devices[idx];
+      m_devices[idx] = nullptr;
+    }
 
-#endif
+    m_devices[idx] = new Device(DeviceType::kNone);
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void HIDSystem::ConnectDevice(u32 port, DeviceType type)
+{
+  if (port >= kDeviceCount) {
+    return;
+  }
+
+  if (m_devices[port]) {
+    delete m_devices[port];
+    m_devices[port] = nullptr;
+  }
+
+  m_devices[port] = new Device(type);
+}
+
+//------------------------------------------------------------------------------
+
+Device* HIDSystem::GetDevice(u32 port) const
+{
+  return (port >= kDeviceCount) ? nullptr : m_devices[port];
+}
+
+} // namespace gpgx::hid
+

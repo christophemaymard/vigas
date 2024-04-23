@@ -64,6 +64,7 @@
 #include "core/input_hw/terebi_oekaki.h"
 
 #include "gpgx/hid/device_type.h"
+#include "gpgx/g_hid_system.h"
 #include "gpgx/g_z80.h"
 
 #define MAPPER_NONE           (0x00)
@@ -551,7 +552,7 @@ void sms_cart_init(void)
       /* auto-detect required peripherals */
       if (game_list[i].peripheral != gpgx::hid::DeviceType::kNone)
       {
-        input.system[0] = game_list[i].peripheral;
+        gpgx::g_hid_system->ConnectDevice(0, game_list[i].peripheral);
       }
 
       /* auto-detect 3D glasses support */

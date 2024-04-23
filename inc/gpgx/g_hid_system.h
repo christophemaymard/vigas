@@ -1,6 +1,5 @@
 /***************************************************************************************
- *  Genesis Plus
- *  Input peripherals support
+ *  Genesis Plus GX
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2016  Eke-Eke (Genesis Plus GX)
@@ -37,32 +36,21 @@
  *
  ****************************************************************************************/
 
-#ifndef _INPUT_H_
-#define _INPUT_H_
+#ifndef __GPGX_G_HID_SYSTEM_H__
+#define __GPGX_G_HID_SYSTEM_H__
 
-#include "xee/fnd/data_type.h"
+#include "gpgx/hid/hid_system.h"
 
-#include "gpgx/hid/controller_type.h"
+namespace gpgx {
 
-/* Max. number of devices */
-#define MAX_DEVICES (8)
+//==============================================================================
 
-typedef struct
-{
-  gpgx::hid::ControllerType dev[MAX_DEVICES];
-  u16 pad[MAX_DEVICES];      /// Digital buttons (set of gpgx::hid::ButtonSet::k* values).
-  s16 analog[MAX_DEVICES][2]; /* analog inputs (x/y) */
-  int x_offset;                 /* gun horizontal offset */
-  int y_offset;                 /* gun vertical offset */
-} t_input;
+//------------------------------------------------------------------------------
 
-/* Global variables */
-extern t_input input;
+/// The current instance of the HID system.
+extern gpgx::hid::HIDSystem* g_hid_system;
 
-/* Function prototypes */
-extern void input_init(void);
-extern void input_reset(void);
-extern void input_refresh(void);
-extern void input_end_frame(unsigned int cycles);
+} // namespace gpgx
 
-#endif
+#endif // #ifndef __GPGX_G_HID_SYSTEM_H__
+
