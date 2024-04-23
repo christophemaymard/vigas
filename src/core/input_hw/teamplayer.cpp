@@ -44,6 +44,7 @@
 #include "core/input_hw/input.h"
 
 #include "gpgx/hid/controller_type.h"
+#include "gpgx/g_hid_system.h"
 
 static struct
 {
@@ -65,7 +66,7 @@ void teamplayer_init(int port)
   for (i=0; i<4; i++)
   {
     padnum = (4 * port) + i;
-    if (input.dev[padnum] == gpgx::hid::ControllerType::kPad3B)
+    if (gpgx::g_hid_system->GetController(padnum)->GetType() == gpgx::hid::ControllerType::kPad3B)
     {
       padnum = padnum << 4;
       teamplayer[port].Table[index++] = padnum;
@@ -118,7 +119,7 @@ static XEE_INLINE unsigned int teamplayer_read(int port)
     case 6:
     case 7: /* PAD type: xxx0000 (3B), xxx0001 (6B) or xxx1111 (NC)*/
     {
-      u32 retval = static_cast<u32>(input.dev[(port << 2) + (counter - 4)]);
+      u32 retval = static_cast<u32>(gpgx::g_hid_system->GetController((port << 2) + (counter - 4))->GetType());
 
       /* TL should match TR */
       return (((teamplayer[port].State & 0x20) >> 1) | retval);

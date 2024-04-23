@@ -102,7 +102,7 @@ void io_init(void)
   {
     case gpgx::hid::DeviceType::kGamepad:
     {
-      port[0].data_w = (input.dev[0] == gpgx::hid::ControllerType::kPad2B) ? dummy_write : gamepad_1_write;
+      port[0].data_w = (gpgx::g_hid_system->GetController(0)->GetType() == gpgx::hid::ControllerType::kPad2B) ? dummy_write : gamepad_1_write;
       port[0].data_r = gamepad_1_read;
       break;
     }
@@ -189,7 +189,7 @@ void io_init(void)
   {
     case gpgx::hid::DeviceType::kGamepad:
     {
-      port[1].data_w = (input.dev[4] == gpgx::hid::ControllerType::kPad2B) ? dummy_write : gamepad_2_write;
+      port[1].data_w = (gpgx::g_hid_system->GetController(4)->GetType() == gpgx::hid::ControllerType::kPad2B) ? dummy_write : gamepad_2_write;
       port[1].data_r = gamepad_2_read;
       break;
     }

@@ -503,7 +503,7 @@ static int sdl_control_update(SDL_Keycode keystate)
       case SDLK_F12:
       {
         joynum = (joynum + 1) % MAX_DEVICES;
-        while (input.dev[joynum] == gpgx::hid::ControllerType::kNone)
+        while (gpgx::g_hid_system->GetController(joynum)->GetType() == gpgx::hid::ControllerType::kNone)
         {
           joynum = (joynum + 1) % MAX_DEVICES;
         }
@@ -529,7 +529,7 @@ int sdl_input_update(void)
   /* reset input */
   input.pad[joynum] = 0;
 
-  switch (input.dev[joynum])
+  switch (gpgx::g_hid_system->GetController(joynum)->GetType())
   {
     case gpgx::hid::ControllerType::kLightGun:
     {

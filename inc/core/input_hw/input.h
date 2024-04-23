@@ -42,14 +42,11 @@
 
 #include "xee/fnd/data_type.h"
 
-#include "gpgx/hid/controller_type.h"
-
 /* Max. number of devices */
 #define MAX_DEVICES (8)
 
 typedef struct
 {
-  gpgx::hid::ControllerType dev[MAX_DEVICES];
   u16 pad[MAX_DEVICES];      /// Digital buttons (set of gpgx::hid::ButtonSet::k* values).
   s16 analog[MAX_DEVICES][2]; /* analog inputs (x/y) */
   int x_offset;                 /* gun horizontal offset */

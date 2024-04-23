@@ -40,6 +40,8 @@
 #ifndef __GPGX_HID_HID_SYSTEM_H__
 #define __GPGX_HID_HID_SYSTEM_H__
 
+#include "gpgx/hid/controller.h"
+#include "gpgx/hid/controller_type.h"
 #include "gpgx/hid/device.h"
 #include "gpgx/hid/device_type.h"
 
@@ -54,6 +56,7 @@ class HIDSystem
 {
 public:
   static constexpr u32 kDeviceCount = 2; /// Max number of devices.
+  static constexpr u32 kControllerCount = 8; /// Max number of controllers.
 
   HIDSystem();
 
@@ -71,8 +74,23 @@ public:
   /// @return The instance of the connected device.
   Device* GetDevice(u32 port) const;
 
+  /// Connects a controller at the specified index.
+  /// 
+  /// @param  index The index to connect the controller to (0 to 7).
+  /// @param  type  The type of the controller to connect.
+  void ConnectController(u32 index, ControllerType type);
+
+  /// Retrieves the controller connected at the specified index.
+  /// 
+  /// @param  index The index of the controller to retrieve (0 to 7).
+  /// @return The instance of the connected controller.
+  Controller* GetController(u32 index) const;
+
+  /// Disconnects all the controllers.
+  void DisconnectAllControllers();
 private:
   Device* m_devices[kDeviceCount]; /// The connected devices.
+  Controller* m_controllers[kControllerCount]; /// The connected controllers.
 };
 
 } // namespace gpgx::hid

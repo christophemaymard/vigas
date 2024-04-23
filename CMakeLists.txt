@@ -194,6 +194,7 @@ add_executable(vigas
     inc/gpgx/cpu/z80/z80_register_pair.h
     inc/gpgx/cpu/z80/z80_table_index.h
     
+    inc/gpgx/hid/controller.h
     inc/gpgx/hid/controller_type.h
     inc/gpgx/hid/device.h
     inc/gpgx/hid/device_type.h
@@ -342,6 +343,7 @@ add_executable(vigas
     src/gpgx/cpu/z80/z80_opcodes.cpp
     src/gpgx/cpu/z80/z80_operations.cpp
     
+    src/gpgx/hid/controller.cpp
     src/gpgx/hid/device.cpp
     src/gpgx/hid/hid_system.cpp
 

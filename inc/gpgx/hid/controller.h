@@ -1,6 +1,5 @@
 /***************************************************************************************
  *  Genesis Plus GX
- *  HID system.
  *
  *  Copyright (C) 1998-2003  Charles Mac Donald (original code)
  *  Copyright (C) 2007-2016  Eke-Eke (Genesis Plus GX)
@@ -37,108 +36,32 @@
  *
  ****************************************************************************************/
 
-#include "gpgx/hid/hid_system.h"
+#ifndef __GPGX_HID_CONTROLLER_H__
+#define __GPGX_HID_CONTROLLER_H__
 
-#include "gpgx/hid/controller.h"
 #include "gpgx/hid/controller_type.h"
-#include "gpgx/hid/device.h"
-#include "gpgx/hid/device_type.h"
 
 namespace gpgx::hid {
 
 //==============================================================================
-// HIDSystem
 
 //------------------------------------------------------------------------------
 
-HIDSystem::HIDSystem()
+class Controller
 {
-  u32 idx = 0;
+public:
+  Controller(ControllerType type);
 
-  for (idx = 0; idx < kDeviceCount; idx++) {
-    m_devices[idx] = nullptr;
-  }
+  /// Returns the type of this controller.
+  /// 
+  /// @return The type of this controller.
+  ControllerType GetType() const;
 
-  for (idx = 0; idx < kControllerCount; idx++) {
-    m_controllers[idx] = nullptr;
-  }
-}
-
-//------------------------------------------------------------------------------
-
-void HIDSystem::Initialize()
-{
-  for (u32 idx = 0; idx < kDeviceCount; idx++) {
-    if (m_devices[idx]) {
-      delete m_devices[idx];
-      m_devices[idx] = nullptr;
-    }
-
-    m_devices[idx] = new Device(DeviceType::kNone);
-  }
-
-  DisconnectAllControllers();
-}
-
-//------------------------------------------------------------------------------
-
-void HIDSystem::ConnectDevice(u32 port, DeviceType type)
-{
-  if (port >= kDeviceCount) {
-    return;
-  }
-
-  if (m_devices[port]) {
-    delete m_devices[port];
-    m_devices[port] = nullptr;
-  }
-
-  m_devices[port] = new Device(type);
-}
-
-//------------------------------------------------------------------------------
-
-Device* HIDSystem::GetDevice(u32 port) const
-{
-  return (port >= kDeviceCount) ? nullptr : m_devices[port];
-}
-
-//------------------------------------------------------------------------------
-
-void HIDSystem::ConnectController(u32 index, ControllerType type)
-{
-  if (index >= kControllerCount) {
-    return;
-  }
-
-  if (m_controllers[index]) {
-    delete m_controllers[index];
-    m_controllers[index] = nullptr;
-  }
-
-  m_controllers[index] = new Controller(type);
-}
-
-//------------------------------------------------------------------------------
-
-Controller* HIDSystem::GetController(u32 index) const
-{
-  return (index >= kControllerCount) ? nullptr : m_controllers[index];
-}
-
-//------------------------------------------------------------------------------
-
-void HIDSystem::DisconnectAllControllers()
-{
-  for (u32 idx = 0; idx < kControllerCount; idx++) {
-    if (m_controllers[idx]) {
-      delete m_controllers[idx];
-      m_controllers[idx] = nullptr;
-    }
-
-    m_controllers[idx] = new Controller(ControllerType::kNone);
-  }
-}
+private:
+  ControllerType m_type; /// The type of this controller.
+};
 
 } // namespace gpgx::hid
+
+#endif // #ifndef __GPGX_HID_CONTROLLER_H__
 
