@@ -69,6 +69,7 @@
 #include "gpgx/cpu/z80/z80_line_state.h"
 #include "gpgx/hid/input.h"
 #include "gpgx/g_audio_renderer.h"
+#include "gpgx/g_hid_system.h"
 #include "gpgx/g_z80.h"
 
 static u8 pause_b;
@@ -1091,7 +1092,7 @@ void system_frame_sms(int do_skip)
   /* Detect pause button input (in Game Gear Mode, NMI is not generated) */
   if (system_hw != SYSTEM_GG)
   {
-    if (input.pad[0] & gpgx::hid::ButtonSet::kStart)
+    if (gpgx::g_hid_system->GetController(0)->IsButtonPressed(gpgx::hid::Button::kStart))
     {
       /* NMI is edge-triggered */
       if (!pause_b)

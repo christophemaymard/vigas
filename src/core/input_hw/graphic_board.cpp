@@ -42,6 +42,8 @@
 
 #include "core/input_hw/input.h"
 
+#include "gpgx/g_hid_system.h"
+
 static struct
 {
   u8 State;
@@ -70,7 +72,7 @@ unsigned char graphic_board_read(void)
   switch (board.Counter & 7)
   {
     case 0:
-      data = ~input.pad[board.Port];
+      data = ~gpgx::g_hid_system->GetController(board.Port)->GetButtons();
       break;
     case 1:
       data = 0x0f;

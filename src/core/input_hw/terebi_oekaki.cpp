@@ -43,6 +43,7 @@
 #include "core/input_hw/input.h"
 
 #include "gpgx/hid/input.h"
+#include "gpgx/g_hid_system.h"
 
 static struct
 {
@@ -62,7 +63,7 @@ unsigned short terebi_oekaki_read(void)
 {
   u16 data = (tablet.busy << 15) | input.analog[0][tablet.axis];
 
-  if (!(input.pad[0] & gpgx::hid::ButtonSet::kB))
+  if (!(gpgx::g_hid_system->GetController(0)->IsButtonPressed(gpgx::hid::Button::kB)))
   {
     data |= 0x100;
   }

@@ -42,6 +42,8 @@
 
 #include "core/input_hw/input.h"
 
+#include "gpgx/g_hid_system.h"
+
 static struct
 {
   u8 State;
@@ -94,7 +96,7 @@ unsigned char mouse_read(void)
       break;
 
     case 5: /* START, A, B, C buttons state (active high) */
-      temp = (input.pad[mouse.Port] >> 4) & 0x0F;
+      temp = (gpgx::g_hid_system->GetController(mouse.Port)->GetButtons() >> 4) & 0x0F;
       break;
 
     case 6: /* X Axis MSB */

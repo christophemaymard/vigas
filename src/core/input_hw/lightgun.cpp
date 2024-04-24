@@ -192,7 +192,7 @@ void lightgun_refresh(int port)
 static XEE_INLINE unsigned char phaser_read(int port)
 {
   /* TL returns TRIGGER (INPUT_A) button status (active low) */
-  unsigned char temp = ~((input.pad[port] >> 2) & 0x10);
+  unsigned char temp = ~((gpgx::g_hid_system->GetController(port)->GetButtons() >> 2) & 0x10);
 
   /* Check that TH is set as an input */
   if (io_reg[0x0F] & (0x02 << (port >> 1)))
@@ -247,7 +247,7 @@ unsigned char menacer_read(void)
   /* D0=??? (INPUT_B), D1=TRIGGER (INPUT_A), D2=??? (INPUT_C), D3= START (INPUT_START) (active high) */
   /* TL & TR pins always return 0 (normally set as output)  */
   /* TH always return 1 (0 on active pixel but button acquisition is always done during VBLANK) */
-  unsigned data = input.pad[4] >> 4;
+  unsigned data = gpgx::g_hid_system->GetController(4)->GetButtons() >> 4;
   return ((data & 0x09) | ((data >> 1) & 0x02) | ((data << 1) & 0x04) | 0x40);
 }
 
@@ -267,7 +267,7 @@ unsigned char justifier_read(void)
   /* Return TRIGGER (INPUT_A) & START (INPUT_START) button status in D0-D1 (active low) */
   /* TL & TR pins should always return 1 (normally set as output) */
   /* LEFT & RIGHT pins should always return 0 */
-  return (((~input.pad[lightgun.Port] >> 6) & 0x03) | 0x70);
+  return (((~gpgx::g_hid_system->GetController(lightgun.Port)->GetButtons() >> 6) & 0x03) | 0x70);
 }
 
 void justifier_write(unsigned char data, unsigned char mask)

@@ -43,6 +43,8 @@
 
 #include "core/input_hw/input.h"
 
+#include "gpgx/g_hid_system.h"
+
 #define XE_1AP_LATENCY 3
 
 static struct
@@ -68,14 +70,17 @@ static XEE_INLINE unsigned char xe_1ap_read(int index)
   unsigned char data;
   unsigned int port = index << 2;
 
+  // Retrieve the controller.
+  const auto controller = gpgx::g_hid_system->GetController(port);
+
   /* Current data transfer cycle */
   switch (xe_1ap[index].Counter)
   {
     case 0: /* E1 E2 Start Select buttons status (active low) */
-      data = (~input.pad[port] >> 10) & 0x0F;
+      data = (~controller->GetButtons() >> 10) & 0x0F;
       break;
     case 1: /* A/A' B/B' C D buttons status (active low) */
-      data = ((~input.pad[port] >> 4) & 0x0F) & ~((input.pad[port] >> 6) & 0x0C);
+      data = ((~controller->GetButtons() >> 4) & 0x0F) & ~((controller->GetButtons() >> 6) & 0x0C);
       break;
     case 2: /* CH0 high (Analog Stick Left/Right direction) */
       data = (input.analog[port][0] >> 4) & 0x0F;
@@ -102,7 +107,7 @@ static XEE_INLINE unsigned char xe_1ap_read(int index)
       data = input.analog[port+1][0] & 0x0F;
       break;
     case 11: /* A B A' B' buttons status (active low) */
-      data = (~input.pad[port] >> 6) & 0x0F;
+      data = (~controller->GetButtons() >> 6) & 0x0F;
       break;
     default: /* N/A */
       data = 0x0F;

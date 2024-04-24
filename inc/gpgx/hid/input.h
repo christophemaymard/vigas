@@ -47,6 +47,66 @@ namespace gpgx::hid {
 
 //------------------------------------------------------------------------------
 
+enum class Button
+{
+  kMode        , /// Button Mode.
+  kX           , /// Button X.
+  kY           , /// Button Y.
+  kZ           , /// Button Z.
+  kStart       , /// Button Start.
+  kA           , /// Button A.
+  kC           , /// Button C.
+  kB           , /// Button B.
+  kRight       , /// Button Right.
+  kLeft        , /// Button Left.
+  kDown        , /// Button Down.
+  kUp          , /// Button Up.
+
+  kButton2     , /// (Master System specific).
+  kButton1     , /// (Master System specific).
+
+  kMouseCenter , /// (Mega Mouse specific).
+  kMouseRight  , /// (Mega Mouse specific).
+  kMouseLeft   , /// (Mega Mouse specific).
+
+  kPicoPen     , /// (Pico hardware specific).
+  kPicoRed     , /// (Pico hardware specific).
+
+  kXeE1        , /// (XE-1AP specific).
+  kXeE2        , /// (XE-1AP specific).
+  kXeStart     , /// (XE-1AP specific).
+  kXeSelect    , /// (XE-1AP specific).
+  kXeA         , /// (XE-1AP specific).
+  kXeB         , /// (XE-1AP specific).
+  kXeA2        , /// (XE-1AP specific).
+  kXeB2        , /// (XE-1AP specific).
+  kXeC         , /// (XE-1AP specific).
+  kXeD         , /// (XE-1AP specific).
+
+  kActivator8U , /// (Activator specific).
+  kActivator8L , /// (Activator specific).
+  kActivator7U , /// (Activator specific).
+  kActivator7L , /// (Activator specific).
+  kActivator6U , /// (Activator specific).
+  kActivator6L , /// (Activator specific).
+  kActivator5U , /// (Activator specific).
+  kActivator5L , /// (Activator specific).
+  kActivator4U , /// (Activator specific).
+  kActivator4L , /// (Activator specific).
+  kActivator3U , /// (Activator specific).
+  kActivator3L , /// (Activator specific).
+  kActivator2U , /// (Activator specific).
+  kActivator2L , /// (Activator specific).
+  kActivator1U , /// (Activator specific).
+  kActivator1L , /// (Activator specific).
+
+  kGraphicPen  , /// (Graphic Board specific).
+  kGraphicDo   , /// (Graphic Board specific).
+  kGraphicMenu , /// (Graphic Board specific).
+};
+
+//------------------------------------------------------------------------------
+
 struct ButtonSet
 {
   static constexpr u16 kMode        = 0x0800; /// Button Mode.

@@ -44,6 +44,8 @@
 #include "core/region_code.h"
 #include "core/input_hw/input.h"
 
+#include "gpgx/g_hid_system.h"
+
 static struct
 {
   u8 State;
@@ -60,7 +62,7 @@ void paddle_reset(int port)
 static XEE_INLINE unsigned char paddle_read(int port)
 {
   /* FIRE button status (active low) */
-  unsigned char temp = ~(input.pad[port] & 0x10);
+  unsigned char temp = ~(gpgx::g_hid_system->GetController(port)->GetButtons() & 0x10);
 
   /* Pad index */
   int index = port >> 2;

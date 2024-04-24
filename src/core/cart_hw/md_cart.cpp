@@ -80,6 +80,7 @@
 
 #include "gpgx/audio/blip_buffer.h"
 #include "gpgx/hid/input.h"
+#include "gpgx/g_hid_system.h"
 
 /* Cart database entry */
 typedef struct
@@ -2292,33 +2293,36 @@ static u32 topshooter_r(u32 address)
   {
     u8 temp = 0xff;
 
+    // Retrieve the first controller.
+    const auto first_controller = gpgx::g_hid_system->GetController(0);
+
     switch (address & 0xff)
     {
       case 0x43:
       {
-        if (input.pad[0] & gpgx::hid::ButtonSet::kA)     temp &= ~0x80; /* Shoot */
-        if (input.pad[0] & gpgx::hid::ButtonSet::kB)     temp &= ~0x10; /* Bet */
-        if (input.pad[0] & gpgx::hid::ButtonSet::kStart) temp &= ~0x20; /* Start */
+        if (first_controller->IsButtonPressed(gpgx::hid::Button::kA))     temp &= ~0x80; /* Shoot */
+        if (first_controller->IsButtonPressed(gpgx::hid::Button::kB))     temp &= ~0x10; /* Bet */
+        if (first_controller->IsButtonPressed(gpgx::hid::Button::kStart)) temp &= ~0x20; /* Start */
         break;
       }
 
       case 0x45:  /* ??? (DOWN) & Service Mode (UP) */
       {
-        if (input.pad[0] & gpgx::hid::ButtonSet::kUp)    temp &= ~0x08; /* Service Mode */
-        if (input.pad[0] & gpgx::hid::ButtonSet::kDown)  temp &= ~0x10; /* ???, used in service menu to select next option */
+        if (first_controller->IsButtonPressed(gpgx::hid::Button::kUp))    temp &= ~0x08; /* Service Mode */
+        if (first_controller->IsButtonPressed(gpgx::hid::Button::kDown))  temp &= ~0x10; /* ???, used in service menu to select next option */
         break;
       }
 
       case 0x47:
       {
-        if (input.pad[0] & gpgx::hid::ButtonSet::kRight) temp &= ~0x03; /* Insert 10 coins */
+        if (first_controller->IsButtonPressed(gpgx::hid::Button::kRight)) temp &= ~0x03; /* Insert 10 coins */
         break;
       }
 
       case 0x49:
       {
-        if (input.pad[0] & gpgx::hid::ButtonSet::kLeft)  temp &= ~0x03; /* Clear coins */
-        if (input.pad[0] & gpgx::hid::ButtonSet::kC)     temp &= ~0x01; /* Insert XXX coins */
+        if (first_controller->IsButtonPressed(gpgx::hid::Button::kLeft))  temp &= ~0x03; /* Clear coins */
+        if (first_controller->IsButtonPressed(gpgx::hid::Button::kC))     temp &= ~0x01; /* Insert XXX coins */
         break;
       }
 

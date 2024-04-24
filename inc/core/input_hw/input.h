@@ -47,7 +47,6 @@
 
 typedef struct
 {
-  u16 pad[MAX_DEVICES];      /// Digital buttons (set of gpgx::hid::ButtonSet::k* values).
   s16 analog[MAX_DEVICES][2]; /* analog inputs (x/y) */
   int x_offset;                 /* gun horizontal offset */
   int y_offset;                 /* gun vertical offset */

@@ -43,6 +43,8 @@
 
 #include "core/input_hw/input.h"
 
+#include "gpgx/g_hid_system.h"
+
 static struct
 {
   u8 State;
@@ -60,7 +62,7 @@ void sportspad_reset(int index)
 static XEE_INLINE unsigned char sportspad_read(int port)
 {
   /* Buttons 1(B) & 2(C) status (active low) */
-  unsigned char temp = ~(input.pad[port] & 0x30);
+  unsigned char temp = ~(gpgx::g_hid_system->GetController(port)->GetButtons() & 0x30);
 
   /* Pad index */
   int index = port >> 2;

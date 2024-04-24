@@ -39,7 +39,10 @@
 #ifndef __GPGX_HID_CONTROLLER_H__
 #define __GPGX_HID_CONTROLLER_H__
 
+#include "xee/fnd/data_type.h"
+
 #include "gpgx/hid/controller_type.h"
+#include "gpgx/hid/input.h" // For Button.
 
 namespace gpgx::hid {
 
@@ -57,8 +60,28 @@ public:
   /// @return The type of this controller.
   ControllerType GetType() const;
 
+  /// Sets the state of the specified button as pressed.
+  /// 
+  /// @param  button  The button to change the state.
+  void PressButton(Button button);
+
+  /// Indicates whether the specified button is pressed.
+  /// 
+  /// @param  button  The button to check.
+  /// @return true if the button is pressed, otherwise false.
+  bool IsButtonPressed(Button button) const;
+
+  /// Returns the button states.
+  /// 
+  /// @return The button states.
+  u16 GetButtons() const;
+
+  /// Reset the button states.
+  void ResetButtons();
+
 private:
   ControllerType m_type; /// The type of this controller.
+  u16 m_buttons; // The button states.
 };
 
 } // namespace gpgx::hid

@@ -655,7 +655,7 @@ unsigned int io_gg_read(unsigned int offset)
   switch (offset)
   {
     case 0: /* Mode Register */
-      return (io_reg[0] & ~(input.pad[0] & gpgx::hid::ButtonSet::kStart));
+      return (io_reg[0] & ~(gpgx::g_hid_system->GetController(0)->GetButtons() & gpgx::hid::ButtonSet::kStart));
 
     case 1: /* Parallel data register (not connected) */
       return ((io_reg[1] & ~(io_reg[2] & 0x7F)) | (io_reg[2] & 0x7F));

@@ -133,7 +133,7 @@ static XEE_INLINE unsigned int teamplayer_read(int port)
       unsigned int padnum = teamplayer[port].Table[counter - 8] >> 4;
 
       /* Each PAD inputs is obtained through 2 or 3 sequential reads: RLDU -> SACB -> MXYZ */
-      retval &= ~(input.pad[padnum] >> (teamplayer[port].Table[counter - 8] & 0x0F));
+      retval &= ~(gpgx::g_hid_system->GetController(padnum)->GetButtons() >> (teamplayer[port].Table[counter - 8] & 0x0F));
 
       /* TL should match TR */
       return (((teamplayer[port].State & 0x20) >> 1) | retval);

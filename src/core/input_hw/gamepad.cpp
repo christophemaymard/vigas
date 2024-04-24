@@ -114,7 +114,7 @@ static XEE_INLINE unsigned char gamepad_read(int port)
   unsigned int data = gamepad[port].State | 0x3F;
 
   /* pad state */
-  unsigned int pad = input.pad[port];
+  unsigned int pad = gpgx::g_hid_system->GetController(port)->GetButtons();
 
   /* get current TH input pulse counter */
   unsigned int step = gamepad[port].Counter | (data >> 6);

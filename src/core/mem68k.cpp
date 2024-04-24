@@ -70,6 +70,7 @@
 #include "core/cd_hw/cdc.h"
 #include "core/cd_hw/gfx.h" // For word_ram_2M_dma_w().
 
+#include "gpgx/g_hid_system.h"
 #include "gpgx/g_psg.h"
 
 /*--------------------------------------------------------------------------*/
@@ -1582,6 +1583,9 @@ void vdp_write_word(unsigned int address, unsigned int data)
 
 unsigned int pico_read_byte(unsigned int address)
 {
+  // Retrieve the first controller.
+  const auto first_controller = gpgx::g_hid_system->GetController(0);
+
   switch (address & 0xFF)
   {
     case 0x01:  /* VERSION register */
@@ -1591,7 +1595,7 @@ unsigned int pico_read_byte(unsigned int address)
 
     case 0x03:  /* IO register */
     {
-      return ~input.pad[0];
+      return ~first_controller->GetButtons();
     }
 
     case 0x05:  /* PEN X coordinate (MSB) */

@@ -43,6 +43,8 @@
 
 #include "core/input_hw/input.h"
 
+#include "gpgx/g_hid_system.h"
+
 static struct
 {
   u8 State;
@@ -59,7 +61,7 @@ void activator_reset(int index)
 static XEE_INLINE unsigned char activator_read(int index)
 {
   /* IR sensors 1-16 data (active low) */
-  u16 data = ~input.pad[index << 2];
+  u16 data = ~gpgx::g_hid_system->GetController(index << 2)->GetButtons();
 
   /* D1 = D0 (data is ready) */
   u8 temp = (activator[index].State & 0x01) << 1;

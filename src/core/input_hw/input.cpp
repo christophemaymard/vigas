@@ -64,7 +64,6 @@
 #include "gpgx/g_hid_system.h"
 
 t_input input = {
-  { 0, 0, 0, 0, 0, 0, 0, 0 },
   { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } },
   0,
   0
@@ -75,11 +74,6 @@ void input_init(void)
 {
   int i;
   int player = 0;
-
-  for (i=0; i<MAX_DEVICES; i++)
-  {
-    input.pad[i] = 0;
-  }
 
   gpgx::g_hid_system->DisconnectAllControllers();
 

@@ -526,10 +526,13 @@ int sdl_input_update(void)
 {
   const u8 *keystate = SDL_GetKeyboardState(NULL);
 
-  /* reset input */
-  input.pad[joynum] = 0;
+  // Retrieve the controller.
+  const auto controller = gpgx::g_hid_system->GetController(joynum);
 
-  switch (gpgx::g_hid_system->GetController(joynum)->GetType())
+  /* reset input */
+  controller->ResetButtons();
+
+  switch (controller->GetType())
   {
     case gpgx::hid::ControllerType::kLightGun:
     {
@@ -544,10 +547,10 @@ int sdl_input_update(void)
       input.analog[joynum][1] =  y - (sdl_video.surf_screen->h-viewport.h)/2;
 
       /* TRIGGER, B, C (Menacer only), START (Menacer & Justifier only) */
-      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kA;
-      if(state & SDL_BUTTON_RMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
-      if(state & SDL_BUTTON_MMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kC;
-      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= gpgx::hid::ButtonSet::kStart;
+      if(state & SDL_BUTTON_LMASK) controller->PressButton(gpgx::hid::Button::kA);
+      if(state & SDL_BUTTON_RMASK) controller->PressButton(gpgx::hid::Button::kB);
+      if(state & SDL_BUTTON_MMASK) controller->PressButton(gpgx::hid::Button::kC);
+      if(keystate[SDL_SCANCODE_F])  controller->PressButton(gpgx::hid::Button::kStart);
       break;
     }
 
@@ -561,7 +564,7 @@ int sdl_input_update(void)
       input.analog[joynum][0] = x * 256 /sdl_video.surf_screen->w;
 
       /* Button I -> 0 0 0 0 0 0 0 I*/
-      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
+      if(state & SDL_BUTTON_LMASK) controller->PressButton(gpgx::hid::Button::kB);
 
       break;
     }
@@ -577,8 +580,8 @@ int sdl_input_update(void)
       input.analog[joynum][1] = (unsigned char)(-y & 0xFF);
 
       /* Buttons I & II -> 0 0 0 0 0 0 II I*/
-      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
-      if(state & SDL_BUTTON_RMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kC;
+      if(state & SDL_BUTTON_LMASK) controller->PressButton(gpgx::hid::Button::kB);
+      if(state & SDL_BUTTON_RMASK) controller->PressButton(gpgx::hid::Button::kC);
 
       break;
     }
@@ -598,10 +601,10 @@ int sdl_input_update(void)
         input.analog[joynum][1] = 0 - input.analog[joynum][1];
 
       /* Start,Left,Right,Middle buttons -> 0 0 0 0 START MIDDLE RIGHT LEFT */
-      if(state & SDL_BUTTON_LMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
-      if(state & SDL_BUTTON_RMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kC;
-      if(state & SDL_BUTTON_MMASK) input.pad[joynum] |= gpgx::hid::ButtonSet::kA;
-      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= gpgx::hid::ButtonSet::kStart;
+      if(state & SDL_BUTTON_LMASK) controller->PressButton(gpgx::hid::Button::kB);
+      if(state & SDL_BUTTON_RMASK) controller->PressButton(gpgx::hid::Button::kC);
+      if(state & SDL_BUTTON_MMASK) controller->PressButton(gpgx::hid::Button::kA);
+      if(keystate[SDL_SCANCODE_F])  controller->PressButton(gpgx::hid::Button::kStart);
 
       break;
     }
@@ -609,14 +612,14 @@ int sdl_input_update(void)
     case gpgx::hid::ControllerType::kXe1Ap:
     {
       /* A,B,C,D,Select,START,E1,E2 buttons -> E1(?) E2(?) START SELECT(?) A B C D */
-      if(keystate[SDL_SCANCODE_A])  input.pad[joynum] |= gpgx::hid::ButtonSet::kStart;
-      if(keystate[SDL_SCANCODE_S])  input.pad[joynum] |= gpgx::hid::ButtonSet::kA;
-      if(keystate[SDL_SCANCODE_D])  input.pad[joynum] |= gpgx::hid::ButtonSet::kC;
-      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= gpgx::hid::ButtonSet::kY;
-      if(keystate[SDL_SCANCODE_Z])  input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
-      if(keystate[SDL_SCANCODE_X])  input.pad[joynum] |= gpgx::hid::ButtonSet::kX;
-      if(keystate[SDL_SCANCODE_C])  input.pad[joynum] |= gpgx::hid::ButtonSet::kMode;
-      if(keystate[SDL_SCANCODE_V])  input.pad[joynum] |= gpgx::hid::ButtonSet::kZ;
+      if(keystate[SDL_SCANCODE_A])  controller->PressButton(gpgx::hid::Button::kStart);
+      if(keystate[SDL_SCANCODE_S])  controller->PressButton(gpgx::hid::Button::kA);
+      if(keystate[SDL_SCANCODE_D])  controller->PressButton(gpgx::hid::Button::kC);
+      if(keystate[SDL_SCANCODE_F])  controller->PressButton(gpgx::hid::Button::kY);
+      if(keystate[SDL_SCANCODE_Z])  controller->PressButton(gpgx::hid::Button::kB);
+      if(keystate[SDL_SCANCODE_X])  controller->PressButton(gpgx::hid::Button::kX);
+      if(keystate[SDL_SCANCODE_C])  controller->PressButton(gpgx::hid::Button::kMode);
+      if(keystate[SDL_SCANCODE_V])  controller->PressButton(gpgx::hid::Button::kZ);
 
       /* Left Analog Stick (bidirectional) */
       if(keystate[SDL_SCANCODE_UP])     input.analog[joynum][1]-=2;
@@ -652,14 +655,18 @@ int sdl_input_update(void)
       int x,y;
       int state = SDL_GetMouseState(&x,&y);
 
+      // Retrieve the first controller.
+      // (PICO tablet should be always connected to index 0)
+      const auto first_controller = gpgx::g_hid_system->GetController(0);
+
       /* Calculate X Y axis values */
       input.analog[0][0] = 0x3c  + (x * (0x17c-0x03c+1)) / sdl_video.surf_screen->w;
       input.analog[0][1] = 0x1fc + (y * (0x2f7-0x1fc+1)) / sdl_video.surf_screen->h;
 
       /* Map mouse buttons to player #1 inputs */
       if(state & SDL_BUTTON_MMASK) pico_current = (pico_current + 1) & 7;
-      if(state & SDL_BUTTON_RMASK) input.pad[0] |= gpgx::hid::ButtonSet::kPicoRed;
-      if(state & SDL_BUTTON_LMASK) input.pad[0] |= gpgx::hid::ButtonSet::kPicoPen;
+      if(state & SDL_BUTTON_RMASK) first_controller->PressButton(gpgx::hid::Button::kPicoRed);
+      if(state & SDL_BUTTON_LMASK) first_controller->PressButton(gpgx::hid::Button::kPicoPen);
 
       break;
     }
@@ -670,12 +677,16 @@ int sdl_input_update(void)
       int x,y;
       int state = SDL_GetMouseState(&x,&y);
 
+      // Retrieve the first controller.
+      // (Terebi Oekaki tablet should be always connected to index 0)
+      const auto first_controller = gpgx::g_hid_system->GetController(0);
+
       /* Calculate X Y axis values */
       input.analog[0][0] = (x * 250) / sdl_video.surf_screen->w;
       input.analog[0][1] = (y * 250) / sdl_video.surf_screen->h;
 
       /* Map mouse buttons to player #1 inputs */
-      if(state & SDL_BUTTON_RMASK) input.pad[0] |= gpgx::hid::ButtonSet::kB;
+      if(state & SDL_BUTTON_RMASK) first_controller->PressButton(gpgx::hid::Button::kB);
 
       break;
     }
@@ -686,43 +697,47 @@ int sdl_input_update(void)
       int x,y;
       int state = SDL_GetMouseState(&x,&y);
 
+      // Retrieve the first controller.
+      // @todo  Check where the Graphic Board can be connected, differences between sdl_input_update(), input_init(), input_reset() and graphic_board_reset().
+      const auto first_controller = gpgx::g_hid_system->GetController(0);
+
       /* Calculate X Y axis values */
       input.analog[0][0] = (x * 255) / sdl_video.surf_screen->w;
       input.analog[0][1] = (y * 255) / sdl_video.surf_screen->h;
 
       /* Map mouse buttons to player #1 inputs */
-      if(state & SDL_BUTTON_LMASK) input.pad[0] |= gpgx::hid::ButtonSet::kGraphicPen;
-      if(state & SDL_BUTTON_RMASK) input.pad[0] |= gpgx::hid::ButtonSet::kGraphicMenu;
-      if(state & SDL_BUTTON_MMASK) input.pad[0] |= gpgx::hid::ButtonSet::kGraphicDo;
+      if(state & SDL_BUTTON_LMASK) first_controller->PressButton(gpgx::hid::Button::kGraphicPen);
+      if(state & SDL_BUTTON_RMASK) first_controller->PressButton(gpgx::hid::Button::kGraphicMenu);
+      if(state & SDL_BUTTON_MMASK) first_controller->PressButton(gpgx::hid::Button::kGraphicDo);
 
       break;
     }
 
     case gpgx::hid::ControllerType::kActivator:
     {
-      if(keystate[SDL_SCANCODE_G])  input.pad[joynum] |= gpgx::hid::ButtonSet::kActivator7L;
-      if(keystate[SDL_SCANCODE_H])  input.pad[joynum] |= gpgx::hid::ButtonSet::kActivator7U;
-      if(keystate[SDL_SCANCODE_J])  input.pad[joynum] |= gpgx::hid::ButtonSet::kActivator8L;
-      if(keystate[SDL_SCANCODE_K])  input.pad[joynum] |= gpgx::hid::ButtonSet::kActivator8U;
+      if(keystate[SDL_SCANCODE_G])  controller->PressButton(gpgx::hid::Button::kActivator7L);
+      if(keystate[SDL_SCANCODE_H])  controller->PressButton(gpgx::hid::Button::kActivator7U);
+      if(keystate[SDL_SCANCODE_J])  controller->PressButton(gpgx::hid::Button::kActivator8L);
+      if(keystate[SDL_SCANCODE_K])  controller->PressButton(gpgx::hid::Button::kActivator8U);
     }
 
     default:
     {
-      if(keystate[SDL_SCANCODE_A])  input.pad[joynum] |= gpgx::hid::ButtonSet::kA;
-      if(keystate[SDL_SCANCODE_S])  input.pad[joynum] |= gpgx::hid::ButtonSet::kB;
-      if(keystate[SDL_SCANCODE_D])  input.pad[joynum] |= gpgx::hid::ButtonSet::kC;
-      if(keystate[SDL_SCANCODE_F])  input.pad[joynum] |= gpgx::hid::ButtonSet::kStart;
-      if(keystate[SDL_SCANCODE_Z])  input.pad[joynum] |= gpgx::hid::ButtonSet::kX;
-      if(keystate[SDL_SCANCODE_X])  input.pad[joynum] |= gpgx::hid::ButtonSet::kY;
-      if(keystate[SDL_SCANCODE_C])  input.pad[joynum] |= gpgx::hid::ButtonSet::kZ;
-      if(keystate[SDL_SCANCODE_V])  input.pad[joynum] |= gpgx::hid::ButtonSet::kMode;
+      if(keystate[SDL_SCANCODE_A])  controller->PressButton(gpgx::hid::Button::kA);
+      if(keystate[SDL_SCANCODE_S])  controller->PressButton(gpgx::hid::Button::kB);
+      if(keystate[SDL_SCANCODE_D])  controller->PressButton(gpgx::hid::Button::kC);
+      if(keystate[SDL_SCANCODE_F])  controller->PressButton(gpgx::hid::Button::kStart);
+      if(keystate[SDL_SCANCODE_Z])  controller->PressButton(gpgx::hid::Button::kX);
+      if(keystate[SDL_SCANCODE_X])  controller->PressButton(gpgx::hid::Button::kY);
+      if(keystate[SDL_SCANCODE_C])  controller->PressButton(gpgx::hid::Button::kZ);
+      if(keystate[SDL_SCANCODE_V])  controller->PressButton(gpgx::hid::Button::kMode);
 
-      if(keystate[SDL_SCANCODE_UP]) input.pad[joynum] |= gpgx::hid::ButtonSet::kUp;
+      if(keystate[SDL_SCANCODE_UP]) controller->PressButton(gpgx::hid::Button::kUp);
       else
-      if(keystate[SDL_SCANCODE_DOWN]) input.pad[joynum] |= gpgx::hid::ButtonSet::kDown;
-      if(keystate[SDL_SCANCODE_LEFT]) input.pad[joynum] |= gpgx::hid::ButtonSet::kLeft;
+      if(keystate[SDL_SCANCODE_DOWN]) controller->PressButton(gpgx::hid::Button::kDown);
+      if(keystate[SDL_SCANCODE_LEFT]) controller->PressButton(gpgx::hid::Button::kLeft);
       else
-      if(keystate[SDL_SCANCODE_RIGHT]) input.pad[joynum] |= gpgx::hid::ButtonSet::kRight;
+      if(keystate[SDL_SCANCODE_RIGHT]) controller->PressButton(gpgx::hid::Button::kRight);
 
       break;
     }
